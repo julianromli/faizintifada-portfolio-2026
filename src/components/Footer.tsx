@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="mt-32 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
       <p className="text-[14px] text-gray-400 font-medium tracking-wide">
-        © 2024 Satya. All rights reserved.
+        © {new Date().getFullYear()} Faiz. All rights reserved.
       </p>
       <div className="flex items-center space-x-6 text-gray-600">
         <a href="#" className="hover:text-gray-900 transition-colors">

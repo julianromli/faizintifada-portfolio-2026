@@ -50,7 +50,7 @@ export function Hero() {
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-orange-50/50 border-4 border-white overflow-hidden flex items-center justify-center shadow-[0px_6px_12px_rgba(0,0,0,0.25),0px_2px_4px_rgba(0,0,0,0.15)] transform transition-transform duration-500 ease-in-out hover:scale-110 hover:-rotate-12 cursor-pointer">
               <img src={IMAGES.avatar} alt="Faiz Avatar" className="w-full h-full object-cover rounded-1xl" />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900">Faiz</h1>
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900">Faiz Intifada</h1>
           </div>
           
           <h2 className="text-[1.75rem] sm:text-4xl leading-[1.3] text-gray-800 tracking-tight font-medium">

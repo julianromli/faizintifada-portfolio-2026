@@ -13,6 +13,9 @@
   "dependencies": {
     "@google/genai": "^1.29.0",
     "@phosphor-icons/react": "^2.1.10",
+    "@squircle/core": "^1.0.6",
+    "@squircle/paint-polyfill": "^1.0.6",
+    "@squircle/tailwindcss": "^1.0.6",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
     "dotenv": "^17.2.3",
@@ -21,6 +24,7 @@
     "motion": "^12.23.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.14.2",
     "vite": "^6.2.0"
   },
   "devDependencies": {

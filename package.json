@@ -11,29 +11,20 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@google/genai": "^1.29.0",
     "@phosphor-icons/react": "^2.1.10",
-    "@squircle/core": "^1.0.6",
-    "@squircle/paint-polyfill": "^1.0.6",
-    "@squircle/tailwindcss": "^1.0.6",
     "@tailwindcss/vite": "^4.1.14",
-    "@vitejs/plugin-react": "^5.0.4",
-    "dotenv": "^17.2.3",
-    "express": "^4.21.2",
-    "lucide-react": "^0.546.0",
+    "@vitejs/plugin-react": "^6.0.1",
     "motion": "^12.23.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.14.2",
-    "vite": "^6.2.0"
+    "react-router-dom": "^7.14.2"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
-    "autoprefixer": "^10.4.21",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "tailwindcss": "^4.1.14",
-    "tsx": "^4.21.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "typescript": "~6.0.3",
+    "vite": "^8.0.10"
   }
 }

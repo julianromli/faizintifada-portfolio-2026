@@ -46,22 +46,22 @@ export function Hero() {
       <div className="flex flex-col space-y-10">
         {/* Header / Intro */}
         <div className="space-y-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-orange-50/50 border-4 border-white overflow-hidden flex items-center justify-center shadow-[0px_6px_12px_rgba(0,0,0,0.25),0px_2px_4px_rgba(0,0,0,0.15)] transform transition-transform duration-500 ease-in-out hover:scale-110 hover:-rotate-12 cursor-pointer">
+          <div className="flex items-center space-x-4 animate-blur-reveal">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-orange-50/50 border-4 border-white overflow-hidden flex items-center justify-center shadow-[0px_6px_12px_rgba(0,0,0,0.25),0px_2px_4px_rgba(0,0,0,0.15)] transform transition-transform duration-200 ease-out hover:scale-110 hover:-rotate-12 cursor-pointer">
               <img src={IMAGES.avatar} alt="Faiz Avatar" className="w-full h-full object-cover rounded-1xl" />
             </div>
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900">Faiz Intifada</h1>
           </div>
           
-          <h2 className="text-[1.75rem] sm:text-4xl leading-[1.3] text-gray-800 tracking-tight font-medium">
+          <h2 className="text-[1.75rem] sm:text-4xl leading-[1.3] text-gray-800 tracking-tight font-medium animate-blur-reveal delay-100">
             {`I Design and... Developer, Creator, Artist, and Gamer. Part of `}
             <span className="text-gray-400 inline-flex items-center">
               Cursor <img src="https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ8y11lI5HNL9CO2WPxU8zlIhd0i7GsmceFJDy" className="w-8 h-8 mx-2 inline-block opacity-80" alt="Cursor" /> Ambassadors
             </span>
           </h2>
           
-          <div className="pt-2">
-            <button className="inline-flex items-center space-x-2 text-white px-6 py-4 rounded-full font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 btn-embossed">
+          <div className="pt-2 animate-blur-reveal delay-150">
+            <button className="inline-flex items-center space-x-2 text-white px-6 py-4 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 btn-embossed">
               <ChatCircleText size={20} weight="regular" />
               <span>Discuss a Project</span>
             </button>
@@ -69,7 +69,7 @@ export function Hero() {
         </div>
 
         {/* Skills */}
-        <div className="flex flex-wrap gap-3 sm:gap-4 pt-4">
+        <div className="flex flex-wrap gap-3 sm:gap-4 pt-4 animate-blur-reveal delay-200">
           <div className="flex items-center space-x-2 px-5 py-3 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-default">
             <Globe size={18} className="text-gray-500" />
             <span>Web Design</span>
@@ -93,15 +93,15 @@ export function Hero() {
         </div>
 
         {/* Testimonial */}
-        <div className="pt-6 w-full sm:max-w-xl">
+        <div className="pt-6 w-full sm:max-w-xl animate-blur-reveal delay-250">
           <div className="border border-gray-100 rounded-3xl p-8 bg-white shadow-[0_4px_30px_rgba(0,0,0,0.02)] relative min-h-[260px] flex flex-col justify-between">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTestimonial}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, y: 10, scale: 0.98, filter: "blur(2px)" }}
+                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -10, scale: 0.98, filter: "blur(2px)" }}
+                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                 className="flex-1 flex flex-col"
               >
                 <p className="text-[17px] leading-relaxed text-gray-700 font-medium pb-4">
@@ -125,7 +125,7 @@ export function Hero() {
               <button
                 key={idx}
                 onClick={() => setActiveTestimonial(idx)}
-                className={`h-2 rounded-full transition-all duration-300 ${activeTestimonial === idx ? 'w-6 bg-gray-900' : 'w-2 bg-gray-200 hover:bg-gray-400'}`}
+                className={`h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${activeTestimonial === idx ? 'w-6 bg-gray-900' : 'w-2 bg-gray-200 hover:bg-gray-400'}`}
                 aria-label={`Go to testimonial ${idx + 1}`}
               />
             ))}
@@ -136,14 +136,14 @@ export function Hero() {
 
       {/* Right Column (Images) */}
       <div className="flex flex-col gap-6 h-full mt-8 xl:mt-0 xl:-my-4">
-        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100">
-          <img src={IMAGES.abstractBottom} alt="Abstract White" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-in-out" />
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100 animate-blur-reveal delay-300">
+          <img src={IMAGES.abstractBottom} alt="Abstract White" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-400 ease-out" />
         </div>
-        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-indigo-50">
-          <img src={IMAGES.abstractTop} alt="Abstract Colors" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-in-out" />
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-indigo-50 animate-blur-reveal delay-400">
+          <img src={IMAGES.abstractTop} alt="Abstract Colors" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-400 ease-out" />
         </div>
-        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-blue-50">
-          <img src={IMAGES.abstractMiddle} alt="Abstract Blue" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-in-out" />
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-blue-50 animate-blur-reveal delay-500">
+          <img src={IMAGES.abstractMiddle} alt="Abstract Blue" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-400 ease-out" />
         </div>
       </div>
 

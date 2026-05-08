@@ -2,6 +2,28 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight } from '@phosphor-icons/react';
 import { projects } from '../data/projects';
 import { useEffect } from 'react';
+import { motion } from 'motion/react';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15, filter: "blur(4px)" },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    filter: "blur(0px)",
+    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] }
+  }
+};
 
 export function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -27,39 +49,44 @@ export function ProjectDetail() {
   }
 
   return (
-    <main className="animate-fade-in">
+    <motion.main 
+      initial="hidden"
+      animate="show"
+      variants={containerVariants}
+      className="pb-24"
+    >
       {/* Back Link */}
-      <div className="mb-12">
+      <motion.div variants={itemVariants} className="mb-12">
         <Link 
           to="/"
-          className="inline-flex items-center space-x-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 transition-colors group"
+          className="inline-flex items-center space-x-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 active:scale-95 transition-all duration-200 ease-out group"
         >
-          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform duration-200 ease-out" />
           <span>Back to projects</span>
         </Link>
-      </div>
+      </motion.div>
 
       {/* Hero Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20">
         <div className="lg:col-span-5 space-y-8">
-          <div>
+          <motion.div variants={itemVariants}>
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900 mb-6 leading-tight">
               {project.title}
             </h1>
             <p className="text-lg text-gray-500 leading-relaxed">
               {project.description}
             </p>
-          </div>
+          </motion.div>
 
-          <div className="flex flex-wrap gap-2.5">
+          <motion.div variants={itemVariants} className="flex flex-wrap gap-2.5">
             {project.tags.map(tag => (
               <span key={tag} className="px-4 py-1.5 rounded-full border border-gray-100 text-[13px] font-medium text-gray-600 bg-gray-50">
                 {tag}
               </span>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-2 gap-8 pt-8 border-t border-gray-100">
+          <motion.div variants={itemVariants} className="grid grid-cols-2 gap-8 pt-8 border-t border-gray-100">
             {project.client && (
               <div>
                 <p className="text-[11px] font-semibold text-gray-400 tracking-wider uppercase mb-2">Client</p>
@@ -78,24 +105,24 @@ export function ProjectDetail() {
                 <p className="text-[15px] font-medium text-gray-900">{project.timeline}</p>
               </div>
             )}
-          </div>
+          </motion.div>
 
           {project.liveUrl && (
-            <div className="pt-4">
+            <motion.div variants={itemVariants} className="pt-4">
               <a 
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-gray-900 text-white rounded-full text-[14px] font-medium hover:bg-gray-800 transition-colors group"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-gray-900 text-white rounded-full text-[14px] font-medium hover:bg-gray-800 active:scale-95 transition-all duration-200 ease-out group"
               >
                 <span>Visit Live Site</span>
-                <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200 ease-out" />
               </a>
-            </div>
+            </motion.div>
           )}
         </div>
 
-        <div className="lg:col-span-7">
+        <motion.div variants={itemVariants} className="lg:col-span-7">
           <div className={`rounded-[2rem] overflow-hidden ${project.bgClass} aspect-[4/3] sm:aspect-video relative border border-gray-100`}>
             <img 
               src={project.image} 
@@ -103,31 +130,44 @@ export function ProjectDetail() {
               className={`w-full h-full object-cover ${project.imagePosition || 'object-center'} mix-blend-multiply opacity-95`}
             />
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Content Section */}
-      <div className="max-w-3xl mx-auto mb-24">
+      <motion.div 
+        initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+        whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+        className="max-w-3xl mx-auto mb-24"
+      >
         <h2 className="text-2xl font-semibold text-gray-900 mb-6">About the Project</h2>
         <div className="text-lg text-gray-500 space-y-6">
           <p className="leading-relaxed">{project.longDescription}</p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Image Gallery */}
       {project.images && project.images.length > 1 && (
         <div className="space-y-8">
           {project.images.slice(1).map((img, index) => (
-            <div key={index} className="rounded-[2rem] overflow-hidden bg-gray-50 border border-gray-100">
+            <motion.div 
+              key={index} 
+              initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+              className="rounded-[2rem] overflow-hidden bg-gray-50 border border-gray-100"
+            >
               <img 
                 src={img} 
                 alt={`${project.title} screenshot ${index + 1}`} 
                 className="w-full h-auto object-cover"
               />
-            </div>
+            </motion.div>
           ))}
         </div>
       )}
-    </main>
+    </motion.main>
   );
 }

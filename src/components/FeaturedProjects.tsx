@@ -18,7 +18,7 @@ function ProjectCard({ slug, title, description, image, tags, bgClass, imagePosi
         />
       </div>
       <div className="flex justify-between items-start px-1">
-        <h3 className="text-base font-normal text-gray-900">{title}</h3>
+        <h3 className="text-base font-semibold text-gray-900">{title}</h3>
         <span className="text-base font-normal text-gray-500 text-right">{tags.join(', ')}</span>
       </div>
     </Link>
@@ -30,11 +30,10 @@ export function FeaturedProjects() {
     <section>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 space-y-4 sm:space-y-0">
         <div>
-          <p className="text-[11px] font-semibold text-gray-400 tracking-wider uppercase mb-3">SELECTED WORK</p>
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900">Featured Projects</h2>
         </div>
         <Link to="/projects" className="flex items-center space-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group">
-          <span>View all projects</span>
+          <span>View all</span>
           <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
         </Link>
       </div>

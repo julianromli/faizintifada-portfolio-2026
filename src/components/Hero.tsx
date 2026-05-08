@@ -136,13 +136,13 @@ export function Hero() {
 
       {/* Right Column (Images) */}
       <div className="flex flex-col gap-6 h-full mt-8 xl:mt-0 xl:-my-4">
-        <div className="rounded-3xl overflow-hidden aspect-[4/3] sm:aspect-[16/9] xl:aspect-auto xl:flex-1 relative bg-gray-100">
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100">
           <img src={IMAGES.abstractBottom} alt="Abstract White" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-in-out" />
         </div>
-        <div className="rounded-3xl overflow-hidden aspect-[4/3] sm:aspect-[16/9] xl:aspect-auto xl:flex-1 relative bg-indigo-50">
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-indigo-50">
           <img src={IMAGES.abstractTop} alt="Abstract Colors" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-in-out" />
         </div>
-        <div className="rounded-3xl overflow-hidden aspect-[4/3] sm:aspect-[16/9] xl:aspect-auto xl:flex-1 relative bg-blue-50">
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-blue-50">
           <img src={IMAGES.abstractMiddle} alt="Abstract Blue" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-in-out" />
         </div>
       </div>

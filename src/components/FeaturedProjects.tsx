@@ -9,26 +9,17 @@ interface ProjectCardProps extends Project {
 
 function ProjectCard({ slug, title, description, image, tags, bgClass, imagePosition = 'object-top' }: ProjectCardProps) {
   return (
-    <Link to={`/project/${slug}`} className="group block cursor-pointer rounded-[2rem] border border-gray-100 bg-white overflow-hidden hover:shadow-sm transition-shadow duration-300">
-      <div className={`overflow-hidden ${bgClass} aspect-[4/3] relative`}>
+    <Link to={`/project/${slug}`} className="block cursor-pointer">
+      <div className={`overflow-hidden ${bgClass} aspect-[1.91/1] rounded-[1rem] relative mb-4`}>
         <img 
           src={image} 
           alt={title} 
-          className={`w-full h-full object-cover ${imagePosition} opacity-90 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] mix-blend-multiply group-hover:scale-105`} 
+          className={`w-full h-full object-cover ${imagePosition}`} 
         />
       </div>
-      <div className="p-6 sm:p-8 space-y-5">
-        <div>
-          <h3 className="text-[20px] font-medium text-gray-900 mb-1.5">{title}</h3>
-          <p className="text-[15.5px] text-gray-500 font-normal leading-relaxed">{description}</p>
-        </div>
-        <div className="flex flex-wrap gap-2.5 pt-1">
-          {tags.map(tag => (
-            <span key={tag} className="px-4 py-1.5 rounded-full border border-gray-100 text-[13px] font-medium text-gray-600 bg-white">
-              {tag}
-            </span>
-          ))}
-        </div>
+      <div className="flex justify-between items-start px-1">
+        <h3 className="text-base font-normal text-gray-900">{title}</h3>
+        <span className="text-base font-normal text-gray-500 text-right">{tags.join(', ')}</span>
       </div>
     </Link>
   );

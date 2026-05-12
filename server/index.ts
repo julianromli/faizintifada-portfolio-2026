@@ -6,7 +6,11 @@ import { asc, eq } from 'drizzle-orm';
 import { getDb } from '../src/db/client';
 import { projects as projectsTable } from '../src/db/schema';
 import { rowToProject } from '../src/lib/project-mapper';
+import { createRouteHandler } from 'uploadthing/server';
+import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers';
 import { createAdminApp } from './routes/admin';
+import { uploadRouter } from './uploadthing';
+import { normalizeCmsAdminSecret } from '../src/lib/normalize-cms-admin-secret';
 
 const app = new Hono();
 
@@ -17,8 +21,19 @@ app.use(
   '/*',
   cors({
     origin: corsOrigins?.length ? corsOrigins : devOrigins,
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-uploadthing-version',
+      'x-uploadthing-api-key',
+      'x-uploadthing-fe-package',
+      'x-uploadthing-package',
+      'x-uploadthing-be-adapter',
+      CMS_UPLOAD_TOKEN_HEADER,
+      'b3',
+      'traceparent',
+    ],
   }),
 );
 
@@ -64,12 +79,26 @@ app.get('/api/projects/:slug', async (c) => {
 
 app.route('/api/admin', createAdminApp());
 
+const uploadHandlers = createRouteHandler({
+  router: uploadRouter,
+  config: {
+    token: process.env.UPLOADTHING_TOKEN,
+    isDev: process.env.NODE_ENV !== 'production',
+  },
+});
+
+app.all('/api/uploadthing', (c) => uploadHandlers(c.req.raw));
+
 const port = Number(process.env.API_PORT) || 3001;
 
-if (!process.env.CMS_ADMIN_TOKEN?.trim()) {
+if (!normalizeCmsAdminSecret(process.env.CMS_ADMIN_TOKEN)) {
   console.warn(
     '[api] CMS_ADMIN_TOKEN is not set; POST/PUT/DELETE /api/admin/projects will return 503 until you set it.',
   );
+}
+
+if (!process.env.UPLOADTHING_TOKEN?.trim()) {
+  console.warn('[api] UPLOADTHING_TOKEN is not set; uploads will fail until you add it from the UploadThing dashboard.');
 }
 
 serve({

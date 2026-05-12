@@ -6,6 +6,7 @@ import { projects as projectsTable } from '../../src/db/schema';
 import { projectToInsertValues, rowToProject } from '../../src/lib/project-mapper';
 import type { Project } from '../../src/types/project';
 import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload';
+import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret';
 
 function isUniqueConstraintError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
@@ -48,7 +49,7 @@ export function createAdminApp() {
   const admin = new Hono();
 
   admin.use('*', async (c, next) => {
-    const tok = process.env.CMS_ADMIN_TOKEN?.trim();
+    const tok = normalizeCmsAdminSecret(process.env.CMS_ADMIN_TOKEN);
     if (!tok) {
       return c.json(
         { error: 'Admin API is not configured. Set CMS_ADMIN_TOKEN in the server environment.' },
@@ -57,6 +58,9 @@ export function createAdminApp() {
     }
     return bearerAuth({ token: tok })(c, next);
   });
+
+  /** Used by AdminLogin to validate the Bearer token matches CMS_ADMIN_TOKEN. */
+  admin.get('/session', (c) => c.json({ ok: true }, 200));
 
   admin.post('/projects', async (c) => {
     let body: unknown;

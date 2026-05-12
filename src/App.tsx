@@ -1,4 +1,4 @@
-import React from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
@@ -6,14 +6,31 @@ import { Home } from './pages/Home';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { NotFound } from './pages/NotFound';
-import { AdminLogin } from './pages/admin/AdminLogin';
-import { AdminProjectList } from './pages/admin/AdminProjectList';
-import { AdminProjectForm } from './pages/admin/AdminProjectForm';
 import { RequireAdmin } from './pages/admin/RequireAdmin';
+import { BodyOverlayScrollbars } from './components/BodyOverlayScrollbars';
+
+const AdminLogin = lazy(() =>
+  import('./pages/admin/AdminLogin').then((mod) => ({ default: mod.AdminLogin })),
+);
+const AdminProjectList = lazy(() =>
+  import('./pages/admin/AdminProjectList').then((mod) => ({ default: mod.AdminProjectList })),
+);
+const AdminProjectForm = lazy(() =>
+  import('./pages/admin/AdminProjectForm').then((mod) => ({ default: mod.AdminProjectForm })),
+);
+
+function adminRoute(element: ReactNode) {
+  return (
+    <Suspense fallback={<p className="py-12 text-[15px] text-gray-500 animate-pulse">Loading admin…</p>}>
+      {element}
+    </Suspense>
+  );
+}
 
 export default function App() {
   return (
     <Router>
+      <BodyOverlayScrollbars />
       <div className="min-h-screen bg-[#f1f2f4] py-4 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-gray-200">
         <div className="max-w-[1280px] mx-auto bg-white rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 md:p-14 lg:p-16 shadow-sm overflow-hidden border border-gray-100">
           
@@ -23,29 +40,35 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/project/:slug" element={<ProjectDetail />} />
-            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin" element={adminRoute(<AdminLogin />)} />
             <Route
               path="/admin/projects"
               element={
-                <RequireAdmin>
-                  <AdminProjectList />
-                </RequireAdmin>
+                adminRoute(
+                  <RequireAdmin>
+                    <AdminProjectList />
+                  </RequireAdmin>,
+                )
               }
             />
             <Route
               path="/admin/projects/new"
               element={
-                <RequireAdmin>
-                  <AdminProjectForm />
-                </RequireAdmin>
+                adminRoute(
+                  <RequireAdmin>
+                    <AdminProjectForm />
+                  </RequireAdmin>,
+                )
               }
             />
             <Route
               path="/admin/projects/edit/:slug"
               element={
-                <RequireAdmin>
-                  <AdminProjectForm />
-                </RequireAdmin>
+                adminRoute(
+                  <RequireAdmin>
+                    <AdminProjectForm />
+                  </RequireAdmin>,
+                )
               }
             />
             <Route path="*" element={<NotFound />} />

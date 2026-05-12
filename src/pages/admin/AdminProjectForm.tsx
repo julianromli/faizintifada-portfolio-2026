@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from '@phosphor-icons/react';
 import type { Project } from '../../types/project';
 import { apiUrl } from '../../lib/api';
-import { adminFetch, readAdminError } from '../../lib/admin-api';
+import { adminFetch, cmsUploadThingHeaders, readAdminError } from '../../lib/admin-api';
+import { ProjectImageDropzone } from '../../uploadthing/client';
 
 type FormState = {
   slug: string;
@@ -67,6 +68,43 @@ const inputClass =
   'w-full rounded-xl border border-gray-200 px-4 py-2.5 text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10';
 const labelClass = 'block text-[13px] font-medium text-gray-700 mb-1.5';
 
+function isProbablyHttpImageUrl(raw: string): boolean {
+  const s = raw.trim();
+  if (!s) return false;
+  try {
+    const u = new URL(s);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function GalleryThumb({ url }: { url: string }) {
+  const [broken, setBroken] = useState(false);
+
+  useEffect(() => {
+    setBroken(false);
+  }, [url]);
+
+  if (broken) {
+    return (
+      <div className="flex aspect-square flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 p-2 text-center">
+        <span className="text-[11px] leading-snug text-gray-500">Could not load preview</span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={url}
+      alt=""
+      className="aspect-square h-24 w-full rounded-xl border border-gray-100 object-cover"
+      loading="lazy"
+      onError={() => setBroken(true)}
+    />
+  );
+}
+
 export function AdminProjectForm() {
   const { slug: urlSlug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -77,6 +115,20 @@ export function AdminProjectForm() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [coverUploadError, setCoverUploadError] = useState<string | null>(null);
+  const [galleryUploadError, setGalleryUploadError] = useState<string | null>(null);
+  const [coverPreviewBroken, setCoverPreviewBroken] = useState(false);
+
+  const coverTrimmed = form.image.trim();
+  const galleryUrls = form.imagesRaw
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .filter(isProbablyHttpImageUrl);
+
+  useEffect(() => {
+    setCoverPreviewBroken(false);
+  }, [coverTrimmed]);
 
   useEffect(() => {
     if (!isEdit || !urlSlug) {
@@ -284,7 +336,7 @@ export function AdminProjectForm() {
             />
           </div>
 
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-2 space-y-2">
             <label htmlFor="image" className={labelClass}>
               Cover image URL
             </label>
@@ -295,6 +347,48 @@ export function AdminProjectForm() {
               onChange={(e) => update('image', e.target.value)}
               className={inputClass}
             />
+            <p className="text-[13px] text-gray-500">
+              Or drag and drop an image (uses UploadThing; requires being signed in to admin with a valid
+              CMS token).
+            </p>
+            <ProjectImageDropzone
+              endpoint="projectCover"
+              headers={cmsUploadThingHeaders}
+              onClientUploadComplete={(res) => {
+                const u = res[0]?.url;
+                if (typeof u === 'string') {
+                  update('image', u);
+                }
+                setCoverUploadError(null);
+              }}
+              onUploadError={(err) => setCoverUploadError(err.message)}
+              className="border border-gray-100 rounded-2xl bg-gray-50/50"
+            />
+            {coverUploadError && (
+              <p className="text-[13px] text-red-600">{coverUploadError}</p>
+            )}
+            {isProbablyHttpImageUrl(coverTrimmed) ? (
+              <div className="pt-2">
+                <p className={`${labelClass} text-gray-600`}>Preview</p>
+                {coverPreviewBroken ? (
+                  <div className="flex min-h-[160px] items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 text-center">
+                    <p className="text-[13px] text-gray-500">
+                      Preview unavailable — check that the URL is a direct image link.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+                    <img
+                      src={coverTrimmed}
+                      alt="Cover preview"
+                      className={`mx-auto max-h-64 w-full max-w-xl object-contain ${form.imagePosition.trim() || 'object-top'}`}
+                      loading="lazy"
+                      onError={() => setCoverPreviewBroken(true)}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : null}
           </div>
 
           <div className="sm:col-span-2">
@@ -385,7 +479,7 @@ export function AdminProjectForm() {
             />
           </div>
 
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-2 space-y-2">
             <label htmlFor="imagesRaw" className={labelClass}>
               Gallery image URLs (one per line)
             </label>
@@ -396,6 +490,47 @@ export function AdminProjectForm() {
               onChange={(e) => update('imagesRaw', e.target.value)}
               className={inputClass}
             />
+            <p className="text-[13px] text-gray-500">
+              Or drop multiple images here to append their URLs to the list (duplicates skipped).
+            </p>
+            <ProjectImageDropzone
+              endpoint="projectGallery"
+              headers={cmsUploadThingHeaders}
+              onClientUploadComplete={(res) => {
+                const urls = res
+                  .map((r) => r.url)
+                  .filter((u): u is string => typeof u === 'string');
+                setForm((prev) => {
+                  const existing = prev.imagesRaw
+                    .split('\n')
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                  const seen = new Set(existing);
+                  for (const u of urls) {
+                    seen.add(u);
+                  }
+                  return { ...prev, imagesRaw: Array.from(seen).join('\n') };
+                });
+                setGalleryUploadError(null);
+              }}
+              onUploadError={(err) => setGalleryUploadError(err.message)}
+              className="border border-gray-100 rounded-2xl bg-gray-50/50"
+            />
+            {galleryUploadError && (
+              <p className="text-[13px] text-red-600">{galleryUploadError}</p>
+            )}
+            {galleryUrls.length > 0 ? (
+              <div className="pt-2">
+                <p className={`${labelClass} text-gray-600`}>Preview ({galleryUrls.length})</p>
+                <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  {galleryUrls.map((u, i) => (
+                    <li key={`${i}-${u}`} className="min-w-0">
+                      <GalleryThumb url={u} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
 
           <div className="flex items-center gap-2 pt-2">

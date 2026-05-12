@@ -2,6 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+@import "uploadthing/tw/v4";
+@source "../node_modules/@uploadthing/react/dist";
 @theme {
   --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
@@ -49,6 +51,20 @@ body {
   font-family: var(--font-sans);
   background-color: #f3f4f6;
   color: #111827;
+}
+
+/* OverlayScrollbars — matches gray shell / white card UI */
+.os-theme-faiz {
+  --os-size: 10px;
+  --os-padding-perpendicular: 4px;
+  --os-padding-axis: 4px;
+  --os-track-border-radius: 9999px;
+  --os-track-bg: rgba(17, 24, 39, 0.06);
+  --os-track-bg-hover: rgba(17, 24, 39, 0.09);
+  --os-handle-border-radius: 9999px;
+  --os-handle-bg: rgba(107, 114, 128, 0.55);
+  --os-handle-bg-hover: rgba(75, 85, 99, 0.75);
+  --os-handle-bg-active: rgba(55, 65, 81, 0.9);
 }
 
 @layer components {

@@ -14,59 +14,59 @@ const TOOLS: Tool[] = [
   { 
     id: 'figma', 
     name: 'Figma', 
-    bg: 'bg-white',
+    bg: 'bg-[#FAFAFA]',
     imgClassName: 'border-0',
     icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg', 
     rotate: -21 
   },
   { 
-    id: 'react', 
-    name: 'React', 
-    bg: 'bg-[#E6F9FF]', 
-    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg', 
+    id: 'google-ai-studio', 
+    name: 'Google AI Studio', 
+    bg: 'bg-[#FAFAFA]', 
+    icon: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJeroJZ67v7EOcR6jGLWBNTApisPuaeDYMUbnI', 
     rotate: -15 
   },
   { 
-    id: 'nextjs', 
-    name: 'Next.js', 
-    bg: 'bg-[#F3F4F6]',
-    borderClass: 'border-0',
-    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg', 
+    id: 'hermes-agents', 
+    name: 'Hermes Agents', 
+    bg: 'bg-[#FAFAFA]',
+    borderClass: 'border-4 border-[#F5F5F5]',
+    icon: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJzp8gzHQ01jPoxERhQSFJuI2qmrfb95LAUe3C', 
     rotate: -9 
   },
   { 
-    id: 'tailwind', 
-    name: 'Tailwind CSS', 
-    bg: 'bg-[#E0F8FB]', 
-    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg', 
+    id: 'davinci-resolve', 
+    name: 'DaVinci Resolve', 
+    bg: 'bg-[#FAFAFA]', 
+    icon: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/DaVinci_Resolve_Studio.png', 
     rotate: -3 
   },
   { 
-    id: 'typescript', 
-    name: 'TypeScript', 
-    bg: 'bg-[#EAF2FD]', 
-    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg', 
+    id: 'obsidian', 
+    name: 'Obsidian', 
+    bg: 'bg-[#FAFAFA]', 
+    icon: 'https://upload.wikimedia.org/wikipedia/commons/1/10/2023_Obsidian_logo.svg', 
     rotate: 3 
   },
   { 
     id: 'cursor', 
     name: 'Cursor', 
-    bg: 'bg-[#F3F4F6]', 
+    bg: 'bg-[#FAFAFA]', 
     icon: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ8y11lI5HNL9CO2WPxU8zlIhd0i7GsmceFJDy', 
     rotate: 9 
   },
   { 
     id: 'pi', 
     name: 'Pi Agent', 
-    bg: 'bg-[#E6F9F0]', 
+    bg: 'bg-[#222222]', 
     icon: 'https://camo.githubusercontent.com/0a417ac08f65d3a99f29136b4ce9461da31d19d15099dfeaba8db96a30ad3193/68747470733a2f2f70692e6465762f6c6f676f2d6175746f2e737667', 
     rotate: 15 
   },
   { 
     id: 'codex', 
     name: 'Codex', 
-    bg: 'bg-[#F3E8FF]', 
-    icon: 'https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg', 
+    bg: 'bg-[#FAFAFA]', 
+    icon: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJvzLF0kt3OERfomb5VsYrNqh3BI4C2GiPLp7z', 
     rotate: 21 
   },
 ];

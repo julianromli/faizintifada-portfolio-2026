@@ -6,6 +6,10 @@ import { Home } from './pages/Home';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { NotFound } from './pages/NotFound';
+import { AdminLogin } from './pages/admin/AdminLogin';
+import { AdminProjectList } from './pages/admin/AdminProjectList';
+import { AdminProjectForm } from './pages/admin/AdminProjectForm';
+import { RequireAdmin } from './pages/admin/RequireAdmin';
 
 export default function App() {
   return (
@@ -19,6 +23,31 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/project/:slug" element={<ProjectDetail />} />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route
+              path="/admin/projects"
+              element={
+                <RequireAdmin>
+                  <AdminProjectList />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/projects/new"
+              element={
+                <RequireAdmin>
+                  <AdminProjectForm />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin/projects/edit/:slug"
+              element={
+                <RequireAdmin>
+                  <AdminProjectForm />
+                </RequireAdmin>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
           

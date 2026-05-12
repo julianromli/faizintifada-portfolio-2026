@@ -38,6 +38,8 @@ export function rowToProject(row: ProjectRow): Project {
     timeline: row.timeline ?? undefined,
     liveUrl: row.liveUrl ?? undefined,
     images,
+    featured: row.featured,
+    sortOrder: row.sortOrder,
   };
 }
 

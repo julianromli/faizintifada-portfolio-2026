@@ -6,6 +6,7 @@ import { asc, eq } from 'drizzle-orm';
 import { getDb } from '../src/db/client';
 import { projects as projectsTable } from '../src/db/schema';
 import { rowToProject } from '../src/lib/project-mapper';
+import { createAdminApp } from './routes/admin';
 
 const app = new Hono();
 
@@ -16,8 +17,8 @@ app.use(
   '/*',
   cors({
     origin: corsOrigins?.length ? corsOrigins : devOrigins,
-    allowMethods: ['GET', 'OPTIONS'],
-    allowHeaders: ['Content-Type'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
   }),
 );
 
@@ -61,7 +62,16 @@ app.get('/api/projects/:slug', async (c) => {
   }
 });
 
+app.route('/api/admin', createAdminApp());
+
 const port = Number(process.env.API_PORT) || 3001;
+
+if (!process.env.CMS_ADMIN_TOKEN?.trim()) {
+  console.warn(
+    '[api] CMS_ADMIN_TOKEN is not set; POST/PUT/DELETE /api/admin/projects will return 503 until you set it.',
+  );
+}
+
 serve({
   fetch: app.fetch,
   port,

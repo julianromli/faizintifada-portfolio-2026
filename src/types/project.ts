@@ -12,4 +12,8 @@ export interface Project {
   timeline?: string;
   liveUrl?: string;
   images?: string[];
+  /** Included in API JSON for CMS / ordering */
+  featured?: boolean;
+  /** Included in API JSON for CMS / ordering */
+  sortOrder?: number;
 }

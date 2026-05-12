@@ -1,24 +1,28 @@
-import { ArrowRight } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft } from '@phosphor-icons/react';
 import { useProjects } from '../hooks/useProjects';
-import { ProjectCard, ProjectsGridSkeleton } from './ProjectCard';
+import { ProjectCard, ProjectsGridSkeleton } from '../components/ProjectCard';
 
-export function FeaturedProjects() {
-  const { projects, loading, error, retry } = useProjects({ featuredOnly: true });
+export function Projects() {
+  const { projects, loading, error, retry } = useProjects();
 
   return (
-    <section>
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 space-y-4 sm:space-y-0">
+    <main className="space-y-10 pb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-semibold tracking-tight text-gray-900">Featured Projects</h2>
+          <Link
+            to="/"
+            className="inline-flex items-center space-x-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 active:scale-95 transition-all duration-200 ease-out group mb-4"
+          >
+            <ArrowLeft
+              size={16}
+              className="group-hover:-translate-x-1 transition-transform duration-200 ease-out"
+            />
+            <span>Back to home</span>
+          </Link>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">All projects</h1>
+          <p className="text-[15px] text-gray-500 mt-2">Every case study in the archive.</p>
         </div>
-        <Link
-          to="/projects"
-          className="flex items-center space-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group"
-        >
-          <span>View all</span>
-          <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
-        </Link>
       </div>
 
       {loading && <ProjectsGridSkeleton />}
@@ -38,7 +42,7 @@ export function FeaturedProjects() {
       )}
 
       {!loading && !error && projects.length === 0 && (
-        <p className="text-[15px] text-gray-500">No featured projects yet.</p>
+        <p className="text-[15px] text-gray-500">No projects yet.</p>
       )}
 
       {!loading && !error && projects.length > 0 && (
@@ -57,6 +61,6 @@ export function FeaturedProjects() {
           ))}
         </div>
       )}
-    </section>
+    </main>
   );
 }

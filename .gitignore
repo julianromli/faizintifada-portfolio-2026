@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# local libsql file (drizzle-kit / dev)
+*.sqlite

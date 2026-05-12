@@ -78,7 +78,7 @@ export function ToolsStack() {
         initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+        transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] as const }}
         className="text-center mb-12 sm:mb-16"
       >
         <h2 className="text-3xl font-semibold tracking-tight text-gray-900 mb-4">Tools I Use</h2>
@@ -89,7 +89,7 @@ export function ToolsStack() {
         initial={{ opacity: 0, y: 40, scale: 0.9 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+        transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] as const }}
         className="flex items-center justify-center -space-x-4 sm:-space-x-8 px-4"
       >
         {TOOLS.map((tool, index) => {

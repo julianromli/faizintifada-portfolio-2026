@@ -4,26 +4,40 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port=3000 --host=0.0.0.0",
+    "dev:vite": "vite --port=3000 --host=0.0.0.0",
+    "dev:api": "tsx watch server/index.ts",
+    "dev": "concurrently -n vite,api -c blue,green \"npm run dev:vite\" \"npm run dev:api\"",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx scripts/seed-projects.ts"
   },
   "dependencies": {
+    "@hono/node-server": "^2.0.2",
+    "@libsql/client": "^0.17.3",
     "@phosphor-icons/react": "^2.1.10",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^6.0.1",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.18",
     "motion": "^12.23.24",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.14.2"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
+    "@types/node": "^22.19.19",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "concurrently": "^9.2.1",
+    "drizzle-kit": "^0.31.10",
     "tailwindcss": "^4.1.14",
+    "tsx": "^4.21.0",
     "typescript": "~6.0.3",
     "vite": "^8.0.10"
   }

@@ -1,6 +1,6 @@
 import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
-import * as schema from './schema';
+import * as schema from './schema.js';
 
 /** Server-side and scripts only — do not import from React bundles. */
 export function getDb() {

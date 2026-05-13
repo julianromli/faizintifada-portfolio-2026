@@ -1,5 +1,5 @@
-import type { Project } from '../types/project';
-import type { ProjectRow } from '../db/schema';
+import type { Project } from '../types/project.js';
+import type { ProjectRow } from '../db/schema.js';
 
 export function rowToProject(row: ProjectRow): Project {
   let tags: string[] = [];

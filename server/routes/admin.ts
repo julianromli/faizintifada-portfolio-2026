@@ -1,12 +1,12 @@
 import { Hono } from 'hono';
 import { bearerAuth } from 'hono/bearer-auth';
 import { eq } from 'drizzle-orm';
-import { getDb } from '../../src/db/client';
-import { projects as projectsTable } from '../../src/db/schema';
-import { projectToInsertValues, rowToProject } from '../../src/lib/project-mapper';
-import type { Project } from '../../src/types/project';
-import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload';
-import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret';
+import { getDb } from '../../src/db/client.js';
+import { projects as projectsTable } from '../../src/db/schema.js';
+import { projectToInsertValues, rowToProject } from '../../src/lib/project-mapper.js';
+import type { Project } from '../../src/types/project.js';
+import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload.js';
+import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret.js';
 
 function isUniqueConstraintError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);

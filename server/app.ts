@@ -2,12 +2,12 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { asc, eq } from 'drizzle-orm';
 import { createRouteHandler } from 'uploadthing/server';
-import { getDb } from '../src/db/client';
-import { projects as projectsTable } from '../src/db/schema';
-import { rowToProject } from '../src/lib/project-mapper';
-import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers';
-import { createAdminApp } from './routes/admin';
-import { uploadRouter } from './uploadthing';
+import { getDb } from '../src/db/client.js';
+import { projects as projectsTable } from '../src/db/schema.js';
+import { rowToProject } from '../src/lib/project-mapper.js';
+import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
+import { createAdminApp } from './routes/admin.js';
+import { uploadRouter } from './uploadthing.js';
 
 const app = new Hono();
 

@@ -1,7 +1,7 @@
 import { createUploadthing, UploadThingError } from 'uploadthing/server';
 import type { FileRouter } from 'uploadthing/types';
-import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers';
-import { normalizeCmsAdminSecret, tokenFromAuthorizationHeader } from '../src/lib/normalize-cms-admin-secret';
+import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
+import { normalizeCmsAdminSecret, tokenFromAuthorizationHeader } from '../src/lib/normalize-cms-admin-secret.js';
 
 const f = createUploadthing();
 

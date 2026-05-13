@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { serve } from '@hono/node-server';
-import { normalizeCmsAdminSecret } from '../src/lib/normalize-cms-admin-secret';
-import app from './app';
+import { normalizeCmsAdminSecret } from '../src/lib/normalize-cms-admin-secret.js';
+import app from './app.js';
 
 const port = Number(process.env.API_PORT) || 3001;
 

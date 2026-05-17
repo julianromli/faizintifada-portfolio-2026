@@ -3,6 +3,7 @@ import { FeaturedProjects } from '../components/FeaturedProjects';
 import { AboutSection } from '../components/AboutSection';
 import { ToolsStack } from '../components/ToolsStack';
 import { LatestVideos } from '../components/LatestVideos';
+import { GitHubContributions } from '../components/GitHubContributions';
 
 export function Home() {
   return (
@@ -10,6 +11,7 @@ export function Home() {
       <Hero />
       <FeaturedProjects />
       <LatestVideos />
+      <GitHubContributions />
       <ToolsStack />
       <AboutSection />
     </main>

@@ -10,6 +10,7 @@ import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
 import { createAdminApp } from './routes/admin.js';
 import { uploadRouter } from './uploadthing.js';
 import { fetchLatestYouTubeVideos, parseVideoLimit } from './youtube.js';
+import { fetchGitHubContributions } from './github.js';
 
 const app = new Hono();
 
@@ -102,6 +103,18 @@ app.get('/api/youtube/videos', async (c) => {
   } catch (err) {
     console.error('[GET /api/youtube/videos]', err);
     return c.json({ error: 'Failed to load YouTube videos' }, 500);
+  }
+});
+
+app.get('/api/github/contributions', async (c) => {
+  try {
+    const contributions = await fetchGitHubContributions();
+
+    c.header('Cache-Control', 'public, max-age=21600, s-maxage=21600, stale-while-revalidate=86400');
+    return c.json(contributions);
+  } catch (err) {
+    console.error('[GET /api/github/contributions]', err);
+    return c.json({ error: 'Failed to load GitHub contributions' }, 500);
   }
 });
 

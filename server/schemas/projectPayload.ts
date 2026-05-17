@@ -24,9 +24,6 @@ export const projectPayloadSchema = z.object({
 
 export type ProjectPayload = z.infer<typeof projectPayloadSchema>;
 
-export function updateProjectPayloadSchema(urlSlug: string) {
-  return projectPayloadSchema.refine((d) => d.slug === urlSlug, {
-    message: 'Slug in body must match the URL (slug cannot be changed).',
-    path: ['slug'],
-  });
+export function updateProjectPayloadSchema() {
+  return projectPayloadSchema;
 }

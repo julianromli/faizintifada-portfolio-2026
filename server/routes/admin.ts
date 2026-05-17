@@ -158,7 +158,7 @@ export function createAdminApp() {
       return c.json({ error: 'Invalid JSON body' }, 400);
     }
 
-    const schema = updateProjectPayloadSchema(urlSlug);
+    const schema = updateProjectPayloadSchema();
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
       return c.json({ error: 'Validation failed', details: parsed.error.flatten() }, 400);
@@ -171,11 +171,20 @@ export function createAdminApp() {
       sortOrder: data.sortOrder,
     });
 
-    const updated = await db
-      .update(projectsTable)
-      .set(values)
-      .where(eq(projectsTable.slug, urlSlug))
-      .returning({ id: projectsTable.id });
+    let updated: Array<{ id: number }>;
+    try {
+      updated = await db
+        .update(projectsTable)
+        .set(values)
+        .where(eq(projectsTable.slug, urlSlug))
+        .returning({ id: projectsTable.id });
+    } catch (err) {
+      if (isUniqueConstraintError(err)) {
+        return c.json({ error: 'A project with this slug already exists' }, 409);
+      }
+      console.error('[PUT /api/admin/projects/:slug]', err);
+      return c.json({ error: 'Failed to update project' }, 500);
+    }
 
     if (updated.length === 0) {
       return c.json({ error: 'Project not found' }, 404);
@@ -184,7 +193,7 @@ export function createAdminApp() {
     const [row] = await db
       .select()
       .from(projectsTable)
-      .where(eq(projectsTable.slug, urlSlug))
+      .where(eq(projectsTable.slug, data.slug))
       .limit(1);
 
     return c.json(rowToProject(row!));

@@ -267,8 +267,7 @@ export function AdminProjectForm() {
           {isEdit ? 'Edit project' : 'New project'}
         </h1>
         <p className="text-[15px] text-gray-500 mt-1">
-          Slugs use lowercase letters, numbers, and hyphens. Changing the slug later is disabled in edit
-          mode.
+          Slugs use lowercase letters, numbers, and hyphens. Changing a slug updates the public project URL.
         </p>
       </div>
 
@@ -287,12 +286,16 @@ export function AdminProjectForm() {
             <input
               id="slug"
               required
-              disabled={isEdit}
               value={form.slug}
               onChange={(e) => update('slug', e.target.value)}
               className={inputClass}
               placeholder="fintrack-dashboard"
             />
+            {isEdit && (
+              <p className="mt-2 text-[13px] text-amber-700">
+                Changing this will move the project to a new URL and the old slug will no longer resolve.
+              </p>
+            )}
           </div>
 
           <div className="sm:col-span-2">

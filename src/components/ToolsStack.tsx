@@ -58,8 +58,8 @@ const TOOLS: Tool[] = [
   { 
     id: 'pi', 
     name: 'Pi Agent', 
-    bg: 'bg-[#222222]', 
-    icon: 'https://camo.githubusercontent.com/0a417ac08f65d3a99f29136b4ce9461da31d19d15099dfeaba8db96a30ad3193/68747470733a2f2f70692e6465762f6c6f676f2d6175746f2e737667', 
+    bg: 'bg-[#FAFAFA]', 
+    icon: 'https://0nzst7ka0j.ufs.sh/f/octNiMKDR9jHClsVmeuAh4y2o59B1PJewTDsUE3rtVRxf7gI', 
     rotate: 15 
   },
   { 

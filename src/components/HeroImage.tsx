@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from 'react';
 
 type HeroImageProps = {
   src?: string;
+  fallbackSrc?: string;
   alt: string;
   imgClassName: string;
   placeholderClassName?: string;
@@ -11,21 +12,24 @@ type HeroImageProps = {
 
 function HeroImageComponent({
   src,
+  fallbackSrc,
   alt,
   imgClassName,
   placeholderClassName = 'bg-gray-100',
   loading,
   fetchPriority,
 }: HeroImageProps) {
+  const [currentSrc, setCurrentSrc] = useState(() => src || fallbackSrc);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    setCurrentSrc(src || fallbackSrc);
     setLoaded(false);
     setFailed(false);
-  }, [src]);
+  }, [fallbackSrc, src]);
 
-  const showPlaceholder = !src || !loaded || failed;
+  const showPlaceholder = !currentSrc || !loaded || failed;
 
   return (
     <>
@@ -35,14 +39,22 @@ function HeroImageComponent({
           showPlaceholder ? 'opacity-100' : 'opacity-0'
         } ${placeholderClassName}`}
       />
-      {src ? (
+      {currentSrc ? (
         <img
-          src={src}
+          src={currentSrc}
           alt={alt}
           loading={loading}
           fetchPriority={fetchPriority}
           onLoad={() => setLoaded(true)}
-          onError={() => setFailed(true)}
+          onError={() => {
+            if (fallbackSrc && currentSrc !== fallbackSrc) {
+              setCurrentSrc(fallbackSrc);
+              setLoaded(false);
+              return;
+            }
+
+            setFailed(true);
+          }}
           className={`${imgClassName} transition-[opacity,filter,transform] duration-700 ease-out ${
             loaded && !failed ? 'opacity-100 blur-0' : 'opacity-0 blur-xl scale-105'
           }`}

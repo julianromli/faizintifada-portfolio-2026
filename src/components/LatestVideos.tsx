@@ -28,19 +28,22 @@ function VideoCard({ video, index }: VideoCardProps) {
         href={video.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="block cursor-pointer active:scale-[0.98] transition-transform duration-200 ease-out"
+        className="group block cursor-pointer active:scale-[0.98] transition-transform duration-200 ease-out"
       >
-        <div className="overflow-hidden bg-gray-100 aspect-[4/3] rounded-[1rem] relative mb-4">
+        <div className="overflow-hidden bg-gray-100 aspect-[4/3] rounded-[1rem] relative mb-4 transition-shadow duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
           <img
             src={video.thumbnailUrl}
             alt={video.title}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.035]"
           />
+          <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:bg-black/[0.03]" />
         </div>
         <div className="flex flex-col space-y-0.5 px-1 mt-1">
-          <h3 className="text-base font-semibold text-gray-900">{video.title}</h3>
+          <h3 className="text-base font-semibold text-gray-900 transition-colors duration-200 ease-out group-hover:text-gray-700">
+            {video.title}
+          </h3>
           <span className="text-[14px] font-medium text-gray-500">{formatPublishedDate(video.publishedAt)}</span>
         </div>
       </a>

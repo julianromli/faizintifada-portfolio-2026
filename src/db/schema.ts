@@ -19,5 +19,15 @@ export const projects = sqliteTable('projects', {
   sortOrder: integer('sort_order').notNull().default(0),
 });
 
+export const pageSettings = sqliteTable('page_settings', {
+  key: text('key').primaryKey(),
+  avatarImage: text('avatar_image').notNull(),
+  heroImageTop: text('hero_image_top').notNull(),
+  heroImageMiddle: text('hero_image_middle').notNull(),
+  heroImageBottom: text('hero_image_bottom').notNull(),
+});
+
 export type ProjectRow = typeof projects.$inferSelect;
 export type NewProjectRow = typeof projects.$inferInsert;
+export type PageSettingsRow = typeof pageSettings.$inferSelect;
+export type NewPageSettingsRow = typeof pageSettings.$inferInsert;

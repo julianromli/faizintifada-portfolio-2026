@@ -3,7 +3,8 @@ import { cors } from 'hono/cors';
 import { asc, eq } from 'drizzle-orm';
 import { createRouteHandler } from 'uploadthing/server';
 import { getDb } from '../src/db/client.js';
-import { projects as projectsTable } from '../src/db/schema.js';
+import { pageSettings as pageSettingsTable, projects as projectsTable } from '../src/db/schema.js';
+import { HOME_PAGE_SETTINGS_KEY, rowToPageSettings } from '../src/lib/page-settings.js';
 import { rowToProject } from '../src/lib/project-mapper.js';
 import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
 import { createAdminApp } from './routes/admin.js';
@@ -71,6 +72,22 @@ app.get('/api/projects/:slug', async (c) => {
   } catch (err) {
     console.error('[GET /api/projects/:slug]', err);
     return c.json({ error: 'Failed to load project' }, 500);
+  }
+});
+
+app.get('/api/page-settings', async (c) => {
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(pageSettingsTable)
+      .where(eq(pageSettingsTable.key, HOME_PAGE_SETTINGS_KEY))
+      .limit(1);
+
+    return c.json(rowToPageSettings(row));
+  } catch (err) {
+    console.error('[GET /api/page-settings]', err);
+    return c.json({ error: 'Failed to load page settings' }, 500);
   }
 });
 

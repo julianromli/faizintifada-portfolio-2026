@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChatCircleText, Globe, FigmaLogo, PenNib, Code } from '@phosphor-icons/react';
-import { IMAGES } from '../constants';
+import { apiUrl } from '../lib/api';
+import {
+  DEFAULT_PAGE_SETTINGS,
+  type PageSettings,
+} from '../lib/page-settings';
 
 const TESTIMONIALS = [
   {
@@ -32,12 +36,34 @@ const TESTIMONIALS = [
 
 export function Hero() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [pageSettings, setPageSettings] = useState<PageSettings>(DEFAULT_PAGE_SETTINGS);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
     }, 5000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const res = await fetch(apiUrl('/api/page-settings'));
+        if (!res.ok) return;
+        const settings = (await res.json()) as PageSettings;
+        if (!cancelled) {
+          setPageSettings(settings);
+        }
+      } catch {
+        // Keep the bundled defaults if CMS settings cannot be loaded.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -48,7 +74,7 @@ export function Hero() {
         <div className="space-y-6">
           <div className="flex items-center space-x-4 animate-blur-reveal">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-orange-50/50 border-4 border-white overflow-hidden flex items-center justify-center shadow-[0px_6px_12px_rgba(0,0,0,0.25),0px_2px_4px_rgba(0,0,0,0.15)] transform transition-transform duration-200 ease-out hover:scale-110 hover:-rotate-12 cursor-pointer">
-              <img src={IMAGES.avatar} alt="Faiz Avatar" className="w-full h-full object-cover rounded-1xl" />
+              <img src={pageSettings.avatarImage} alt="Faiz Avatar" className="w-full h-full object-cover rounded-1xl" />
             </div>
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900">Faiz Intifada</h1>
           </div>
@@ -137,13 +163,13 @@ export function Hero() {
       {/* Right Column (Images) */}
       <div className="flex flex-col gap-6 h-full mt-8 xl:mt-0 xl:-my-4">
         <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100 animate-blur-reveal delay-300">
-          <img src={IMAGES.abstractBottom} alt="Abstract White" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-400 ease-out" />
+          <img src={pageSettings.heroImageTop} alt="Abstract White" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-400 ease-out" />
         </div>
         <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-indigo-50 animate-blur-reveal delay-400">
-          <img src={IMAGES.abstractTop} alt="Abstract Colors" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-400 ease-out" />
+          <img src={pageSettings.heroImageMiddle} alt="Abstract Colors" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-400 ease-out" />
         </div>
         <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-blue-50 animate-blur-reveal delay-500">
-          <img src={IMAGES.abstractMiddle} alt="Abstract Blue" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-400 ease-out" />
+          <img src={pageSettings.heroImageBottom} alt="Abstract Blue" className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-400 ease-out" />
         </div>
       </div>
 

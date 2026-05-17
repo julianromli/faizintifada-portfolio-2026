@@ -18,6 +18,9 @@ const AdminProjectList = lazy(() =>
 const AdminProjectForm = lazy(() =>
   import('./pages/admin/AdminProjectForm').then((mod) => ({ default: mod.AdminProjectForm })),
 );
+const AdminPageSettings = lazy(() =>
+  import('./pages/admin/AdminPageSettings').then((mod) => ({ default: mod.AdminPageSettings })),
+);
 
 function adminRoute(element: ReactNode) {
   return (
@@ -67,6 +70,16 @@ export default function App() {
                 adminRoute(
                   <RequireAdmin>
                     <AdminProjectForm />
+                  </RequireAdmin>,
+                )
+              }
+            />
+            <Route
+              path="/admin/page"
+              element={
+                adminRoute(
+                  <RequireAdmin>
+                    <AdminPageSettings />
                   </RequireAdmin>,
                 )
               }

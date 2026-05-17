@@ -54,6 +54,12 @@ export function AdminProjectList() {
             <Plus size={18} weight="bold" aria-hidden />
             New project
           </Link>
+          <Link
+            to="/admin/page"
+            className="rounded-full border border-gray-200 px-5 py-2.5 text-[14px] font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Page settings
+          </Link>
           <button
             type="button"
             onClick={logout}

@@ -28,6 +28,20 @@ function assertCmsAuth(req: Request) {
 }
 
 export const uploadRouter = {
+  pageImage: f(
+    {
+      image: { maxFileSize: '16MB', maxFileCount: 1 },
+    },
+    { awaitServerData: false },
+  )
+    .middleware(({ req }) => {
+      assertCmsAuth(req);
+      return {};
+    })
+    .onUploadComplete(() => {
+      /** URLs are returned to the client via UploadThing; settings save happens in the CMS form */
+    }),
+
   projectCover: f(
     {
       image: { maxFileSize: '16MB', maxFileCount: 1 },

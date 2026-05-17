@@ -2,9 +2,15 @@ import { Hono } from 'hono';
 import { bearerAuth } from 'hono/bearer-auth';
 import { eq } from 'drizzle-orm';
 import { getDb } from '../../src/db/client.js';
-import { projects as projectsTable } from '../../src/db/schema.js';
+import { pageSettings as pageSettingsTable, projects as projectsTable } from '../../src/db/schema.js';
+import {
+  HOME_PAGE_SETTINGS_KEY,
+  pageSettingsToInsertValues,
+  rowToPageSettings,
+} from '../../src/lib/page-settings.js';
 import { projectToInsertValues, rowToProject } from '../../src/lib/project-mapper.js';
 import type { Project } from '../../src/types/project.js';
+import { pageSettingsPayloadSchema } from '../schemas/pageSettingsPayload.js';
 import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload.js';
 import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret.js';
 
@@ -61,6 +67,48 @@ export function createAdminApp() {
 
   /** Used by AdminLogin to validate the Bearer token matches CMS_ADMIN_TOKEN. */
   admin.get('/session', (c) => c.json({ ok: true }, 200));
+
+  admin.get('/page-settings', async (c) => {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(pageSettingsTable)
+      .where(eq(pageSettingsTable.key, HOME_PAGE_SETTINGS_KEY))
+      .limit(1);
+
+    return c.json(rowToPageSettings(row));
+  });
+
+  admin.put('/page-settings', async (c) => {
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'Invalid JSON body' }, 400);
+    }
+
+    const parsed = pageSettingsPayloadSchema.safeParse(body);
+    if (!parsed.success) {
+      return c.json({ error: 'Validation failed', details: parsed.error.flatten() }, 400);
+    }
+
+    const db = getDb();
+    const values = pageSettingsToInsertValues(parsed.data);
+    await db
+      .insert(pageSettingsTable)
+      .values(values)
+      .onConflictDoUpdate({
+        target: pageSettingsTable.key,
+        set: {
+          avatarImage: values.avatarImage,
+          heroImageTop: values.heroImageTop,
+          heroImageMiddle: values.heroImageMiddle,
+          heroImageBottom: values.heroImageBottom,
+        },
+      });
+
+    return c.json(rowToPageSettings(values));
+  });
 
   admin.post('/projects', async (c) => {
     let body: unknown;

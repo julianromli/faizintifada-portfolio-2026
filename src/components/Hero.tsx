@@ -181,7 +181,7 @@ export function Hero() {
           <HeroImage
             src={pageSettings?.heroImageTop}
             alt="Abstract White"
-            imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105"
+            imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
             placeholderClassName="bg-gray-100 blur-xl scale-110"
             loading="eager"
             fetchPriority="high"
@@ -191,7 +191,7 @@ export function Hero() {
           <HeroImage
             src={pageSettings?.heroImageMiddle}
             alt="Abstract Colors"
-            imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105"
+            imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
             placeholderClassName="bg-indigo-50 blur-xl scale-110"
           />
         </div>
@@ -199,7 +199,7 @@ export function Hero() {
           <HeroImage
             src={pageSettings?.heroImageBottom}
             alt="Abstract Blue"
-            imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105"
+            imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
             placeholderClassName="bg-blue-50 blur-xl scale-110"
           />
         </div>

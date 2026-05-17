@@ -9,6 +9,7 @@ import { rowToProject } from '../src/lib/project-mapper.js';
 import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
 import { createAdminApp } from './routes/admin.js';
 import { uploadRouter } from './uploadthing.js';
+import { fetchLatestYouTubeVideos, parseVideoLimit } from './youtube.js';
 
 const app = new Hono();
 
@@ -88,6 +89,19 @@ app.get('/api/page-settings', async (c) => {
   } catch (err) {
     console.error('[GET /api/page-settings]', err);
     return c.json({ error: 'Failed to load page settings' }, 500);
+  }
+});
+
+app.get('/api/youtube/videos', async (c) => {
+  try {
+    const limit = parseVideoLimit(c.req.query('limit'));
+    const videos = await fetchLatestYouTubeVideos(limit);
+
+    c.header('Cache-Control', 'public, max-age=900, s-maxage=900, stale-while-revalidate=3600');
+    return c.json(videos);
+  } catch (err) {
+    console.error('[GET /api/youtube/videos]', err);
+    return c.json({ error: 'Failed to load YouTube videos' }, 500);
   }
 });
 

@@ -6,7 +6,7 @@ import {
   DEFAULT_PAGE_SETTINGS,
   type PageSettings,
 } from '../lib/page-settings';
-import { HeroImage } from './HeroImage';
+import { HeroImage, HeroImageSkeleton } from './HeroImage';
 
 const TESTIMONIALS = [
   {
@@ -37,7 +37,8 @@ const TESTIMONIALS = [
 
 export function Hero() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
-  const [pageSettings, setPageSettings] = useState<PageSettings>(DEFAULT_PAGE_SETTINGS);
+  const [pageSettings, setPageSettings] = useState<PageSettings | null>(null);
+  const [settingsLoading, setSettingsLoading] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,19 +53,21 @@ export function Hero() {
     void (async () => {
       try {
         const res = await fetch(apiUrl('/api/page-settings'));
-        if (!res.ok) {
-          if (!cancelled) {
-            setPageSettings(DEFAULT_PAGE_SETTINGS);
-          }
-          return;
-        }
-        const settings = (await res.json()) as PageSettings;
         if (!cancelled) {
-          setPageSettings(settings);
+          if (!res.ok) {
+            setPageSettings(DEFAULT_PAGE_SETTINGS);
+          } else {
+            const settings = (await res.json()) as PageSettings;
+            setPageSettings(settings);
+          }
         }
       } catch {
         if (!cancelled) {
           setPageSettings(DEFAULT_PAGE_SETTINGS);
+        }
+      } finally {
+        if (!cancelled) {
+          setSettingsLoading(false);
         }
       }
     })();
@@ -82,15 +85,17 @@ export function Hero() {
         <div className="space-y-6">
           <div className="flex items-center space-x-4 animate-blur-reveal">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-orange-50/50 border-4 border-white overflow-hidden flex items-center justify-center shadow-[0px_6px_12px_rgba(0,0,0,0.25),0px_2px_4px_rgba(0,0,0,0.15)] transform transition-transform duration-200 ease-out hover:scale-110 hover:-rotate-12 cursor-pointer relative">
-              <HeroImage
-                src={pageSettings.avatarImage}
-                fallbackSrc={DEFAULT_PAGE_SETTINGS.avatarImage}
-                alt="Faiz Avatar"
-                imgClassName="absolute inset-0 w-full h-full object-cover rounded-1xl"
-                placeholderClassName="bg-orange-100/70 blur-xl scale-110"
-                loading="eager"
-                fetchPriority="high"
-              />
+              {settingsLoading || !pageSettings ? (
+                <HeroImageSkeleton />
+              ) : (
+                <HeroImage
+                  src={pageSettings.avatarImage}
+                  alt="Faiz Avatar"
+                  imgClassName="absolute inset-0 w-full h-full object-cover rounded-1xl"
+                  loading="eager"
+                  fetchPriority="high"
+                />
+              )}
             </div>
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900">Faiz Intifada</h1>
           </div>
@@ -179,33 +184,39 @@ export function Hero() {
       {/* Right Column (Images) */}
       <div className="flex flex-col gap-6 h-full mt-8 xl:mt-0 xl:-my-4">
         <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100 animate-blur-reveal delay-300">
-          <HeroImage
-            src={pageSettings.heroImageTop}
-            fallbackSrc={DEFAULT_PAGE_SETTINGS.heroImageTop}
-            alt="Abstract White"
-            imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
-            placeholderClassName="bg-gray-100 blur-xl scale-110"
-            loading="eager"
-            fetchPriority="high"
-          />
+          {settingsLoading || !pageSettings ? (
+            <HeroImageSkeleton />
+          ) : (
+            <HeroImage
+              src={pageSettings.heroImageTop}
+              alt="Abstract White"
+              imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
+              loading="eager"
+              fetchPriority="high"
+            />
+          )}
         </div>
-        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-indigo-50 animate-blur-reveal delay-400">
-          <HeroImage
-            src={pageSettings.heroImageMiddle}
-            fallbackSrc={DEFAULT_PAGE_SETTINGS.heroImageMiddle}
-            alt="Abstract Colors"
-            imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
-            placeholderClassName="bg-indigo-50 blur-xl scale-110"
-          />
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100 animate-blur-reveal delay-400">
+          {settingsLoading || !pageSettings ? (
+            <HeroImageSkeleton />
+          ) : (
+            <HeroImage
+              src={pageSettings.heroImageMiddle}
+              alt="Abstract Colors"
+              imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
+            />
+          )}
         </div>
-        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-blue-50 animate-blur-reveal delay-500">
-          <HeroImage
-            src={pageSettings.heroImageBottom}
-            fallbackSrc={DEFAULT_PAGE_SETTINGS.heroImageBottom}
-            alt="Abstract Blue"
-            imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
-            placeholderClassName="bg-blue-50 blur-xl scale-110"
-          />
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100 animate-blur-reveal delay-500">
+          {settingsLoading || !pageSettings ? (
+            <HeroImageSkeleton />
+          ) : (
+            <HeroImage
+              src={pageSettings.heroImageBottom}
+              alt="Abstract Blue"
+              imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
+            />
+          )}
         </div>
       </div>
 

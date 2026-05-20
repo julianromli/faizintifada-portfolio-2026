@@ -2,59 +2,49 @@ import { memo, useEffect, useState } from 'react';
 
 type HeroImageProps = {
   src?: string;
-  fallbackSrc?: string;
   alt: string;
   imgClassName: string;
-  placeholderClassName?: string;
   loading?: 'eager' | 'lazy';
   fetchPriority?: 'high' | 'low' | 'auto';
 };
 
+export function HeroImageSkeleton() {
+  return <div aria-hidden className="absolute inset-0 animate-pulse bg-gray-100" />;
+}
+
 function HeroImageComponent({
   src,
-  fallbackSrc,
   alt,
   imgClassName,
-  placeholderClassName = 'bg-gray-100',
   loading,
   fetchPriority,
 }: HeroImageProps) {
-  const [currentSrc, setCurrentSrc] = useState(() => src || fallbackSrc);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    setCurrentSrc(src || fallbackSrc);
     setLoaded(false);
     setFailed(false);
-  }, [fallbackSrc, src]);
+  }, [src]);
 
-  const showPlaceholder = !currentSrc || !loaded || failed;
+  const showSkeleton = !src || !loaded || failed;
 
   return (
     <>
       <div
         aria-hidden
-        className={`absolute inset-0 transition-opacity duration-500 ${
-          showPlaceholder ? 'opacity-100' : 'opacity-0'
-        } ${placeholderClassName}`}
+        className={`absolute inset-0 animate-pulse bg-gray-100 transition-opacity duration-500 ${
+          showSkeleton ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
       />
-      {currentSrc ? (
+      {src ? (
         <img
-          src={currentSrc}
+          src={src}
           alt={alt}
           loading={loading}
           fetchPriority={fetchPriority}
           onLoad={() => setLoaded(true)}
-          onError={() => {
-            if (fallbackSrc && currentSrc !== fallbackSrc) {
-              setCurrentSrc(fallbackSrc);
-              setLoaded(false);
-              return;
-            }
-
-            setFailed(true);
-          }}
+          onError={() => setFailed(true)}
           className={`${imgClassName} transition-[opacity,filter,transform] duration-700 ease-out ${
             loaded && !failed ? 'opacity-100 blur-0' : 'opacity-0 blur-xl scale-105'
           }`}

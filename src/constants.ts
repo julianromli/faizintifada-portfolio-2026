@@ -1,3 +1,41 @@
+export const CONTACT_EMAIL = 'faizintifada@gmail.com';
+export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}`;
+
+export const SOCIAL_LINKS = [
+  {
+    href: 'https://x.com/faizintifada_',
+    label: 'X (Twitter)',
+    icon: 'x' as const,
+  },
+  {
+    href: 'https://instagram.com/faizintifada',
+    label: 'Instagram',
+    icon: 'instagram' as const,
+  },
+  {
+    href: 'https://threads.com/faizintifada',
+    label: 'Threads',
+    icon: 'threads' as const,
+  },
+  {
+    href: 'https://linkedin.com/in/faizintifada',
+    label: 'LinkedIn',
+    icon: 'linkedin' as const,
+  },
+  {
+    href: 'https://youtube.com/@faizintifada',
+    label: 'YouTube',
+    icon: 'youtube' as const,
+  },
+] as const;
+
+export const NAV_LINKS = [
+  { to: '/#about', label: 'About' },
+  { to: '/projects', label: 'Projects' },
+  { to: '/', label: 'Blog' },
+  { to: '/', label: 'Feeds' },
+] as const;
+
 export const IMAGES = {
   avatar: "https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ2IcJW7L0gRb7VfrqtvwOY85P9oAypHuTnWCa",
   abstractTop: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop", // abstract liquid

@@ -1,5 +1,6 @@
 import { Briefcase, MapPin, PaperPlaneTilt } from '@phosphor-icons/react';
 import { motion } from 'motion/react';
+import { CONTACT_MAILTO } from '../constants';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -25,6 +26,7 @@ const itemVariants = {
 export function AboutSection() {
   return (
     <motion.section
+      id="about"
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: "-100px" }}
@@ -42,9 +44,12 @@ export function AboutSection() {
               I'm a multidisciplinary designer who loves crafting meaningful and functional digital experiences. With a keen eye for detail and a passion for design, I help brands and products connect with their audience.
             </motion.p>
             <motion.div variants={itemVariants}>
-              <button className="text-white px-8 py-3.5 rounded-full font-medium text-[15px] btn-embossed">
-                More About Me
-              </button>
+              <a
+                href={CONTACT_MAILTO}
+                className="inline-block text-white px-8 py-3.5 rounded-full font-medium text-[15px] btn-embossed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+              >
+                Work With Me
+              </a>
             </motion.div>
           </div>
           

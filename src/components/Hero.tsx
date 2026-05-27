@@ -7,6 +7,7 @@ import {
   type PageSettings,
 } from '../lib/page-settings';
 import { HeroImage, HeroImageSkeleton } from './HeroImage';
+import { CONTACT_MAILTO } from '../constants';
 
 const TESTIMONIALS = [
   {
@@ -108,10 +109,13 @@ export function Hero() {
           </h2>
           
           <div className="pt-2 animate-blur-reveal delay-150">
-            <button className="inline-flex items-center space-x-2 text-white px-6 py-4 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 btn-embossed">
+            <a
+              href={CONTACT_MAILTO}
+              className="inline-flex items-center space-x-2 text-white px-6 py-4 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 btn-embossed"
+            >
               <ChatCircleText size={20} weight="regular" />
               <span>Discuss a Project</span>
-            </button>
+            </a>
           </div>
         </div>
 

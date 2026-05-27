@@ -102,7 +102,7 @@ export function Hero() {
           </div>
           
           <h2 className="text-[1.75rem] sm:text-4xl leading-[1.3] text-gray-800 tracking-tight font-medium animate-blur-reveal delay-100">
-            {`I Design and... Developer, Creator, Artist, and Gamer. Part of `}
+            {`Design engineer building products at the intersection of UI, code, and craft. Part of `}
             <span className="text-gray-400 inline-flex items-center">
               Cursor <img src="https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ8y11lI5HNL9CO2WPxU8zlIhd0i7GsmceFJDy" className="w-8 h-8 mx-2 inline-block opacity-80" alt="Cursor" /> Ambassadors
             </span>
@@ -193,7 +193,7 @@ export function Hero() {
           ) : (
             <HeroImage
               src={pageSettings.heroImageTop}
-              alt="Abstract White"
+              alt="Faiz Intifada — design engineer portfolio hero"
               imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
               loading="eager"
               fetchPriority="high"
@@ -206,7 +206,7 @@ export function Hero() {
           ) : (
             <HeroImage
               src={pageSettings.heroImageMiddle}
-              alt="Abstract Colors"
+              alt="Design engineer work — UI and product visuals"
               imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
             />
           )}
@@ -217,7 +217,7 @@ export function Hero() {
           ) : (
             <HeroImage
               src={pageSettings.heroImageBottom}
-              alt="Abstract Blue"
+              alt="Design engineer portfolio — digital product detail"
               imgClassName="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-[1.025]"
             />
           )}

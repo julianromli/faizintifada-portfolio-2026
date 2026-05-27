@@ -1,7 +1,8 @@
 import { lazy, Suspense, type ReactNode } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
+import { Seo } from './components/Seo';
 import { Home } from './pages/Home';
 import { Projects } from './pages/Projects';
 import { ProjectDetail } from './pages/ProjectDetail';
@@ -22,6 +23,12 @@ const AdminPageSettings = lazy(() =>
   import('./pages/admin/AdminPageSettings').then((mod) => ({ default: mod.AdminPageSettings })),
 );
 
+function AdminNoIndex() {
+  const { pathname } = useLocation();
+  if (!pathname.startsWith('/admin')) return null;
+  return <Seo noIndex title="Admin" path={pathname} />;
+}
+
 function adminRoute(element: ReactNode) {
   return (
     <Suspense fallback={<p className="py-12 text-[15px] text-gray-500 animate-pulse">Loading admin…</p>}>
@@ -34,6 +41,7 @@ export default function App() {
   return (
     <Router>
       <BodyOverlayScrollbars />
+      <AdminNoIndex />
       <div className="min-h-screen bg-[#f1f2f4] py-4 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-gray-200">
         <div className="max-w-[1280px] mx-auto bg-white rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 md:p-14 lg:p-16 shadow-sm overflow-hidden border border-gray-100">
           

@@ -3,6 +3,8 @@ import { ArrowLeft, ArrowUpRight } from '@phosphor-icons/react';
 import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useProject } from '../hooks/useProject';
+import { Seo } from '../components/Seo';
+import { creativeWorkSchema } from '../lib/seo';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -82,7 +84,9 @@ export function ProjectDetail() {
 
   if (!project) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-6">
+      <>
+        <Seo title="Project not found" noIndex path={`/project/${slug ?? ''}`} />
+        <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-6">
         <h1 className="text-2xl font-semibold text-gray-900">Project not found</h1>
         <Link
           to="/"
@@ -92,11 +96,21 @@ export function ProjectDetail() {
           <span>Back to home</span>
         </Link>
       </div>
+      </>
     );
   }
 
   return (
-    <motion.main
+    <>
+      <Seo
+        title={`${project.title} — Design Engineer Case Study`}
+        description={project.description}
+        path={`/project/${project.slug}`}
+        image={project.image}
+        type="article"
+        jsonLd={creativeWorkSchema(project)}
+      />
+      <motion.main
       initial="hidden"
       animate="show"
       variants={containerVariants}
@@ -230,5 +244,6 @@ export function ProjectDetail() {
         </div>
       )}
     </motion.main>
+    </>
   );
 }

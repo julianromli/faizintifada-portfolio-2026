@@ -11,6 +11,7 @@ import { createAdminApp } from './routes/admin.js';
 import { uploadRouter } from './uploadthing.js';
 import { fetchLatestYouTubeVideos, parseVideoLimit } from './youtube.js';
 import { fetchGitHubContributions } from './github.js';
+import { buildSitemapXml } from './sitemap.js';
 
 const app = new Hono();
 
@@ -103,6 +104,18 @@ app.get('/api/youtube/videos', async (c) => {
   } catch (err) {
     console.error('[GET /api/youtube/videos]', err);
     return c.json({ error: 'Failed to load YouTube videos' }, 500);
+  }
+});
+
+app.get('/api/sitemap.xml', async (c) => {
+  try {
+    const xml = await buildSitemapXml();
+    c.header('Content-Type', 'application/xml; charset=utf-8');
+    c.header('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400');
+    return c.body(xml);
+  } catch (err) {
+    console.error('[GET /api/sitemap.xml]', err);
+    return c.text('Failed to generate sitemap', 500);
   }
 });
 

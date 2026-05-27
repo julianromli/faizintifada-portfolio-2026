@@ -2,12 +2,19 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from '@phosphor-icons/react';
 import { useProjects } from '../hooks/useProjects';
 import { ProjectCard, ProjectsGridSkeleton } from '../components/ProjectCard';
+import { Seo } from '../components/Seo';
 
 export function Projects() {
   const { projects, loading, error, retry } = useProjects();
 
   return (
-    <main className="space-y-10 pb-8">
+    <>
+      <Seo
+        title="Design Projects"
+        description="Explore design engineer case studies and selected project work by Faiz Intifada."
+        path="/projects"
+      />
+      <main className="space-y-10 pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <Link
@@ -62,5 +69,6 @@ export function Projects() {
         </div>
       )}
     </main>
+    </>
   );
 }

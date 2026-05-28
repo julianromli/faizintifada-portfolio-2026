@@ -8,9 +8,10 @@ import {
 } from '../lib/page-settings';
 import type { Testimonial } from '../types/testimonial';
 import { HeroImage, HeroImageSkeleton } from './HeroImage';
-import { CONTACT_MAILTO } from '../constants';
+import { useContactDialog } from './ContactDialogProvider';
 
 export function Hero() {
+  const { openContactDialog } = useContactDialog();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [testimonialsLoading, setTestimonialsLoading] = useState(true);
@@ -106,13 +107,14 @@ export function Hero() {
           </h2>
           
           <div className="pt-2 animate-blur-reveal delay-150">
-            <a
-              href={CONTACT_MAILTO}
+            <button
+              type="button"
+              onClick={openContactDialog}
               className="inline-flex items-center gap-x-2 text-white px-6 py-4 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 btn-embossed"
             >
               <ChatCircleText size={20} weight="regular" />
               <span>Discuss a Project</span>
-            </a>
+            </button>
           </div>
         </div>
 

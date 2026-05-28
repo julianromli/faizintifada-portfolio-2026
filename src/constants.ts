@@ -1,6 +1,17 @@
 export const CONTACT_EMAIL = 'faizintifada@gmail.com';
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}`;
 
+export const CONTACT_CHANNELS = [
+  { id: 'email', href: CONTACT_MAILTO, label: 'Email Faiz', external: false },
+  { id: 'whatsapp', href: 'https://wa.me/628989004363', label: 'WhatsApp', external: true },
+  {
+    id: 'instagram',
+    href: 'https://instagram.com/faizintifada',
+    label: 'Instagram DM',
+    external: true,
+  },
+] as const;
+
 export const SOCIAL_LINKS = [
   {
     href: 'https://x.com/faizintifada_',

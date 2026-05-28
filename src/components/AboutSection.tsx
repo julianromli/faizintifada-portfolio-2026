@@ -1,6 +1,6 @@
 import { Briefcase, MapPin, PaperPlaneTilt } from '@phosphor-icons/react';
 import { m } from 'motion/react';
-import { CONTACT_MAILTO } from '../constants';
+import { useContactDialog } from './ContactDialogProvider';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -24,6 +24,8 @@ const itemVariants = {
 };
 
 export function AboutSection() {
+  const { openContactDialog } = useContactDialog();
+
   return (
     <m.section
       id="about"
@@ -44,12 +46,13 @@ export function AboutSection() {
               I'm a multidisciplinary designer who loves crafting meaningful and functional digital experiences. With a keen eye for detail and a passion for design, I help brands and products connect with their audience.
             </m.p>
             <m.div variants={itemVariants}>
-              <a
-                href={CONTACT_MAILTO}
+              <button
+                type="button"
+                onClick={openContactDialog}
                 className="inline-block text-white px-8 py-3.5 rounded-full font-medium text-[15px] btn-embossed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
               >
                 Work With Me
-              </a>
+              </button>
             </m.div>
           </div>
           

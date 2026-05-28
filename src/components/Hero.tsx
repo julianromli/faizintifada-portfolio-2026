@@ -6,69 +6,65 @@ import {
   DEFAULT_PAGE_SETTINGS,
   type PageSettings,
 } from '../lib/page-settings';
+import type { Testimonial } from '../types/testimonial';
 import { HeroImage, HeroImageSkeleton } from './HeroImage';
 import { CONTACT_MAILTO } from '../constants';
 
-const TESTIMONIALS = [
-  {
-    quote: "Faiz is an exceptional designer with a keen eye for detail and user experience. His work is creative, functional, and always top-notch. Highly recommended!",
-    name: "Alya",
-    role: "Co Founder of Sprrint",
-    avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=5"
-  },
-  {
-    quote: "Working with Faiz was a game-changer for our app. He perfectly captured our brand identity and delivered something beyond our wildest expectations.",
-    name: "Marcus Chen",
-    role: "CEO of Nova Tech",
-    avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=8"
-  },
-  {
-    quote: "Brilliant execution and communication. The final UI was pixel-perfect and dev-ready. Will definitely collaborate again on future projects.",
-    name: "Elena Rodriguez",
-    role: "Engineering Manager",
-    avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=12"
-  },
-  {
-    quote: "A true artist wrapped in a developer's mindset. Faiz gets both the aesthetic nuance and the technical implementation right every single time.",
-    name: "James Doe",
-    role: "Lead Product Designer",
-    avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=4"
-  }
-];
-
 export function Hero() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonialsLoading, setTestimonialsLoading] = useState(true);
   const [pageSettings, setPageSettings] = useState<PageSettings | null>(null);
   const [settingsLoading, setSettingsLoading] = useState(true);
 
+  const count = testimonials.length;
+  const activeIndex = count === 0 ? 0 : Math.min(activeTestimonial, count - 1);
+  const current = count > 0 ? testimonials[activeIndex] : null;
+
   useEffect(() => {
+    if (count <= 1) return;
+
     const interval = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
+      setActiveTestimonial((prev) => (prev + 1) % count);
     }, 5000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [count]);
 
   useEffect(() => {
     let cancelled = false;
 
     void (async () => {
       try {
-        const res = await fetch(apiUrl('/api/page-settings'));
-        if (!cancelled) {
-          if (!res.ok) {
-            setPageSettings(DEFAULT_PAGE_SETTINGS);
-          } else {
-            const settings = (await res.json()) as PageSettings;
-            setPageSettings(settings);
-          }
+        const [settingsRes, testimonialsRes] = await Promise.all([
+          fetch(apiUrl('/api/page-settings')),
+          fetch(apiUrl('/api/testimonials')),
+        ]);
+
+        if (cancelled) return;
+
+        if (settingsRes.ok) {
+          const settings = (await settingsRes.json()) as PageSettings;
+          setPageSettings(settings);
+        } else {
+          setPageSettings(DEFAULT_PAGE_SETTINGS);
+        }
+
+        if (testimonialsRes.ok) {
+          const items = (await testimonialsRes.json()) as Testimonial[];
+          setTestimonials(items);
+        } else {
+          setTestimonials([]);
         }
       } catch {
         if (!cancelled) {
           setPageSettings(DEFAULT_PAGE_SETTINGS);
+          setTestimonials([]);
         }
       } finally {
         if (!cancelled) {
           setSettingsLoading(false);
+          setTestimonialsLoading(false);
         }
       }
     })();
@@ -145,45 +141,48 @@ export function Hero() {
         </div>
 
         {/* Testimonial */}
-        <div className="pt-6 w-full sm:max-w-xl animate-blur-reveal delay-250">
-          <div className="border border-gray-100 rounded-3xl p-8 bg-white shadow-[0_4px_30px_rgba(0,0,0,0.02)] relative min-h-[260px] flex flex-col justify-between">
-            <AnimatePresence mode="wait">
-              <m.div
-                key={activeTestimonial}
-                initial={{ opacity: 0, y: 10, scale: 0.98, filter: "blur(2px)" }}
-                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -10, scale: 0.98, filter: "blur(2px)" }}
-                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as const }}
-                className="flex-1 flex flex-col"
-              >
-                <p className="text-[17px] leading-relaxed text-gray-700 font-medium pb-4">
-                  "{TESTIMONIALS[activeTestimonial].quote}"
-                </p>
-                <div className="mt-auto pt-4 flex items-center gap-x-4">
-                  <div className="size-10 rounded-xl bg-blue-50 flex items-center justify-center p-1 border border-gray-100 shrink-0">
-                    <img src={TESTIMONIALS[activeTestimonial].avatar} alt={`${TESTIMONIALS[activeTestimonial].name} Avatar`} className="w-full h-full object-cover rounded-lg" />
+        {!testimonialsLoading && count > 0 && current ? (
+          <div className="pt-6 w-full sm:max-w-xl animate-blur-reveal delay-250">
+            <div className="border border-gray-100 rounded-3xl p-8 bg-white shadow-[0_4px_30px_rgba(0,0,0,0.02)] relative min-h-[260px] flex flex-col justify-between">
+              <AnimatePresence mode="wait">
+                <m.div
+                  key={current.id}
+                  initial={{ opacity: 0, y: 10, scale: 0.98, filter: "blur(2px)" }}
+                  animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -10, scale: 0.98, filter: "blur(2px)" }}
+                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as const }}
+                  className="flex-1 flex flex-col"
+                >
+                  <p className="text-[17px] leading-relaxed text-gray-700 font-medium pb-4">
+                    &ldquo;{current.quote}&rdquo;
+                  </p>
+                  <div className="mt-auto pt-4 flex items-center gap-x-4">
+                    <div className="size-10 rounded-xl bg-blue-50 flex items-center justify-center p-1 border border-gray-100 shrink-0">
+                      <img src={current.avatar} alt={`${current.name} Avatar`} className="w-full h-full object-cover rounded-lg" />
+                    </div>
+                    <div>
+                      <h4 className="text-[15px] font-semibold text-gray-900">{current.name}</h4>
+                      <p className="text-[13px] text-gray-400 font-medium mt-0.5">{current.role}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-[15px] font-semibold text-gray-900">{TESTIMONIALS[activeTestimonial].name}</h4>
-                    <p className="text-[13px] text-gray-400 font-medium mt-0.5">{TESTIMONIALS[activeTestimonial].role}</p>
-                  </div>
-                </div>
-              </m.div>
-            </AnimatePresence>
+                </m.div>
+              </AnimatePresence>
+            </div>
+            {count > 1 ? (
+              <div className="flex justify-center gap-x-2 mt-6">
+                {testimonials.map((testimonial, idx) => (
+                  <button
+                    key={testimonial.id}
+                    type="button"
+                    onClick={() => setActiveTestimonial(idx)}
+                    className={`h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${activeIndex === idx ? 'w-6 bg-gray-900' : 'w-2 bg-gray-200 hover:bg-gray-400'}`}
+                    aria-label={`Go to testimonial ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            ) : null}
           </div>
-          {/* Pagination Dots */}
-          <div className="flex justify-center gap-x-2 mt-6">
-            {TESTIMONIALS.map((testimonial, idx) => (
-              <button
-                key={testimonial.name}
-                type="button"
-                onClick={() => setActiveTestimonial(idx)}
-                className={`h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${activeTestimonial === idx ? 'w-6 bg-gray-900' : 'w-2 bg-gray-200 hover:bg-gray-400'}`}
-                aria-label={`Go to testimonial ${idx + 1}`}
-              />
-            ))}
-          </div>
-        </div>
+        ) : null}
 
       </div>
 

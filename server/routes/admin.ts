@@ -1,8 +1,13 @@
 import { Hono } from 'hono';
 import { bearerAuth } from 'hono/bearer-auth';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { getDb } from '../../src/db/client.js';
-import { pageSettings as pageSettingsTable, projects as projectsTable } from '../../src/db/schema.js';
+import {
+  pageSettings as pageSettingsTable,
+  projects as projectsTable,
+  testimonials as testimonialsTable,
+} from '../../src/db/schema.js';
+import { rowToTestimonial, testimonialToInsertValues } from '../../src/lib/testimonial-mapper.js';
 import {
   HOME_PAGE_SETTINGS_KEY,
   pageSettingsToInsertValues,
@@ -12,6 +17,7 @@ import { projectToInsertValues, rowToProject } from '../../src/lib/project-mappe
 import type { Project } from '../../src/types/project.js';
 import { pageSettingsPayloadSchema } from '../schemas/pageSettingsPayload.js';
 import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload.js';
+import { testimonialPayloadSchema } from '../schemas/testimonialPayload.js';
 import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret.js';
 
 function decodeParamSlug(raw: string): string {
@@ -25,6 +31,14 @@ function decodeParamSlug(raw: string): string {
 function isUniqueConstraintError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
   return /UNIQUE constraint failed|SQLITE_CONSTRAINT_UNIQUE/i.test(msg);
+}
+
+function parseTestimonialId(raw: string): number | null {
+  const id = Number.parseInt(raw, 10);
+  if (!Number.isFinite(id) || id < 1) {
+    return null;
+  }
+  return id;
 }
 
 function payloadToProject(p: {
@@ -116,6 +130,118 @@ export function createAdminApp() {
       });
 
     return c.json(rowToPageSettings(values));
+  });
+
+  admin.get('/testimonials', async (c) => {
+    try {
+      const db = getDb();
+      const rows = await db
+        .select()
+        .from(testimonialsTable)
+        .orderBy(asc(testimonialsTable.sortOrder), asc(testimonialsTable.id));
+      return c.json(rows.map(rowToTestimonial));
+    } catch (err) {
+      console.error('[GET /api/admin/testimonials]', err);
+      return c.json({ error: 'Failed to load testimonials' }, 500);
+    }
+  });
+
+  admin.post('/testimonials', async (c) => {
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'Invalid JSON body' }, 400);
+    }
+
+    const parsed = testimonialPayloadSchema.safeParse(body);
+    if (!parsed.success) {
+      return c.json({ error: 'Validation failed', details: parsed.error.flatten() }, 400);
+    }
+
+    const db = getDb();
+    const values = testimonialToInsertValues(parsed.data);
+
+    try {
+      const inserted = await db.insert(testimonialsTable).values(values).returning();
+      const row = inserted[0];
+      if (!row) {
+        return c.json({ error: 'Failed to create testimonial' }, 500);
+      }
+      return c.json(rowToTestimonial(row), 201);
+    } catch (err) {
+      console.error('[POST /api/admin/testimonials]', err);
+      return c.json({ error: 'Failed to create testimonial' }, 500);
+    }
+  });
+
+  admin.put('/testimonials/:id', async (c) => {
+    const id = parseTestimonialId(c.req.param('id'));
+    if (id === null) {
+      return c.json({ error: 'Invalid testimonial id' }, 400);
+    }
+
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'Invalid JSON body' }, 400);
+    }
+
+    const parsed = testimonialPayloadSchema.safeParse(body);
+    if (!parsed.success) {
+      return c.json({ error: 'Validation failed', details: parsed.error.flatten() }, 400);
+    }
+
+    const db = getDb();
+    const values = testimonialToInsertValues(parsed.data);
+
+    try {
+      const updated = await db
+        .update(testimonialsTable)
+        .set(values)
+        .where(eq(testimonialsTable.id, id))
+        .returning({ id: testimonialsTable.id });
+
+      if (updated.length === 0) {
+        return c.json({ error: 'Testimonial not found' }, 404);
+      }
+
+      const [row] = await db
+        .select()
+        .from(testimonialsTable)
+        .where(eq(testimonialsTable.id, id))
+        .limit(1);
+
+      return c.json(rowToTestimonial(row!));
+    } catch (err) {
+      console.error('[PUT /api/admin/testimonials/:id]', err);
+      return c.json({ error: 'Failed to update testimonial' }, 500);
+    }
+  });
+
+  admin.delete('/testimonials/:id', async (c) => {
+    const id = parseTestimonialId(c.req.param('id'));
+    if (id === null) {
+      return c.json({ error: 'Invalid testimonial id' }, 400);
+    }
+
+    const db = getDb();
+    try {
+      const removed = await db
+        .delete(testimonialsTable)
+        .where(eq(testimonialsTable.id, id))
+        .returning({ id: testimonialsTable.id });
+
+      if (removed.length === 0) {
+        return c.json({ error: 'Testimonial not found' }, 404);
+      }
+
+      return c.json({ ok: true, id }, 200);
+    } catch (err) {
+      console.error('[DELETE /api/admin/testimonials/:id]', err);
+      return c.json({ error: 'Failed to delete testimonial' }, 500);
+    }
   });
 
   admin.post('/projects', async (c) => {

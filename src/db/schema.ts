@@ -27,7 +27,18 @@ export const pageSettings = sqliteTable('page_settings', {
   heroImageBottom: text('hero_image_bottom').notNull(),
 });
 
+export const testimonials = sqliteTable('testimonials', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  avatar: text('avatar').notNull(),
+  name: text('name').notNull(),
+  role: text('role').notNull(),
+  quote: text('quote').notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+});
+
 export type ProjectRow = typeof projects.$inferSelect;
 export type NewProjectRow = typeof projects.$inferInsert;
 export type PageSettingsRow = typeof pageSettings.$inferSelect;
 export type NewPageSettingsRow = typeof pageSettings.$inferInsert;
+export type TestimonialRow = typeof testimonials.$inferSelect;
+export type NewTestimonialRow = typeof testimonials.$inferInsert;

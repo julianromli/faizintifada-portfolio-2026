@@ -7,6 +7,8 @@ import {
   type PageSettings,
 } from '../../lib/page-settings';
 import { ProjectImageDropzone } from '../../uploadthing/client';
+import type { Testimonial } from '../../types/testimonial';
+import { AdminTestimonialsSection } from './AdminTestimonialsSection';
 
 type ImageKey = keyof PageSettings;
 
@@ -89,6 +91,7 @@ function ImagePreview({ url, className }: { url: string; className: string }) {
 
 export function AdminPageSettings() {
   const [form, setForm] = useState<PageSettings>(DEFAULT_PAGE_SETTINGS);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -101,14 +104,24 @@ export function AdminPageSettings() {
 
     void (async () => {
       try {
-        const res = await adminFetch('/api/admin/page-settings');
-        if (!res.ok) {
-          const msg = await readAdminError(res);
-          throw new Error(msg);
-        }
-        const settings = (await res.json()) as PageSettings;
+        const [settingsRes, testimonialsRes] = await Promise.all([
+          adminFetch('/api/admin/page-settings'),
+          adminFetch('/api/admin/testimonials'),
+        ]);
+
         if (!cancelled) {
-          setForm(settings);
+          if (settingsRes.ok) {
+            const settings = (await settingsRes.json()) as PageSettings;
+            setForm(settings);
+          } else {
+            const msg = await readAdminError(settingsRes);
+            throw new Error(msg);
+          }
+
+          if (testimonialsRes.ok) {
+            const items = (await testimonialsRes.json()) as Testimonial[];
+            setTestimonials(items);
+          }
         }
       } catch (err) {
         if (!cancelled) {
@@ -183,7 +196,8 @@ export function AdminPageSettings() {
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Page settings</h1>
         <p className="mt-1 text-[15px] text-gray-500">
-          Manage the homepage hero avatar and image stack. Uploads use the same CMS token as project images.
+          Manage the homepage hero avatar, image stack, and testimonial carousel. Uploads use the same CMS token as
+          project images.
         </p>
       </div>
 
@@ -272,6 +286,8 @@ export function AdminPageSettings() {
           </Link>
         </div>
       </form>
+
+      <AdminTestimonialsSection testimonials={testimonials} onChange={setTestimonials} />
     </main>
   );
 }

@@ -3,7 +3,12 @@ import { cors } from 'hono/cors';
 import { asc, eq } from 'drizzle-orm';
 import { createRouteHandler } from 'uploadthing/server';
 import { getDb } from '../src/db/client.js';
-import { pageSettings as pageSettingsTable, projects as projectsTable } from '../src/db/schema.js';
+import {
+  pageSettings as pageSettingsTable,
+  projects as projectsTable,
+  testimonials as testimonialsTable,
+} from '../src/db/schema.js';
+import { rowToTestimonial } from '../src/lib/testimonial-mapper.js';
 import { HOME_PAGE_SETTINGS_KEY, rowToPageSettings } from '../src/lib/page-settings.js';
 import { rowToProject } from '../src/lib/project-mapper.js';
 import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
@@ -78,6 +83,20 @@ app.get('/api/projects/:slug', async (c) => {
   } catch (err) {
     console.error('[GET /api/projects/:slug]', err);
     return c.json({ error: 'Failed to load project' }, 500);
+  }
+});
+
+app.get('/api/testimonials', async (c) => {
+  try {
+    const db = getDb();
+    const rows = await db
+      .select()
+      .from(testimonialsTable)
+      .orderBy(asc(testimonialsTable.sortOrder), asc(testimonialsTable.id));
+    return c.json(rows.map(rowToTestimonial));
+  } catch (err) {
+    console.error('[GET /api/testimonials]', err);
+    return c.json({ error: 'Failed to load testimonials' }, 500);
   }
 });
 

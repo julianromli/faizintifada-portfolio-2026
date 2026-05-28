@@ -7,7 +7,7 @@
   "scripts": {
     "dev:vite": "vite --port=3000 --host=0.0.0.0",
     "dev:api": "tsx watch server/index.ts",
-    "dev": "concurrently -n vite,api -c blue,green \"npm run dev:vite\" \"npm run dev:api\"",
+    "dev": "concurrently -n vite,api -c blue,green \"bun run dev:vite\" \"bun run dev:api\"",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",

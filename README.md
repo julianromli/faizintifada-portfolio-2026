@@ -4,23 +4,23 @@ React, Vite, and Tailwind portfolio site.
 
 ## Run Locally
 
-Prerequisites: Node.js 20+ (Bun optional).
+Prerequisites: [Bun](https://bun.sh) 1.3+ (see `packageManager` in `package.json`).
 
-1. Install dependencies: `npm install`
+1. Install dependencies: `bun install`
 
 2. Copy [`.env.example`](.env.example) to `.env` and set **`DATABASE_URL`** and **`DATABASE_AUTH_TOKEN`** from your [Turso](https://turso.tech) database (for local file SQLite you can use `DATABASE_URL=file:dev.sqlite` and omit the token). Set a long random **`CMS_ADMIN_TOKEN`** for the **`/admin`** CMS (**`POST` / `PUT` / `DELETE /api/admin`** use this as a Bearer secret). For image uploads in the CMS, add **`UPLOADTHING_TOKEN`** from the [UploadThing](https://uploadthing.com) dashboard (server secret only — not `VITE_`).
 
 3. Push the schema and seed sample projects:
 
    ```bash
-   npm run db:push
-   npm run db:seed
+   bun run db:push
+   bun run db:seed
    ```
 
 4. Start Vite and the JSON API together:
 
    ```bash
-   npm run dev
+   bun run dev
    ```
 
    - Site: `http://localhost:3000`
@@ -32,7 +32,7 @@ For production, set **`VITE_API_URL`** if the API is hosted separately, and **`C
 
 - Schema: [`src/db/schema.ts`](src/db/schema.ts)
 - HTTP API: [`server/index.ts`](server/index.ts) — public `GET /api/projects`, `GET /api/projects?featured=1`, `GET /api/projects/:slug`; admin (**Bearer `CMS_ADMIN_TOKEN`**) — `POST /api/admin/projects`, `PUT /api/admin/projects/:slug`, `DELETE /api/admin/projects/:slug`; **UploadThing** handler at `POST/GET /api/uploadthing` (uses **`UPLOADTHING_TOKEN`**; uploads require the same **CMS** Bearer as the admin UI).
-- Commands: `npm run db:generate`, `npm run db:push`, `npm run db:studio`, `npm run db:seed`
+- Commands: `bun run db:generate`, `bun run db:push`, `bun run db:studio`, `bun run db:seed`
 
 ## CMS (projects)
 

@@ -65,13 +65,17 @@ export async function adminFetch(path: string, init?: RequestInit): Promise<Resp
     throw new Error('Not authenticated');
   }
   const url = apiUrl(path.startsWith('/') ? path : `/${path}`);
+  const hasBody = init?.body != null;
+  const headers = new Headers(init?.headers);
+  if (!headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+  if (hasBody && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
   return fetch(url, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...(init?.headers ?? {}),
-    },
+    headers,
   });
 }
 
@@ -87,13 +91,17 @@ export function cmsUploadThingHeaders(): HeadersInit {
 
 export async function readAdminError(res: Response): Promise<string> {
   let msg = res.statusText || `Request failed (${res.status})`;
+  const text = await res.text();
+  if (!text) {
+    return msg;
+  }
   try {
-    const j = (await res.json()) as { error?: string; details?: unknown };
+    const j = JSON.parse(text) as { error?: string };
     if (typeof j.error === 'string') {
-      msg = j.error;
+      return j.error;
     }
   } catch {
-    /* empty */
+    return text;
   }
   return msg;
 }

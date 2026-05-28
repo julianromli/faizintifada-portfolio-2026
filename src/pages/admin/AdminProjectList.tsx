@@ -1,25 +1,41 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PencilSimple, Plus, Trash } from '@phosphor-icons/react';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { useProjects } from '../../hooks/useProjects';
 import { adminFetch, clearAdminToken, readAdminError } from '../../lib/admin-api';
+
+interface PendingDelete {
+  slug: string;
+  title: string;
+}
 
 export function AdminProjectList() {
   const navigate = useNavigate();
   const { projects, loading, error, retry } = useProjects();
   const [busySlug, setBusySlug] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [hiddenSlugs, setHiddenSlugs] = useState<Set<string>>(() => new Set());
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
 
   function logout() {
     clearAdminToken();
     navigate('/admin', { replace: true });
   }
 
-  async function handleDelete(slug: string) {
-    if (!window.confirm(`Delete project “${slug}”? This cannot be undone.`)) {
+  function requestDelete(project: PendingDelete) {
+    setActionError(null);
+    setActionSuccess(null);
+    setPendingDelete(project);
+  }
+
+  async function confirmDelete() {
+    if (!pendingDelete) {
       return;
     }
-    setActionError(null);
+
+    const { slug } = pendingDelete;
     setBusySlug(slug);
     try {
       const res = await adminFetch(`/api/admin/projects/${encodeURIComponent(slug)}`, {
@@ -29,6 +45,9 @@ export function AdminProjectList() {
         const msg = await readAdminError(res);
         throw new Error(msg);
       }
+      setHiddenSlugs((prev) => new Set(prev).add(slug));
+      setActionSuccess(`Deleted “${slug}”.`);
+      setPendingDelete(null);
       retry();
     } catch (e) {
       setActionError(e instanceof Error ? e.message : String(e));
@@ -37,7 +56,30 @@ export function AdminProjectList() {
     }
   }
 
+  const visibleProjects = projects.filter((p) => !hiddenSlugs.has(p.slug));
+
   return (
+    <>
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Delete project?"
+        description={
+          pendingDelete ? (
+            <>
+              <span className="font-medium text-gray-900">{pendingDelete.title}</span>
+              <span className="block mt-1 font-mono text-[13px] text-gray-500">{pendingDelete.slug}</span>
+              <span className="block mt-2">This cannot be undone.</span>
+            </>
+          ) : null
+        }
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        busy={pendingDelete !== null && busySlug === pendingDelete.slug}
+        onConfirm={() => void confirmDelete()}
+        onCancel={() => setPendingDelete(null)}
+      />
+
     <main className="space-y-8 pb-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -82,6 +124,12 @@ export function AdminProjectList() {
         </div>
       )}
 
+      {actionSuccess && (
+        <div className="rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-[14px] text-green-900">
+          {actionSuccess}
+        </div>
+      )}
+
       {loading && (
         <p className="text-[15px] text-gray-500 animate-pulse">Loading projects…</p>
       )}
@@ -95,11 +143,11 @@ export function AdminProjectList() {
         </div>
       )}
 
-      {!loading && !error && projects.length === 0 && (
+      {!loading && !error && visibleProjects.length === 0 && (
         <p className="text-[15px] text-gray-500">No projects yet. Create one to get started.</p>
       )}
 
-      {!loading && !error && projects.length > 0 && (
+      {!loading && !error && visibleProjects.length > 0 && (
         <div className="overflow-hidden rounded-2xl border border-gray-100">
           <table className="w-full text-left text-[14px]">
             <thead className="bg-gray-50 text-gray-600">
@@ -112,7 +160,7 @@ export function AdminProjectList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {projects.map((p) => (
+              {visibleProjects.map((p) => (
                 <tr key={p.slug} className="bg-white">
                   <td className="px-4 py-3 font-mono text-[13px] text-gray-800">{p.slug}</td>
                   <td className="px-4 py-3 text-gray-900">{p.title}</td>
@@ -129,7 +177,7 @@ export function AdminProjectList() {
                     <button
                       type="button"
                       disabled={busySlug === p.slug}
-                      onClick={() => void handleDelete(p.slug)}
+                      onClick={() => requestDelete({ slug: p.slug, title: p.title })}
                       className="inline-flex items-center gap-1 text-red-700 hover:text-red-900 font-medium disabled:opacity-50"
                     >
                       <Trash size={18} aria-hidden />
@@ -143,5 +191,6 @@ export function AdminProjectList() {
         </div>
       )}
     </main>
+    </>
   );
 }

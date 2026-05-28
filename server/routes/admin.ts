@@ -14,6 +14,14 @@ import { pageSettingsPayloadSchema } from '../schemas/pageSettingsPayload.js';
 import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload.js';
 import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret.js';
 
+function decodeParamSlug(raw: string): string {
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
 function isUniqueConstraintError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
   return /UNIQUE constraint failed|SQLITE_CONSTRAINT_UNIQUE/i.test(msg);
@@ -150,7 +158,7 @@ export function createAdminApp() {
   });
 
   admin.put('/projects/:slug', async (c) => {
-    const urlSlug = c.req.param('slug');
+    const urlSlug = decodeParamSlug(c.req.param('slug'));
     let body: unknown;
     try {
       body = await c.req.json();
@@ -200,18 +208,23 @@ export function createAdminApp() {
   });
 
   admin.delete('/projects/:slug', async (c) => {
-    const slug = c.req.param('slug');
+    const slug = decodeParamSlug(c.req.param('slug'));
     const db = getDb();
-    const removed = await db
-      .delete(projectsTable)
-      .where(eq(projectsTable.slug, slug))
-      .returning({ id: projectsTable.id });
+    try {
+      const removed = await db
+        .delete(projectsTable)
+        .where(eq(projectsTable.slug, slug))
+        .returning({ id: projectsTable.id });
 
-    if (removed.length === 0) {
-      return c.json({ error: 'Project not found' }, 404);
+      if (removed.length === 0) {
+        return c.json({ error: 'Project not found' }, 404);
+      }
+
+      return c.json({ ok: true, slug }, 200);
+    } catch (err) {
+      console.error('[DELETE /api/admin/projects/:slug]', err);
+      return c.json({ error: 'Failed to delete project' }, 500);
     }
-
-    return c.body(null, 204);
   });
 
   return admin;

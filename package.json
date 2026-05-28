@@ -9,6 +9,7 @@
     "dev:api": "tsx watch server/index.ts",
     "dev": "concurrently -n vite,api -c blue,green \"bun run dev:vite\" \"bun run dev:api\"",
     "build": "vite build",
+    "start": "bun server/production.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",

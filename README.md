@@ -28,6 +28,45 @@ Prerequisites: [Bun](https://bun.sh) 1.3+ (see `packageManager` in `package.json
 
 For production, set **`VITE_API_URL`** if the API is hosted separately, and **`CORS_ORIGIN`** to your frontend origin(s), comma-separated.
 
+## Deploy on Dokploy (VPS)
+
+This app serves the Vite SPA (`dist/`) and the Hono API on **one port**. [`vercel.json`](vercel.json) and [`api/[...route].ts`](api/[...route].ts) are for **Vercel only**; on a VPS use [`server/production.ts`](server/production.ts).
+
+### Build and start
+
+| Step | Command / setting |
+|------|-------------------|
+| Install | `bun install --frozen-lockfile` |
+| Build | `bun run build` |
+| Start | `bun run start` → runs `server/production.ts` |
+| Listen | `0.0.0.0` on **`PORT`** (default `3000`) |
+
+**Railpack / Nixpacks:** ensure `package.json` includes the `start` script so the platform does not fall back to `vite preview` (localhost-only → 502 behind Traefik).
+
+**Dockerfile (recommended):** use the repo [`Dockerfile`](Dockerfile) in Dokploy (Build type: Dockerfile). Published port must match `PORT` (default `3000`).
+
+### Environment variables
+
+Set in Dokploy for **build** and **runtime** (see [`.env.example`](.env.example)):
+
+| Variable | When | Notes |
+|----------|------|--------|
+| `VITE_SITE_URL` | Build | e.g. `https://faizintifada.com` |
+| `SITE_URL` | Runtime | Same canonical URL (sitemap) |
+| `PORT` | Runtime | Must match Dokploy published port |
+| `NODE_ENV` | Runtime | `production` |
+| `DATABASE_URL`, `DATABASE_AUTH_TOKEN` | Runtime | Turso |
+| `CORS_ORIGIN` | Runtime | e.g. `https://faizintifada.com` |
+| `CMS_ADMIN_TOKEN`, `UPLOADTHING_TOKEN`, `GITHUB_TOKEN` | Runtime | API / CMS |
+
+Leave **`VITE_API_URL`** empty when frontend and API share the same domain (same-origin `/api`).
+
+### Post-deploy checks
+
+1. Runtime logs show: `[production] listening on http://0.0.0.0:<port>`
+2. On the VPS: `curl -I http://127.0.0.1:<PORT>/` → `200`
+3. Public: `curl -I https://faizintifada.com/` → `200` (if still 502, check Cloudflare DNS/SSL vs origin)
+
 ## Database (Drizzle + Turso / libSQL)
 
 - Schema: [`src/db/schema.ts`](src/db/schema.ts)

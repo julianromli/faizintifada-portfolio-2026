@@ -58,6 +58,7 @@ Set in Dokploy for **build** and **runtime** (see [`.env.example`](.env.example)
 | `DATABASE_URL`, `DATABASE_AUTH_TOKEN` | Runtime | Turso |
 | `CORS_ORIGIN` | Runtime | e.g. `https://faizintifada.com` |
 | `CMS_ADMIN_TOKEN`, `UPLOADTHING_TOKEN`, `GITHUB_TOKEN` | Runtime | API / CMS |
+| `YOUTUBE_API_KEY` | Runtime | **Required** for Latest Videos on most hosts (YouTube RSS often 404s from servers). Enable YouTube Data API v3. Optional `YOUTUBE_CHANNEL_ID=UCrWK10cz2En42V_eUNMuNVQ` |
 
 Leave **`VITE_API_URL`** empty when frontend and API share the same domain (same-origin `/api`).
 

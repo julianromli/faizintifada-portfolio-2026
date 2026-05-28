@@ -102,7 +102,12 @@ app.get('/api/youtube/videos', async (c) => {
     c.header('Cache-Control', 'public, max-age=900, s-maxage=900, stale-while-revalidate=3600');
     return c.json(videos);
   } catch (err) {
-    console.error('[GET /api/youtube/videos]', err);
+    const hasApiKey = Boolean(process.env.YOUTUBE_API_KEY?.trim());
+    console.error(
+      '[GET /api/youtube/videos]',
+      err,
+      hasApiKey ? '(YOUTUBE_API_KEY is set)' : '(set YOUTUBE_API_KEY when RSS returns 404)',
+    );
     return c.json({ error: 'Failed to load YouTube videos' }, 500);
   }
 });

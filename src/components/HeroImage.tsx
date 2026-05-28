@@ -1,5 +1,19 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Skeleton } from './Skeleton';
+
+/** Browser may finish loading (cache) before React runs effects — read `complete` after reset. */
+function syncLoadedFromImg(
+  img: HTMLImageElement | null,
+  setLoaded: (loaded: boolean) => void,
+  setFailed: (failed: boolean) => void,
+) {
+  if (!img?.complete) return;
+  if (img.naturalWidth > 0) {
+    setLoaded(true);
+  } else {
+    setFailed(true);
+  }
+}
 
 type HeroImageProps = {
   src?: string;
@@ -22,10 +36,12 @@ function HeroImageComponent({
 }: HeroImageProps) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     setLoaded(false);
     setFailed(false);
+    syncLoadedFromImg(imgRef.current, setLoaded, setFailed);
   }, [src]);
 
   const showSkeleton = !src || !loaded || failed;
@@ -39,6 +55,7 @@ function HeroImageComponent({
       />
       {src ? (
         <img
+          ref={imgRef}
           src={src}
           alt={alt}
           loading={loading}

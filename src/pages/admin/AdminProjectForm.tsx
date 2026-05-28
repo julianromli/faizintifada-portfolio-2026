@@ -79,12 +79,30 @@ function isProbablyHttpImageUrl(raw: string): boolean {
   }
 }
 
-function GalleryThumb({ url }: { url: string }) {
+function CoverPreview({ url, imagePosition }: { url: string; imagePosition: string }) {
   const [broken, setBroken] = useState(false);
 
-  useEffect(() => {
-    setBroken(false);
-  }, [url]);
+  return broken ? (
+    <div className="flex min-h-[160px] items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 text-center">
+      <p className="text-[13px] text-gray-500">
+        Preview unavailable. Check that the URL is a direct image link.
+      </p>
+    </div>
+  ) : (
+    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+      <img
+        src={url}
+        alt="Cover preview"
+        className={`mx-auto max-h-64 w-full max-w-xl object-contain ${imagePosition}`}
+        loading="lazy"
+        onError={() => setBroken(true)}
+      />
+    </div>
+  );
+}
+
+function GalleryThumb({ url }: { url: string }) {
+  const [broken, setBroken] = useState(false);
 
   if (broken) {
     return (
@@ -107,6 +125,10 @@ function GalleryThumb({ url }: { url: string }) {
 
 export function AdminProjectForm() {
   const { slug: urlSlug } = useParams<{ slug: string }>();
+  return <AdminProjectFormInner key={urlSlug ?? 'new'} urlSlug={urlSlug} />;
+}
+
+function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
   const navigate = useNavigate();
   const isEdit = urlSlug !== undefined;
 
@@ -117,23 +139,17 @@ export function AdminProjectForm() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [coverUploadError, setCoverUploadError] = useState<string | null>(null);
   const [galleryUploadError, setGalleryUploadError] = useState<string | null>(null);
-  const [coverPreviewBroken, setCoverPreviewBroken] = useState(false);
 
   const coverTrimmed = form.image.trim();
   const galleryUrls = form.imagesRaw
     .split('\n')
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .filter(isProbablyHttpImageUrl);
-
-  useEffect(() => {
-    setCoverPreviewBroken(false);
-  }, [coverTrimmed]);
+    .flatMap((s) => {
+      const trimmed = s.trim();
+      return trimmed && isProbablyHttpImageUrl(trimmed) ? [trimmed] : [];
+    });
 
   useEffect(() => {
     if (!isEdit || !urlSlug) {
-      setForm(emptyForm());
-      setLoading(false);
       return;
     }
 
@@ -177,12 +193,16 @@ export function AdminProjectForm() {
 
     const tags = form.tagsRaw
       .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
+      .flatMap((s) => {
+        const trimmed = s.trim();
+        return trimmed ? [trimmed] : [];
+      });
     const images = form.imagesRaw
       .split('\n')
-      .map((s) => s.trim())
-      .filter(Boolean);
+      .flatMap((s) => {
+        const trimmed = s.trim();
+        return trimmed ? [trimmed] : [];
+      });
 
     let sortNum = Number.parseInt(form.sortOrder, 10);
     if (Number.isNaN(sortNum) || sortNum < 0) {
@@ -285,6 +305,8 @@ export function AdminProjectForm() {
             </label>
             <input
               id="slug"
+              name="slug"
+              aria-label="Slug"
               required
               value={form.slug}
               onChange={(e) => update('slug', e.target.value)}
@@ -304,6 +326,8 @@ export function AdminProjectForm() {
             </label>
             <input
               id="title"
+              name="title"
+              aria-label="Title"
               required
               value={form.title}
               onChange={(e) => update('title', e.target.value)}
@@ -317,6 +341,8 @@ export function AdminProjectForm() {
             </label>
             <textarea
               id="description"
+              name="description"
+              aria-label="Short description"
               required
               rows={2}
               value={form.description}
@@ -331,6 +357,8 @@ export function AdminProjectForm() {
             </label>
             <textarea
               id="longDescription"
+              name="longDescription"
+              aria-label="Long description"
               required
               rows={8}
               value={form.longDescription}
@@ -345,6 +373,8 @@ export function AdminProjectForm() {
             </label>
             <input
               id="image"
+              name="image"
+              aria-label="Cover image URL"
               required
               value={form.image}
               onChange={(e) => update('image', e.target.value)}
@@ -357,6 +387,7 @@ export function AdminProjectForm() {
             <ProjectImageDropzone
               endpoint="projectCover"
               headers={cmsUploadThingHeaders}
+              aria-label="Upload cover image"
               onClientUploadComplete={(res) => {
                 const u = res[0]?.url;
                 if (typeof u === 'string') {
@@ -373,23 +404,11 @@ export function AdminProjectForm() {
             {isProbablyHttpImageUrl(coverTrimmed) ? (
               <div className="pt-2">
                 <p className={`${labelClass} text-gray-600`}>Preview</p>
-                {coverPreviewBroken ? (
-                  <div className="flex min-h-[160px] items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 text-center">
-                    <p className="text-[13px] text-gray-500">
-                      Preview unavailable — check that the URL is a direct image link.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
-                    <img
-                      src={coverTrimmed}
-                      alt="Cover preview"
-                      className={`mx-auto max-h-64 w-full max-w-xl object-contain ${form.imagePosition.trim() || 'object-top'}`}
-                      loading="lazy"
-                      onError={() => setCoverPreviewBroken(true)}
-                    />
-                  </div>
-                )}
+                <CoverPreview
+                  key={coverTrimmed}
+                  url={coverTrimmed}
+                  imagePosition={form.imagePosition.trim() || 'object-top'}
+                />
               </div>
             ) : null}
           </div>
@@ -400,6 +419,8 @@ export function AdminProjectForm() {
             </label>
             <input
               id="tagsRaw"
+              name="tagsRaw"
+              aria-label="Tags (comma-separated)"
               value={form.tagsRaw}
               onChange={(e) => update('tagsRaw', e.target.value)}
               className={inputClass}
@@ -413,6 +434,8 @@ export function AdminProjectForm() {
             </label>
             <input
               id="bgClass"
+              name="bgClass"
+              aria-label="Background class (Tailwind)"
               required
               value={form.bgClass}
               onChange={(e) => update('bgClass', e.target.value)}
@@ -426,6 +449,8 @@ export function AdminProjectForm() {
             </label>
             <input
               id="imagePosition"
+              name="imagePosition"
+              aria-label="Image position (optional)"
               value={form.imagePosition}
               onChange={(e) => update('imagePosition', e.target.value)}
               className={inputClass}
@@ -439,6 +464,8 @@ export function AdminProjectForm() {
             </label>
             <input
               id="client"
+              name="client"
+              aria-label="Client"
               value={form.client}
               onChange={(e) => update('client', e.target.value)}
               className={inputClass}
@@ -451,6 +478,8 @@ export function AdminProjectForm() {
             </label>
             <input
               id="role"
+              name="role"
+              aria-label="Role"
               value={form.role}
               onChange={(e) => update('role', e.target.value)}
               className={inputClass}
@@ -463,6 +492,8 @@ export function AdminProjectForm() {
             </label>
             <input
               id="timeline"
+              name="timeline"
+              aria-label="Timeline"
               value={form.timeline}
               onChange={(e) => update('timeline', e.target.value)}
               className={inputClass}
@@ -475,7 +506,9 @@ export function AdminProjectForm() {
             </label>
             <input
               id="liveUrl"
+              name="liveUrl"
               type="text"
+              aria-label="Live URL (optional)"
               value={form.liveUrl}
               onChange={(e) => update('liveUrl', e.target.value)}
               className={inputClass}
@@ -488,6 +521,8 @@ export function AdminProjectForm() {
             </label>
             <textarea
               id="imagesRaw"
+              name="imagesRaw"
+              aria-label="Gallery image URLs (one per line)"
               rows={4}
               value={form.imagesRaw}
               onChange={(e) => update('imagesRaw', e.target.value)}
@@ -499,15 +534,16 @@ export function AdminProjectForm() {
             <ProjectImageDropzone
               endpoint="projectGallery"
               headers={cmsUploadThingHeaders}
+              aria-label="Upload gallery images"
               onClientUploadComplete={(res) => {
-                const urls = res
-                  .map((r) => r.url)
-                  .filter((u): u is string => typeof u === 'string');
+                const urls = res.flatMap((r) => (typeof r.url === 'string' ? [r.url] : []));
                 setForm((prev) => {
                   const existing = prev.imagesRaw
                     .split('\n')
-                    .map((s) => s.trim())
-                    .filter(Boolean);
+                    .flatMap((s) => {
+                      const trimmed = s.trim();
+                      return trimmed ? [trimmed] : [];
+                    });
                   const seen = new Set(existing);
                   for (const u of urls) {
                     seen.add(u);
@@ -526,9 +562,9 @@ export function AdminProjectForm() {
               <div className="pt-2">
                 <p className={`${labelClass} text-gray-600`}>Preview ({galleryUrls.length})</p>
                 <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                  {galleryUrls.map((u, i) => (
-                    <li key={`${i}-${u}`} className="min-w-0">
-                      <GalleryThumb url={u} />
+                  {galleryUrls.map((u) => (
+                    <li key={u} className="min-w-0">
+                      <GalleryThumb key={u} url={u} />
                     </li>
                   ))}
                 </ul>
@@ -539,7 +575,9 @@ export function AdminProjectForm() {
           <div className="flex items-center gap-2 pt-2">
             <input
               id="featured"
+              name="featured"
               type="checkbox"
+              aria-label="Featured on homepage"
               checked={form.featured}
               onChange={(e) => update('featured', e.target.checked)}
               className="rounded border-gray-300"
@@ -555,7 +593,9 @@ export function AdminProjectForm() {
             </label>
             <input
               id="sortOrder"
+              name="sortOrder"
               type="number"
+              aria-label="Sort order"
               min={0}
               value={form.sortOrder}
               onChange={(e) => update('sortOrder', e.target.value)}

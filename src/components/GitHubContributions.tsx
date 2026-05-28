@@ -24,7 +24,7 @@ export function GitHubContributions() {
 
   return (
     <section>
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
         <div>
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900">GitHub Contributions</h2>
           <p className="mt-2 text-[15px] font-medium text-gray-500">
@@ -35,7 +35,7 @@ export function GitHubContributions() {
           href={contributions.profileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center space-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group"
+          className="flex items-center gap-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group"
         >
           <span>View GitHub</span>
           <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
@@ -72,7 +72,7 @@ export function GitHubContributions() {
                     key={day.date}
                     title={`${day.contributionCount} contributions on ${formatDate(day.date)}`}
                     aria-label={`${day.contributionCount} contributions on ${formatDate(day.date)}`}
-                    className="h-3.5 w-3.5 rounded-[3px] border border-gray-900/[0.03]"
+                    className="size-3.5 rounded-[3px] border border-gray-900/[0.03]"
                     style={{
                       backgroundColor: day.color,
                       gridColumnStart: weekIndex + 1,
@@ -98,7 +98,7 @@ export function GitHubContributions() {
               {legendColors.map((color) => (
                 <span
                   key={color}
-                  className="h-3.5 w-3.5 rounded-[3px] border border-gray-900/[0.03]"
+                  className="size-3.5 rounded-[3px] border border-gray-900/[0.03]"
                   style={{ backgroundColor: color }}
                 />
               ))}

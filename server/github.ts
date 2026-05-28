@@ -68,7 +68,7 @@ export async function fetchGitHubContributions(): Promise<GitHubContributions> {
 
   const body = (await response.json()) as GitHubGraphQLResponse;
   if (body.errors?.length) {
-    throw new Error(body.errors.map((error) => error.message).filter(Boolean).join('; '));
+    throw new Error(body.errors.flatMap((error) => (error.message ? [error.message] : [])).join('; '));
   }
 
   const user = body.data?.user;

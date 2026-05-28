@@ -16,7 +16,8 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx scripts/seed-projects.ts"
+    "db:seed": "tsx scripts/seed-projects.ts",
+    "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
     "@hono/node-server": "^2.0.2",
@@ -44,6 +45,7 @@
     "@types/react-dom": "^19.2.3",
     "concurrently": "^9.2.1",
     "drizzle-kit": "^0.31.10",
+    "react-doctor": "^0.2.9",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~6.0.3",

@@ -51,8 +51,11 @@ export function Seo({
       <meta name="twitter:description" content={metaDescription} />
       <meta name="twitter:image" content={image} />
 
-      {jsonLdPayload.map((entry, index) => (
-        <script key={index} type="application/ld+json">
+      {jsonLdPayload.map((entry) => (
+        <script
+          key={typeof entry['@type'] === 'string' ? entry['@type'] : JSON.stringify(entry)}
+          type="application/ld+json"
+        >
           {JSON.stringify(entry)}
         </script>
       ))}

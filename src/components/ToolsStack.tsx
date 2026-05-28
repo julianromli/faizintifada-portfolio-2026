@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 
 type Tool = {
   id: string;
@@ -74,7 +74,7 @@ const TOOLS: Tool[] = [
 export function ToolsStack() {
   return (
     <section className="flex flex-col items-center justify-center overflow-visible">
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         viewport={{ once: true, margin: "-50px" }}
@@ -83,19 +83,19 @@ export function ToolsStack() {
       >
         <h2 className="text-3xl font-semibold tracking-tight text-gray-900 mb-4">Tools I Use</h2>
         <p className="text-lg text-gray-500">My favorite stack for designing and building digital experiences.</p>
-      </motion.div>
+      </m.div>
       
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0, y: 40, scale: 0.9 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] as const }}
-        className="flex items-center justify-center -space-x-4 sm:-space-x-8 px-4"
+        className="flex items-center justify-center px-4 [&>*+*]:-ml-4 sm:[&>*+*]:-ml-8"
       >
         {TOOLS.map((tool, index) => {
           const borderClass = tool.borderClass ?? 'border-4 border-white';
           return (
-            <motion.div
+            <m.div
               key={tool.id}
               className={`relative group w-24 h-24 sm:w-32 sm:h-32 rounded-2xl sm:rounded-3xl ${borderClass} shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex items-center justify-center cursor-pointer ${tool.bg} origin-bottom`}
               initial={{ rotate: tool.rotate, y: 0 }}
@@ -118,12 +118,12 @@ export function ToolsStack() {
               <div className="absolute -top-14 bg-gray-900 text-white text-[13px] font-medium px-3.5 py-2 rounded-xl opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 ease-out pointer-events-none whitespace-nowrap shadow-xl flex flex-col items-center">
                 {tool.name}
                 {/* Tooltip Arrow */}
-                <div className="absolute -bottom-1 w-2.5 h-2.5 bg-gray-900 rotate-45 rounded-sm"></div>
+                <div className="absolute -bottom-1 size-2.5 bg-gray-900 rotate-45 rounded-sm"></div>
               </div>
-            </motion.div>
+            </m.div>
           );
         })}
-      </motion.div>
+      </m.div>
     </section>
   );
 }

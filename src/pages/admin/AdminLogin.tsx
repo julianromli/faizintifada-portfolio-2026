@@ -44,13 +44,15 @@ export function AdminLogin() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="admin-token" className="block text-[13px] font-medium text-gray-700 mb-1.5">
+          <label id="admin-token-label" htmlFor="admin-token" className="block text-[13px] font-medium text-gray-700 mb-1.5">
             CMS token
           </label>
           <input
             id="admin-token"
+            name="admin-token"
             type="password"
             autoComplete="off"
+            aria-labelledby="admin-token-label"
             value={token}
             disabled={isPending}
             onChange={(e) => setTokenInput(e.target.value)}

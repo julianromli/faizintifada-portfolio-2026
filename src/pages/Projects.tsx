@@ -19,7 +19,7 @@ export function Projects() {
         <div>
           <Link
             to="/"
-            className="inline-flex items-center space-x-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 active:scale-95 transition-all duration-200 ease-out group mb-4"
+            className="inline-flex items-center gap-x-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 active:scale-95 transition-all duration-200 ease-out group mb-4"
           >
             <ArrowLeft
               size={16}

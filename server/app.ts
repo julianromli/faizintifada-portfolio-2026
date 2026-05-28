@@ -16,7 +16,10 @@ import { buildSitemapXml } from './sitemap.js';
 const app = new Hono();
 
 const devOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
-const corsOrigins = process.env.CORS_ORIGIN?.split(',').map((s) => s.trim()).filter(Boolean);
+const corsOrigins = process.env.CORS_ORIGIN?.split(',').flatMap((s) => {
+  const trimmed = s.trim();
+  return trimmed ? [trimmed] : [];
+});
 
 app.use(
   '/*',

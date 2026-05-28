@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { Skeleton } from './Skeleton';
 
 export interface ProjectCardProps {
@@ -22,7 +22,7 @@ export function ProjectCard({
   index,
 }: ProjectCardProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
       whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-50px' }}
@@ -42,14 +42,14 @@ export function ProjectCard({
           />
           <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:bg-black/[0.03]" />
         </div>
-        <div className="flex flex-col space-y-0.5 px-1 mt-1">
+        <div className="flex flex-col gap-y-0.5 px-1 mt-1">
           <h3 className="text-base font-semibold text-gray-900 transition-colors duration-200 ease-out group-hover:text-gray-700">
             {title}
           </h3>
           <span className="text-[14px] font-medium text-gray-500">{tags.join(', ')}</span>
         </div>
       </Link>
-    </motion.div>
+    </m.div>
   );
 }
 

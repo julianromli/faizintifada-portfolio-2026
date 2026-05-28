@@ -60,10 +60,6 @@ function isProbablyHttpImageUrl(raw: string): boolean {
 function ImagePreview({ url, className }: { url: string; className: string }) {
   const [broken, setBroken] = useState(false);
 
-  useEffect(() => {
-    setBroken(false);
-  }, [url]);
-
   if (!isProbablyHttpImageUrl(url)) {
     return (
       <div className="flex min-h-32 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 text-center">
@@ -102,8 +98,6 @@ export function AdminPageSettings() {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setLoadError(null);
 
     void (async () => {
       try {
@@ -172,7 +166,7 @@ export function AdminPageSettings() {
   if (loading) {
     return (
       <main className="py-12">
-        <p className="text-[15px] text-gray-500 animate-pulse">Loading page settings...</p>
+        <p className="text-[15px] text-gray-500 animate-pulse">Loading page settings…</p>
       </main>
     );
   }
@@ -222,6 +216,8 @@ export function AdminPageSettings() {
                   </label>
                   <input
                     id={field.key}
+                    name={field.key}
+                    aria-label={field.label}
                     required
                     value={form[field.key]}
                     onChange={(event) => update(field.key, event.target.value)}
@@ -234,6 +230,7 @@ export function AdminPageSettings() {
                 <ProjectImageDropzone
                   endpoint="pageImage"
                   headers={cmsUploadThingHeaders}
+                  aria-label={`Upload ${field.label}`}
                   onClientUploadComplete={(res) => {
                     const url = res[0]?.url;
                     if (typeof url === 'string') {
@@ -253,7 +250,7 @@ export function AdminPageSettings() {
 
               <div>
                 <p className={`${labelClass} text-gray-600`}>Preview</p>
-                <ImagePreview url={form[field.key]} className={field.previewClassName} />
+                <ImagePreview key={form[field.key]} url={form[field.key]} className={field.previewClassName} />
               </div>
             </div>
           </section>
@@ -265,7 +262,7 @@ export function AdminPageSettings() {
             disabled={saving}
             className="rounded-full bg-gray-900 px-6 py-3 text-[15px] font-medium text-white hover:bg-gray-800 disabled:opacity-60"
           >
-            {saving ? 'Saving...' : 'Save page settings'}
+            {saving ? 'Saving…' : 'Save page settings'}
           </button>
           <Link
             to="/"

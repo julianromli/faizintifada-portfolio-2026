@@ -9,6 +9,7 @@ import { ProjectDetail } from './pages/ProjectDetail';
 import { NotFound } from './pages/NotFound';
 import { RequireAdmin } from './pages/admin/RequireAdmin';
 import { BodyOverlayScrollbars } from './components/BodyOverlayScrollbars';
+import { LazyMotionProvider } from './components/LazyMotionProvider';
 
 const AdminLogin = lazy(() =>
   import('./pages/admin/AdminLogin').then((mod) => ({ default: mod.AdminLogin })),
@@ -39,6 +40,7 @@ function adminRoute(element: ReactNode) {
 
 export default function App() {
   return (
+    <LazyMotionProvider>
     <Router>
       <BodyOverlayScrollbars />
       <AdminNoIndex />
@@ -100,5 +102,6 @@ export default function App() {
         </div>
       </div>
     </Router>
+    </LazyMotionProvider>
   );
 }

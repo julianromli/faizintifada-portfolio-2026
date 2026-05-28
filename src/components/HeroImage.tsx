@@ -39,10 +39,8 @@ function HeroImageComponent({
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    setLoaded(false);
-    setFailed(false);
     syncLoadedFromImg(imgRef.current, setLoaded, setFailed);
-  }, [src]);
+  }, []);
 
   const showSkeleton = !src || !loaded || failed;
 

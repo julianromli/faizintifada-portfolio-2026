@@ -1,5 +1,5 @@
 import { ArrowRight } from '@phosphor-icons/react';
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import type { YouTubeVideo } from '../types/youtube';
 import { useYouTubeVideos } from '../hooks/useYouTubeVideos';
 
@@ -18,7 +18,7 @@ interface VideoCardProps {
 
 function VideoCard({ video, index }: VideoCardProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
       whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-50px' }}
@@ -40,14 +40,14 @@ function VideoCard({ video, index }: VideoCardProps) {
           />
           <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:bg-black/[0.03]" />
         </div>
-        <div className="flex flex-col space-y-0.5 px-1 mt-1">
+        <div className="flex flex-col gap-y-0.5 px-1 mt-1">
           <h3 className="text-base font-semibold text-gray-900 transition-colors duration-200 ease-out group-hover:text-gray-700">
             {video.title}
           </h3>
           <span className="text-[14px] font-medium text-gray-500">{formatPublishedDate(video.publishedAt)}</span>
         </div>
       </a>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -60,7 +60,7 @@ export function LatestVideos() {
 
   return (
     <section>
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
         <div>
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900">Latest Videos</h2>
         </div>
@@ -68,7 +68,7 @@ export function LatestVideos() {
           href={YOUTUBE_CHANNEL_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center space-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group"
+          className="flex items-center gap-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group"
         >
           <span>View YouTube</span>
           <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-900 transition-colors" />

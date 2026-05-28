@@ -8,13 +8,13 @@ export function FeaturedProjects() {
 
   return (
     <section>
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
         <div>
           <h2 className="text-3xl font-semibold tracking-tight text-gray-900">Featured Projects</h2>
         </div>
         <Link
           to="/projects"
-          className="flex items-center space-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group"
+          className="flex items-center gap-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group"
         >
           <span>View all</span>
           <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-900 transition-colors" />

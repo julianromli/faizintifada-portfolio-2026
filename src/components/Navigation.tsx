@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { List, X } from '@phosphor-icons/react';
 import { NAV_LINKS } from '../constants';
@@ -9,10 +9,15 @@ const navLinkClassName =
 export function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const locationKey = `${location.pathname}${location.hash}`;
+  const prevLocationKeyRef = useRef(locationKey);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname, location.hash]);
+  if (locationKey !== prevLocationKeyRef.current) {
+    prevLocationKeyRef.current = locationKey;
+    if (menuOpen) {
+      setMenuOpen(false);
+    }
+  }
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
@@ -30,7 +35,7 @@ export function Navigation() {
         Hola!
       </Link>
 
-      <div className="hidden md:flex items-center space-x-8 text-[15px] text-gray-500">
+      <div className="hidden md:flex items-center gap-x-8 text-[15px] text-gray-500">
         {NAV_LINKS.map(({ to, label }) => (
           <Link key={label} to={to} className={navLinkClassName}>
             {label}
@@ -40,7 +45,7 @@ export function Navigation() {
 
       <button
         type="button"
-        className="md:hidden flex items-center justify-center w-11 h-11 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+        className="md:hidden flex items-center justify-center size-11 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-95 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
         aria-expanded={menuOpen}
         aria-controls="mobile-nav-menu"
         aria-label={menuOpen ? 'Close menu' : 'Open menu'}

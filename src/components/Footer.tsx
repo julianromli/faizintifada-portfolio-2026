@@ -18,7 +18,7 @@ const SOCIAL_ICONS = {
 export function Footer() {
   return (
     <footer className="mt-32 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
-      <p className="text-[14px] text-gray-400 font-medium tracking-wide">
+      <p className="text-[14px] text-gray-400 font-medium tracking-wide" suppressHydrationWarning>
         © {new Date().getFullYear()} Faiz. All rights reserved.
       </p>
       <div className="flex items-center flex-wrap justify-center gap-6 text-gray-600">

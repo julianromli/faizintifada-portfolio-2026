@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight } from '@phosphor-icons/react';
 import { useEffect } from 'react';
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { useProject } from '../hooks/useProject';
 import { Seo } from '../components/Seo';
 import { Skeleton } from '../components/Skeleton';
@@ -69,7 +69,7 @@ export function ProjectDetail() {
 
   if (error && slug) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-6 pb-24">
+      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-y-6 pb-24">
         <h1 className="text-xl font-semibold text-gray-900">Something went wrong</h1>
         <p className="text-[15px] text-gray-500">{error.message}</p>
         <button
@@ -87,11 +87,11 @@ export function ProjectDetail() {
     return (
       <>
         <Seo title="Project not found" noIndex path={`/project/${slug ?? ''}`} />
-        <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-6">
+        <div className="min-h-[50vh] flex flex-col items-center justify-center gap-y-6">
         <h1 className="text-2xl font-semibold text-gray-900">Project not found</h1>
         <Link
           to="/"
-          className="flex items-center space-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors"
+          className="flex items-center gap-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft size={16} />
           <span>Back to home</span>
@@ -111,16 +111,16 @@ export function ProjectDetail() {
         type="article"
         jsonLd={creativeWorkSchema(project)}
       />
-      <motion.main
+      <m.main
       initial="hidden"
       animate="show"
       variants={containerVariants}
       className="pb-24"
     >
-      <motion.div variants={itemVariants} className="mb-12">
+      <m.div variants={itemVariants} className="mb-12">
         <Link
           to="/projects"
-          className="inline-flex items-center space-x-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 active:scale-95 transition-all duration-200 ease-out group"
+          className="inline-flex items-center gap-x-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 active:scale-95 transition-all duration-200 ease-out group"
         >
           <ArrowLeft
             size={16}
@@ -128,18 +128,18 @@ export function ProjectDetail() {
           />
           <span>Back to projects</span>
         </Link>
-      </motion.div>
+      </m.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20">
         <div className="lg:col-span-5 space-y-8">
-          <motion.div variants={itemVariants}>
+          <m.div variants={itemVariants}>
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900 mb-6 leading-tight">
               {project.title}
             </h1>
             <p className="text-lg text-gray-500 leading-relaxed">{project.description}</p>
-          </motion.div>
+          </m.div>
 
-          <motion.div variants={itemVariants} className="flex flex-wrap gap-2.5">
+          <m.div variants={itemVariants} className="flex flex-wrap gap-2.5">
             {project.tags.map((tag) => (
               <span
                 key={tag}
@@ -148,9 +148,9 @@ export function ProjectDetail() {
                 {tag}
               </span>
             ))}
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             variants={itemVariants}
             className="grid grid-cols-2 gap-8 pt-8 border-t border-gray-100"
           >
@@ -178,15 +178,15 @@ export function ProjectDetail() {
                 <p className="text-[15px] font-medium text-gray-900">{project.timeline}</p>
               </div>
             )}
-          </motion.div>
+          </m.div>
 
           {project.liveUrl && (
-            <motion.div variants={itemVariants} className="pt-4">
+            <m.div variants={itemVariants} className="pt-4">
               <a
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-gray-900 text-white rounded-full text-[14px] font-medium hover:bg-gray-800 active:scale-95 transition-all duration-200 ease-out group"
+                className="inline-flex items-center gap-x-2 px-6 py-3 bg-gray-900 text-white rounded-full text-[14px] font-medium hover:bg-gray-800 active:scale-95 transition-all duration-200 ease-out group"
               >
                 <span>Visit Live Site</span>
                 <ArrowUpRight
@@ -194,11 +194,11 @@ export function ProjectDetail() {
                   className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200 ease-out"
                 />
               </a>
-            </motion.div>
+            </m.div>
           )}
         </div>
 
-        <motion.div variants={itemVariants} className="lg:col-span-7">
+        <m.div variants={itemVariants} className="lg:col-span-7">
           <div
             className={`rounded-[2rem] overflow-hidden ${project.bgClass} aspect-[4/3] sm:aspect-video relative border border-gray-100`}
           >
@@ -208,10 +208,10 @@ export function ProjectDetail() {
               className={`w-full h-full object-cover ${project.imagePosition || 'object-center'} mix-blend-multiply opacity-95`}
             />
           </div>
-        </motion.div>
+        </m.div>
       </div>
 
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         viewport={{ once: true, margin: '-50px' }}
@@ -222,13 +222,13 @@ export function ProjectDetail() {
         <div className="text-lg text-gray-500 space-y-6">
           <p className="leading-relaxed">{project.longDescription}</p>
         </div>
-      </motion.div>
+      </m.div>
 
       {project.images && project.images.length > 1 && (
         <div className="space-y-8">
-          {project.images.slice(1).map((img, index) => (
-            <motion.div
-              key={index}
+          {project.images.slice(1).map((img) => (
+            <m.div
+              key={img}
               initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
               whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, margin: '-100px' }}
@@ -237,14 +237,14 @@ export function ProjectDetail() {
             >
               <img
                 src={img}
-                alt={`${project.title} screenshot ${index + 1}`}
+                alt={`${project.title} screenshot`}
                 className="w-full h-auto object-cover"
               />
-            </motion.div>
+            </m.div>
           ))}
         </div>
       )}
-    </motion.main>
+    </m.main>
     </>
   );
 }

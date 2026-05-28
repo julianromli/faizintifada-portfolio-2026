@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useProject } from '../hooks/useProject';
 import { Seo } from '../components/Seo';
+import { Skeleton } from '../components/Skeleton';
 import { creativeWorkSchema } from '../lib/seo';
 
 const containerVariants = {
@@ -29,26 +30,26 @@ const itemVariants = {
 
 function DetailSkeleton() {
   return (
-    <div className="pb-24 animate-pulse space-y-12">
-      <div className="mb-12 h-4 w-32 rounded bg-gray-100" />
+    <div className="pb-24 space-y-12">
+      <Skeleton className="mb-12 h-4 w-32 rounded" />
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20">
         <div className="lg:col-span-5 space-y-6">
-          <div className="h-12 rounded-lg bg-gray-100 w-full" />
-          <div className="h-4 rounded bg-gray-50 w-full" />
-          <div className="h-4 rounded bg-gray-50 w-4/5" />
+          <Skeleton className="h-12 rounded-lg w-full" />
+          <Skeleton variant="text" muted className="w-full" />
+          <Skeleton variant="text" muted className="w-4/5" />
           <div className="flex gap-2 pt-4">
-            <div className="h-8 w-24 rounded-full bg-gray-100" />
-            <div className="h-8 w-28 rounded-full bg-gray-100" />
+            <Skeleton className="h-8 w-24 rounded-full" />
+            <Skeleton className="h-8 w-28 rounded-full" />
           </div>
         </div>
         <div className="lg:col-span-7">
-          <div className="aspect-[4/3] sm:aspect-video rounded-[2rem] bg-gray-100" />
+          <Skeleton className="aspect-[4/3] sm:aspect-video rounded-[2rem]" />
         </div>
       </div>
       <div className="max-w-3xl mx-auto space-y-4">
-        <div className="h-8 w-48 rounded bg-gray-100" />
-        <div className="h-4 rounded bg-gray-50 w-full" />
-        <div className="h-4 rounded bg-gray-50 w-full" />
+        <Skeleton className="h-8 w-48 rounded" />
+        <Skeleton variant="text" muted className="w-full" />
+        <Skeleton variant="text" muted className="w-full" />
       </div>
     </div>
   );

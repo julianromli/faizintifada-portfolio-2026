@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { Skeleton } from './Skeleton';
 
 export interface ProjectCardProps {
   slug: string;
@@ -56,11 +57,14 @@ export function ProjectsGridSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {[0, 1, 2].map((k) => (
-        <div key={k} className="animate-pulse space-y-4">
-          <div className="aspect-[4/3] rounded-[1rem] bg-gray-100" />
+        <div key={k} className="space-y-4">
+          <Skeleton
+            className="aspect-[4/3] rounded-[1rem]"
+            style={{ animationDelay: `${k * 80}ms` }}
+          />
           <div className="space-y-2 px-1">
-            <div className="h-4 rounded bg-gray-100 w-2/3" />
-            <div className="h-3 rounded bg-gray-50 w-full" />
+            <Skeleton variant="text" className="w-2/3" style={{ animationDelay: `${k * 80}ms` }} />
+            <Skeleton variant="text" muted className="h-3 w-full" style={{ animationDelay: `${k * 80}ms` }} />
           </div>
         </div>
       ))}

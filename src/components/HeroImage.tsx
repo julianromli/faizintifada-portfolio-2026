@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from 'react';
+import { Skeleton } from './Skeleton';
 
 type HeroImageProps = {
   src?: string;
@@ -9,7 +10,7 @@ type HeroImageProps = {
 };
 
 export function HeroImageSkeleton() {
-  return <div aria-hidden className="absolute inset-0 animate-pulse bg-gray-100" />;
+  return <Skeleton className="absolute inset-0" />;
 }
 
 function HeroImageComponent({
@@ -31,9 +32,8 @@ function HeroImageComponent({
 
   return (
     <>
-      <div
-        aria-hidden
-        className={`absolute inset-0 animate-pulse bg-gray-100 transition-opacity duration-500 ${
+      <Skeleton
+        className={`absolute inset-0 transition-opacity duration-500 ${
           showSkeleton ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       />

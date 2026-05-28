@@ -8,6 +8,10 @@
   --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --animate-fade-in: fade-in 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  --animate-skeleton-shimmer: skeleton-shimmer 1.5s ease-in-out infinite;
+  --color-skeleton-base: #f3f4f6;
+  --color-skeleton-highlight: #e5e7eb;
+  --color-skeleton-muted: #f9fafb;
 }
 
 @keyframes fade-in {
@@ -37,6 +41,15 @@
 .animate-blur-reveal {
   opacity: 0;
   animation: blur-reveal 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .delay-100 { animation-delay: 100ms; }
@@ -92,6 +105,46 @@ body {
       inset 0px 2px 6px rgba(0, 0, 0, 0.8),
       0px 2px 4px rgba(0, 0, 0, 0.2);
     transform: scale(0.97);
+  }
+
+  .skeleton {
+    background-color: var(--color-skeleton-base);
+  }
+
+  .skeleton-shimmer {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-skeleton-base) 0%,
+      var(--color-skeleton-highlight) 40%,
+      var(--color-skeleton-base) 80%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-skeleton-shimmer);
+  }
+
+  .skeleton-muted {
+    background-color: var(--color-skeleton-muted);
+  }
+
+  .skeleton-muted.skeleton-shimmer {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-skeleton-muted) 0%,
+      var(--color-skeleton-highlight) 40%,
+      var(--color-skeleton-muted) 80%
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+    background-image: none;
+    background-color: var(--color-skeleton-base);
+  }
+
+  .skeleton-muted.skeleton-shimmer {
+    background-color: var(--color-skeleton-muted);
   }
 }
 

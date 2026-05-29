@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowUpRight } from '@phosphor-icons/react';
 import { useEffect } from 'react';
 import { m } from 'motion/react';
 import { useProject } from '../hooks/useProject';
+import { resolveProjectBgClass } from '../lib/project-bg-presets';
 import { Seo } from '../components/Seo';
 import { Skeleton } from '../components/Skeleton';
 import { creativeWorkSchema } from '../lib/seo';
@@ -70,12 +71,12 @@ export function ProjectDetail() {
   if (error && slug) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center gap-y-6 pb-24">
-        <h1 className="text-xl font-semibold text-gray-900">Something went wrong</h1>
-        <p className="text-[15px] text-gray-500">{error.message}</p>
+        <h1 className="text-xl font-semibold text-foreground">Something went wrong</h1>
+        <p className="text-[15px] text-muted">{error.message}</p>
         <button
           type="button"
           onClick={() => retry()}
-          className="text-[15px] font-semibold text-gray-900 underline"
+          className="text-[15px] font-semibold text-foreground underline"
         >
           Retry
         </button>
@@ -88,10 +89,10 @@ export function ProjectDetail() {
       <>
         <Seo title="Project not found" noIndex path={`/project/${slug ?? ''}`} />
         <div className="min-h-[50vh] flex flex-col items-center justify-center gap-y-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Project not found</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Project not found</h1>
         <Link
           to="/"
-          className="flex items-center gap-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors"
+          className="flex items-center gap-x-2 text-[15px] font-medium text-muted hover:text-foreground theme-transition"
         >
           <ArrowLeft size={16} />
           <span>Back to home</span>
@@ -120,7 +121,7 @@ export function ProjectDetail() {
       <m.div variants={itemVariants} className="mb-12">
         <Link
           to="/projects"
-          className="inline-flex items-center gap-x-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 active:scale-95 transition-all duration-200 ease-out group"
+          className="inline-flex items-center gap-x-2 text-[15px] font-medium text-muted hover:text-foreground active:scale-95 theme-transition group"
         >
           <ArrowLeft
             size={16}
@@ -133,17 +134,17 @@ export function ProjectDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20">
         <div className="lg:col-span-5 space-y-8">
           <m.div variants={itemVariants}>
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900 mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-foreground mb-6 leading-tight">
               {project.title}
             </h1>
-            <p className="text-lg text-gray-500 leading-relaxed">{project.description}</p>
+            <p className="text-lg text-muted leading-relaxed">{project.description}</p>
           </m.div>
 
           <m.div variants={itemVariants} className="flex flex-wrap gap-2.5">
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-4 py-1.5 rounded-full border border-gray-100 text-[13px] font-medium text-gray-600 bg-gray-50"
+                className="px-4 py-1.5 rounded-full border border-border text-[13px] font-medium text-muted bg-surface"
               >
                 {tag}
               </span>
@@ -152,30 +153,30 @@ export function ProjectDetail() {
 
           <m.div
             variants={itemVariants}
-            className="grid grid-cols-2 gap-8 pt-8 border-t border-gray-100"
+            className="grid grid-cols-2 gap-8 pt-8 border-t border-border"
           >
             {project.client && (
               <div>
-                <p className="text-[11px] font-semibold text-gray-400 tracking-wider uppercase mb-2">
+                <p className="text-[11px] font-semibold text-muted tracking-wider uppercase mb-2">
                   Client
                 </p>
-                <p className="text-[15px] font-medium text-gray-900">{project.client}</p>
+                <p className="text-[15px] font-medium text-foreground">{project.client}</p>
               </div>
             )}
             {project.role && (
               <div>
-                <p className="text-[11px] font-semibold text-gray-400 tracking-wider uppercase mb-2">
+                <p className="text-[11px] font-semibold text-muted tracking-wider uppercase mb-2">
                   Role
                 </p>
-                <p className="text-[15px] font-medium text-gray-900">{project.role}</p>
+                <p className="text-[15px] font-medium text-foreground">{project.role}</p>
               </div>
             )}
             {project.timeline && (
               <div>
-                <p className="text-[11px] font-semibold text-gray-400 tracking-wider uppercase mb-2">
+                <p className="text-[11px] font-semibold text-muted tracking-wider uppercase mb-2">
                   Timeline
                 </p>
-                <p className="text-[15px] font-medium text-gray-900">{project.timeline}</p>
+                <p className="text-[15px] font-medium text-foreground">{project.timeline}</p>
               </div>
             )}
           </m.div>
@@ -186,7 +187,7 @@ export function ProjectDetail() {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-x-2 px-6 py-3 bg-gray-900 text-white rounded-full text-[14px] font-medium hover:bg-gray-800 active:scale-95 transition-all duration-200 ease-out group"
+                className="inline-flex items-center gap-x-2 px-6 py-3 bg-foreground text-canvas rounded-full text-[14px] font-medium hover:bg-foreground/90 active:scale-95 theme-transition group"
               >
                 <span>Visit Live Site</span>
                 <ArrowUpRight
@@ -200,7 +201,7 @@ export function ProjectDetail() {
 
         <m.div variants={itemVariants} className="lg:col-span-7">
           <div
-            className={`rounded-[2rem] overflow-hidden ${project.bgClass} aspect-[4/3] sm:aspect-video relative border border-gray-100`}
+            className={`rounded-[2rem] overflow-hidden ${resolveProjectBgClass(project.bgClass)} aspect-[4/3] sm:aspect-video relative border border-border theme-transition`}
           >
             <img
               src={project.image}
@@ -218,8 +219,8 @@ export function ProjectDetail() {
         transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] as const }}
         className="max-w-3xl mx-auto mb-24"
       >
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">About the Project</h2>
-        <div className="text-lg text-gray-500 space-y-6">
+        <h2 className="text-2xl font-semibold text-foreground mb-6">About the Project</h2>
+        <div className="text-lg text-muted space-y-6">
           <p className="leading-relaxed">{project.longDescription}</p>
         </div>
       </m.div>
@@ -233,7 +234,7 @@ export function ProjectDetail() {
               whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, margin: '-100px' }}
               transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] as const }}
-              className="rounded-[2rem] overflow-hidden bg-gray-50 border border-gray-100"
+              className="rounded-[2rem] overflow-hidden bg-surface border border-border"
             >
               <img
                 src={img}

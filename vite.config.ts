@@ -31,6 +31,8 @@ export default defineConfig({
     },
   },
   server: {
+    // Allow Cloudflare/ngrok tunnel hostnames during remote dev preview.
+    allowedHosts: ['.trycloudflare.com', '.ngrok-free.dev', '.ngrok.io'],
     // HMR can be disabled by setting DISABLE_HMR=true.
     hmr: process.env.DISABLE_HMR !== 'true',
     proxy: {

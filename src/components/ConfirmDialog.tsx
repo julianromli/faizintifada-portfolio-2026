@@ -72,14 +72,14 @@ export function ConfirmDialog({
   const confirmClassName =
     variant === 'danger'
       ? 'rounded-full bg-red-700 px-5 py-2.5 text-[14px] font-medium text-white hover:bg-red-800 disabled:opacity-50'
-      : 'rounded-full bg-gray-900 px-5 py-2.5 text-[14px] font-medium text-white hover:bg-gray-800 disabled:opacity-50';
+      : 'rounded-full bg-foreground px-5 py-2.5 text-[14px] font-medium text-canvas hover:bg-foreground/90 disabled:opacity-50';
 
   return (
     <dialog
       ref={dialogRef}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
-      className="fixed inset-0 z-50 m-auto w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-xl backdrop:bg-gray-900/40 backdrop:backdrop-blur-[2px] open:flex open:flex-col"
+      className="fixed inset-0 z-50 m-auto w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-xl backdrop:bg-black/40 backdrop:backdrop-blur-[2px] open:flex open:flex-col theme-transition"
       onCancel={(event) => {
         event.preventDefault();
         if (!busy) {
@@ -95,10 +95,10 @@ export function ConfirmDialog({
         disabled={busy}
         onClick={onCancel}
       />
-      <h2 id={titleId} className="text-lg font-semibold tracking-tight text-gray-900">
+      <h2 id={titleId} className="text-lg font-semibold tracking-tight text-foreground">
         {title}
       </h2>
-      <div id={descriptionId} className="mt-2 text-[15px] text-gray-600">
+      <div id={descriptionId} className="mt-2 text-[15px] text-muted">
         {description}
       </div>
       <div className="mt-6 flex flex-wrap justify-end gap-2">
@@ -107,7 +107,7 @@ export function ConfirmDialog({
           type="button"
           disabled={busy}
           onClick={onCancel}
-          className="rounded-full border border-gray-200 px-5 py-2.5 text-[14px] font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          className="rounded-full border border-border px-5 py-2.5 text-[14px] font-medium text-foreground hover:bg-surface disabled:opacity-50 theme-transition"
         >
           {cancelLabel}
         </button>

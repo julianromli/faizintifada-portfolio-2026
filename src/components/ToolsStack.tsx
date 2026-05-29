@@ -14,7 +14,7 @@ const TOOLS: Tool[] = [
   { 
     id: 'figma', 
     name: 'Figma', 
-    bg: 'bg-[#FAFAFA]',
+    bg: 'bg-card',
     imgClassName: 'border-0',
     icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg', 
     rotate: -21 
@@ -22,50 +22,50 @@ const TOOLS: Tool[] = [
   { 
     id: 'google-ai-studio', 
     name: 'Google AI Studio', 
-    bg: 'bg-[#FAFAFA]', 
+    bg: 'bg-card', 
     icon: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJeroJZ67v7EOcR6jGLWBNTApisPuaeDYMUbnI', 
     rotate: -15 
   },
   { 
     id: 'hermes-agents', 
     name: 'Hermes Agents', 
-    bg: 'bg-[#FAFAFA]',
-    borderClass: 'border-4 border-[#F5F5F5]',
+    bg: 'bg-card',
+    borderClass: 'border-4 border-surface',
     icon: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJzp8gzHQ01jPoxERhQSFJuI2qmrfb95LAUe3C', 
     rotate: -9 
   },
   { 
     id: 'davinci-resolve', 
     name: 'DaVinci Resolve', 
-    bg: 'bg-[#FAFAFA]', 
+    bg: 'bg-card', 
     icon: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/DaVinci_Resolve_Studio.png', 
     rotate: -3 
   },
   { 
     id: 'obsidian', 
     name: 'Obsidian', 
-    bg: 'bg-[#FAFAFA]', 
+    bg: 'bg-card', 
     icon: 'https://upload.wikimedia.org/wikipedia/commons/1/10/2023_Obsidian_logo.svg', 
     rotate: 3 
   },
   { 
     id: 'cursor', 
     name: 'Cursor', 
-    bg: 'bg-[#FAFAFA]', 
+    bg: 'bg-card', 
     icon: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ8y11lI5HNL9CO2WPxU8zlIhd0i7GsmceFJDy', 
     rotate: 9 
   },
   { 
     id: 'pi', 
     name: 'Pi Agent', 
-    bg: 'bg-[#FAFAFA]', 
+    bg: 'bg-card', 
     icon: 'https://0nzst7ka0j.ufs.sh/f/octNiMKDR9jHClsVmeuAh4y2o59B1PJewTDsUE3rtVRxf7gI', 
     rotate: 15 
   },
   { 
     id: 'codex', 
     name: 'Codex', 
-    bg: 'bg-[#FAFAFA]', 
+    bg: 'bg-card', 
     icon: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJvzLF0kt3OERfomb5VsYrNqh3BI4C2GiPLp7z', 
     rotate: 21 
   },
@@ -81,8 +81,8 @@ export function ToolsStack() {
         transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] as const }}
         className="text-center mb-12 sm:mb-16"
       >
-        <h2 className="text-3xl font-semibold tracking-tight text-gray-900 mb-4">Tools I Use</h2>
-        <p className="text-lg text-gray-500">My favorite stack for designing and building digital experiences.</p>
+        <h2 className="text-3xl font-semibold tracking-tight text-foreground mb-4">Tools I Use</h2>
+        <p className="text-lg text-muted">My favorite stack for designing and building digital experiences.</p>
       </m.div>
       
       <m.div 
@@ -93,11 +93,11 @@ export function ToolsStack() {
         className="flex items-center justify-center px-4 [&>*+*]:-ml-4 sm:[&>*+*]:-ml-8"
       >
         {TOOLS.map((tool, index) => {
-          const borderClass = tool.borderClass ?? 'border-4 border-white';
+          const borderClass = tool.borderClass ?? 'border-4 border-card';
           return (
             <m.div
               key={tool.id}
-              className={`relative group w-24 h-24 sm:w-32 sm:h-32 rounded-2xl sm:rounded-3xl ${borderClass} shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex items-center justify-center cursor-pointer ${tool.bg} origin-bottom`}
+              className={`relative group w-24 h-24 sm:w-32 sm:h-32 rounded-2xl sm:rounded-3xl ${borderClass} shadow-elevated flex items-center justify-center cursor-pointer ${tool.bg} origin-bottom theme-transition`}
               initial={{ rotate: tool.rotate, y: 0 }}
               whileHover={{
                 y: -24,
@@ -115,10 +115,9 @@ export function ToolsStack() {
               />
 
               {/* Tooltip */}
-              <div className="absolute -top-14 bg-gray-900 text-white text-[13px] font-medium px-3.5 py-2 rounded-xl opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 ease-out pointer-events-none whitespace-nowrap shadow-xl flex flex-col items-center">
+              <div className="absolute -top-14 bg-foreground text-canvas text-[13px] font-medium px-3.5 py-2 rounded-xl opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 ease-out pointer-events-none whitespace-nowrap shadow-xl flex flex-col items-center">
                 {tool.name}
-                {/* Tooltip Arrow */}
-                <div className="absolute -bottom-1 size-2.5 bg-gray-900 rotate-45 rounded-sm"></div>
+                <div className="absolute -bottom-1 size-2.5 bg-foreground rotate-45 rounded-sm"></div>
               </div>
             </m.div>
           );

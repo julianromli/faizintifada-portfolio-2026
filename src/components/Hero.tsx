@@ -82,7 +82,7 @@ export function Hero() {
         {/* Header / Intro */}
         <div className="space-y-6">
           <div className="flex items-center gap-x-4 animate-blur-reveal">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-orange-50/50 border-4 border-white overflow-hidden flex items-center justify-center shadow-[0px_6px_12px_rgba(0,0,0,0.25),0px_2px_4px_rgba(0,0,0,0.15)] transform transition-transform duration-200 ease-out hover:scale-110 hover:-rotate-12 cursor-pointer relative">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-orange-50/50 dark:bg-orange-950/30 border-4 border-card overflow-hidden flex items-center justify-center shadow-[0px_6px_12px_rgba(0,0,0,0.25),0px_2px_4px_rgba(0,0,0,0.15)] transform transition-transform duration-200 ease-out hover:scale-110 hover:-rotate-12 cursor-pointer relative">
               {settingsLoading || !pageSettings ? (
                 <HeroImageSkeleton />
               ) : (
@@ -96,12 +96,12 @@ export function Hero() {
                 />
               )}
             </div>
-            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-gray-900">Faiz Intifada</h1>
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-foreground">Faiz Intifada</h1>
           </div>
           
-          <h2 className="text-[1.75rem] sm:text-4xl leading-[1.3] text-gray-800 tracking-tight font-medium animate-blur-reveal delay-100">
+          <h2 className="text-[1.75rem] sm:text-4xl leading-[1.3] text-foreground tracking-tight font-medium animate-blur-reveal delay-100">
             {`Design engineer building products at the intersection of UI, code, and craft. Part of `}
-            <span className="text-gray-400 inline-flex items-center">
+            <span className="text-muted inline-flex items-center">
               Cursor <img src="https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ8y11lI5HNL9CO2WPxU8zlIhd0i7GsmceFJDy" className="size-8 mx-2 inline-block opacity-80" alt="Cursor" /> Ambassadors
             </span>
           </h2>
@@ -110,7 +110,7 @@ export function Hero() {
             <button
               type="button"
               onClick={openContactDialog}
-              className="inline-flex items-center gap-x-2 text-white px-6 py-4 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 btn-embossed"
+              className="inline-flex items-center gap-x-2 text-white px-6 py-4 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground focus:ring-offset-card btn-embossed"
             >
               <ChatCircleText size={20} weight="regular" />
               <span>Discuss a Project</span>
@@ -120,24 +120,24 @@ export function Hero() {
 
         {/* Skills */}
         <div className="flex flex-wrap gap-3 sm:gap-4 pt-4 animate-blur-reveal delay-200">
-          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-default">
-            <Globe size={18} className="text-gray-500" />
+          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
+            <Globe size={18} className="text-muted" />
             <span>Web Design</span>
           </div>
-          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-default">
-            <FigmaLogo size={18} className="text-gray-500" />
+          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
+            <FigmaLogo size={18} className="text-muted" />
             <span>Figma</span>
           </div>
-          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-default">
-            <ChatCircleText size={18} className="text-gray-500" />
+          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
+            <ChatCircleText size={18} className="text-muted" />
             <span>Copywriting</span>
           </div>
-          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-default">
-            <PenNib size={18} className="text-gray-500" />
+          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
+            <PenNib size={18} className="text-muted" />
             <span>Graphic Design</span>
           </div>
-          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-default">
-            <Code size={18} className="text-gray-500" />
+          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
+            <Code size={18} className="text-muted" />
             <span>Front end</span>
           </div>
         </div>
@@ -145,7 +145,7 @@ export function Hero() {
         {/* Testimonial */}
         {!testimonialsLoading && count > 0 && current ? (
           <div className="pt-6 w-full sm:max-w-xl animate-blur-reveal delay-250">
-            <div className="border border-gray-100 rounded-3xl p-8 bg-white shadow-[0_4px_30px_rgba(0,0,0,0.02)] relative min-h-[260px] flex flex-col justify-between">
+            <div className="border border-border rounded-3xl p-8 bg-card shadow-subtle relative min-h-[260px] flex flex-col justify-between theme-transition">
               <AnimatePresence mode="wait">
                 <m.div
                   key={current.id}
@@ -155,16 +155,16 @@ export function Hero() {
                   transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as const }}
                   className="flex-1 flex flex-col"
                 >
-                  <p className="text-[17px] leading-relaxed text-gray-700 font-medium pb-4">
+                  <p className="text-[17px] leading-relaxed text-foreground font-medium pb-4">
                     &ldquo;{current.quote}&rdquo;
                   </p>
                   <div className="mt-auto pt-4 flex items-center gap-x-4">
-                    <div className="size-10 rounded-xl bg-blue-50 flex items-center justify-center p-1 border border-gray-100 shrink-0">
+                    <div className="size-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center p-1 border border-border shrink-0">
                       <img src={current.avatar} alt={`${current.name} Avatar`} className="w-full h-full object-cover rounded-lg" />
                     </div>
                     <div>
-                      <h4 className="text-[15px] font-semibold text-gray-900">{current.name}</h4>
-                      <p className="text-[13px] text-gray-400 font-medium mt-0.5">{current.role}</p>
+                      <h4 className="text-[15px] font-semibold text-foreground">{current.name}</h4>
+                      <p className="text-[13px] text-muted font-medium mt-0.5">{current.role}</p>
                     </div>
                   </div>
                 </m.div>
@@ -177,7 +177,7 @@ export function Hero() {
                     key={testimonial.id}
                     type="button"
                     onClick={() => setActiveTestimonial(idx)}
-                    className={`h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${activeIndex === idx ? 'w-6 bg-gray-900' : 'w-2 bg-gray-200 hover:bg-gray-400'}`}
+                    className={`h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${activeIndex === idx ? 'w-6 bg-foreground' : 'w-2 bg-surface-nested hover:bg-muted'}`}
                     aria-label={`Go to testimonial ${idx + 1}`}
                   />
                 ))}
@@ -190,7 +190,7 @@ export function Hero() {
 
       {/* Right Column (Images) */}
       <div className="flex flex-col gap-6 h-full mt-8 xl:mt-0 xl:-my-4">
-        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100 animate-blur-reveal delay-300">
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-surface-nested animate-blur-reveal delay-300">
           {settingsLoading || !pageSettings ? (
             <HeroImageSkeleton />
           ) : (
@@ -204,7 +204,7 @@ export function Hero() {
             />
           )}
         </div>
-        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100 animate-blur-reveal delay-400">
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-surface-nested animate-blur-reveal delay-400">
           {settingsLoading || !pageSettings ? (
             <HeroImageSkeleton />
           ) : (
@@ -216,7 +216,7 @@ export function Hero() {
             />
           )}
         </div>
-        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-gray-100 animate-blur-reveal delay-500">
+        <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-surface-nested animate-blur-reveal delay-500">
           {settingsLoading || !pageSettings ? (
             <HeroImageSkeleton />
           ) : (

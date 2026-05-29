@@ -19,7 +19,7 @@ export function Projects() {
         <div>
           <Link
             to="/"
-            className="inline-flex items-center gap-x-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 active:scale-95 transition-all duration-200 ease-out group mb-4"
+            className="inline-flex items-center gap-x-2 text-[15px] font-medium text-muted hover:text-foreground active:scale-95 theme-transition group mb-4"
           >
             <ArrowLeft
               size={16}
@@ -27,8 +27,8 @@ export function Projects() {
             />
             <span>Back to home</span>
           </Link>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">All projects</h1>
-          <p className="text-[15px] text-gray-500 mt-2">Every case study in the archive.</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">All projects</h1>
+          <p className="text-[15px] text-muted mt-2">Every case study in the archive.</p>
         </div>
       </div>
 
@@ -49,7 +49,7 @@ export function Projects() {
       )}
 
       {!loading && !error && projects.length === 0 && (
-        <p className="text-[15px] text-gray-500">No projects yet.</p>
+        <p className="text-[15px] text-muted">No projects yet.</p>
       )}
 
       {!loading && !error && projects.length > 0 && (

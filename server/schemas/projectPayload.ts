@@ -1,6 +1,16 @@
 import { z } from 'zod';
+import {
+  normalizeBgClassPreset,
+  PROJECT_BG_PRESET_KEYS,
+} from '../../src/lib/project-bg-presets.js';
 
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+const bgClassSchema = z
+  .string()
+  .min(1)
+  .transform(normalizeBgClassPreset)
+  .pipe(z.enum(PROJECT_BG_PRESET_KEYS));
 
 export const projectPayloadSchema = z.object({
   slug: z
@@ -11,7 +21,7 @@ export const projectPayloadSchema = z.object({
   longDescription: z.string().min(1),
   image: z.string().min(1),
   tags: z.array(z.string().min(1)),
-  bgClass: z.string().min(1),
+  bgClass: bgClassSchema,
   imagePosition: z.string().optional(),
   client: z.string().optional(),
   role: z.string().optional(),

@@ -32,7 +32,7 @@ function AdminNoIndex() {
 
 function adminRoute(element: ReactNode) {
   return (
-    <Suspense fallback={<p className="py-12 text-[15px] text-gray-500 animate-pulse">Loading admin…</p>}>
+    <Suspense fallback={<p className="py-12 text-[15px] text-muted animate-pulse">Loading admin…</p>}>
       {element}
     </Suspense>
   );
@@ -44,8 +44,8 @@ export default function App() {
     <Router>
       <BodyOverlayScrollbars />
       <AdminNoIndex />
-      <div className="min-h-screen bg-[#f1f2f4] py-4 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-gray-200">
-        <div className="max-w-[1280px] mx-auto bg-white rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 md:p-14 lg:p-16 shadow-sm overflow-hidden border border-gray-100">
+      <div className="min-h-screen bg-shell py-4 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8 font-sans theme-transition selection:bg-surface-nested">
+        <div className="max-w-[1300px] mx-auto bg-card rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 md:p-14 lg:p-16 shadow-sm overflow-hidden border border-border theme-transition">
           
           <Navigation />
 

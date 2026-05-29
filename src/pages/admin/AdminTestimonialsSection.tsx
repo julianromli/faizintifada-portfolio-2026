@@ -1,12 +1,24 @@
 import { useCallback, useState, type FormEvent } from 'react';
 import { PencilSimple, Plus, Trash } from '@phosphor-icons/react';
 import { adminFetch, cmsUploadThingHeaders, readAdminError } from '../../lib/admin-api';
+import {
+  adminAlertError,
+  adminAlertSuccess,
+  adminBtnDestructiveOutline,
+  adminBtnPrimarySm,
+  adminBtnSecondarySm,
+  adminBtnSecondaryXs,
+  adminDropzoneClass,
+  adminImageThumb,
+  adminInputClass,
+  adminLabelClass,
+  adminListItem,
+  adminPreviewEmpty,
+  adminSectionCard,
+  adminTextError,
+} from '../../lib/admin-styles';
 import type { Testimonial } from '../../types/testimonial';
 import { ProjectImageDropzone } from '../../uploadthing/client';
-
-const inputClass =
-  'w-full rounded-xl border border-gray-200 px-4 py-2.5 text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10';
-const labelClass = 'block text-[13px] font-medium text-gray-700 mb-1.5';
 
 type FormState = {
   avatar: string;
@@ -52,16 +64,16 @@ function ImagePreview({ url, className }: { url: string; className: string }) {
 
   if (!isProbablyHttpImageUrl(url)) {
     return (
-      <div className="flex size-20 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-2 text-center">
-        <p className="text-[12px] text-gray-500">Upload or paste URL</p>
+      <div className={`${adminPreviewEmpty} size-20 px-2`}>
+        <p className="text-[12px] text-muted">Upload or paste URL</p>
       </div>
     );
   }
 
   if (broken) {
     return (
-      <div className="flex size-20 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-2 text-center">
-        <p className="text-[12px] text-gray-500">Preview unavailable</p>
+      <div className={`${adminPreviewEmpty} size-20 px-2`}>
+        <p className="text-[12px] text-muted">Preview unavailable</p>
       </div>
     );
   }
@@ -70,7 +82,7 @@ function ImagePreview({ url, className }: { url: string; className: string }) {
     <img
       src={url}
       alt=""
-      className={`size-20 border border-gray-100 bg-gray-50 object-cover ${className}`}
+      className={`size-20 bg-surface object-cover ${adminImageThumb} ${className}`}
       loading="lazy"
       onError={() => setBroken(true)}
     />
@@ -214,46 +226,31 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
     <section className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-gray-900">Hero testimonials</h2>
-          <p className="mt-1 text-[15px] text-gray-500">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">Hero testimonials</h2>
+          <p className="mt-1 text-[15px] text-muted">
             Carousel quotes on the homepage hero. Lower sort order appears first.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={startNew}
-          className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2.5 text-[14px] font-medium text-gray-800 hover:bg-gray-50"
-        >
+        <button type="button" onClick={startNew} className={adminBtnSecondarySm}>
           <Plus size={18} />
           Add testimonial
         </button>
       </div>
 
-      {saveError && (
-        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-[14px] text-red-800">
-          {saveError}
-        </div>
-      )}
+      {saveError && <div className={adminAlertError}>{saveError}</div>}
 
-      {successMessage && (
-        <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-[14px] text-emerald-800">
-          {successMessage}
-        </div>
-      )}
+      {successMessage && <div className={adminAlertSuccess}>{successMessage}</div>}
 
       {editing && (
-        <form
-          onSubmit={(e) => void handleSubmit(e)}
-          className="space-y-4 rounded-3xl border border-gray-100 p-5 sm:p-6"
-        >
-          <h3 className="text-[15px] font-semibold text-gray-900">
+        <form onSubmit={(e) => void handleSubmit(e)} className={`space-y-4 ${adminSectionCard}`}>
+          <h3 className="text-[15px] font-semibold text-foreground">
             {editing.mode === 'new' ? 'New testimonial' : 'Edit testimonial'}
           </h3>
 
           <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto]">
             <div className="space-y-3">
               <div>
-                <label htmlFor="testimonial-avatar" className={labelClass}>
+                <label htmlFor="testimonial-avatar" className={adminLabelClass}>
                   Avatar
                 </label>
                 <input
@@ -262,7 +259,7 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
                   required
                   value={form.avatar}
                   onChange={(e) => update('avatar', e.target.value)}
-                  className={inputClass}
+                  className={adminInputClass}
                   placeholder="https://..."
                 />
               </div>
@@ -278,17 +275,15 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
                   setAvatarUploadError(null);
                 }}
                 onUploadError={(err) => setAvatarUploadError(err.message)}
-                className="rounded-2xl border border-gray-100 bg-gray-50/50"
+                className={adminDropzoneClass}
               />
-              {avatarUploadError && (
-                <p className="text-[13px] text-red-600">{avatarUploadError}</p>
-              )}
+              {avatarUploadError && <p className={adminTextError}>{avatarUploadError}</p>}
             </div>
             <ImagePreview url={form.avatar} className="rounded-xl" />
           </div>
 
           <div>
-            <label htmlFor="testimonial-name" className={labelClass}>
+            <label htmlFor="testimonial-name" className={adminLabelClass}>
               Name
             </label>
             <input
@@ -297,12 +292,12 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
               required
               value={form.name}
               onChange={(e) => update('name', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div>
-            <label htmlFor="testimonial-role" className={labelClass}>
+            <label htmlFor="testimonial-role" className={adminLabelClass}>
               Role
             </label>
             <input
@@ -311,13 +306,13 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
               required
               value={form.role}
               onChange={(e) => update('role', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
               placeholder="CEO of Nova Tech"
             />
           </div>
 
           <div>
-            <label htmlFor="testimonial-quote" className={labelClass}>
+            <label htmlFor="testimonial-quote" className={adminLabelClass}>
               Testimonial
             </label>
             <textarea
@@ -327,12 +322,12 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
               rows={4}
               value={form.quote}
               onChange={(e) => update('quote', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div>
-            <label htmlFor="testimonial-sortOrder" className={labelClass}>
+            <label htmlFor="testimonial-sortOrder" className={adminLabelClass}>
               Sort order
             </label>
             <input
@@ -342,23 +337,15 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
               min={0}
               value={form.sortOrder}
               onChange={(e) => update('sortOrder', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded-full bg-gray-900 px-5 py-2.5 text-[14px] font-medium text-white hover:bg-gray-800 disabled:opacity-60"
-            >
+            <button type="submit" disabled={saving} className={adminBtnPrimarySm}>
               {saving ? 'Saving…' : editing.mode === 'new' ? 'Create' : 'Save changes'}
             </button>
-            <button
-              type="button"
-              onClick={cancelEdit}
-              className="rounded-full border border-gray-200 px-5 py-2.5 text-[14px] font-medium text-gray-700 hover:bg-gray-50"
-            >
+            <button type="button" onClick={cancelEdit} className={adminBtnSecondarySm}>
               Cancel
             </button>
           </div>
@@ -366,38 +353,27 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
       )}
 
       {sorted.length === 0 ? (
-        <p className="text-[15px] text-gray-500">No testimonials yet. Add one to show the hero carousel.</p>
+        <p className="text-[15px] text-muted">No testimonials yet. Add one to show the hero carousel.</p>
       ) : (
         <ul className="space-y-3">
           {sorted.map((t) => (
-            <li
-              key={t.id}
-              className="flex flex-wrap items-center gap-4 rounded-2xl border border-gray-100 p-4"
-            >
-              <img
-                src={t.avatar}
-                alt=""
-                className="size-12 shrink-0 rounded-xl border border-gray-100 object-cover"
-              />
+            <li key={t.id} className={`flex flex-wrap items-center gap-4 ${adminListItem}`}>
+              <img src={t.avatar} alt="" className={`size-12 shrink-0 ${adminImageThumb}`} />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[15px] font-medium text-gray-900">{t.name}</p>
-                <p className="truncate text-[13px] text-gray-500">{t.role}</p>
-                <p className="mt-1 line-clamp-2 text-[13px] text-gray-600">&ldquo;{t.quote}&rdquo;</p>
-                <p className="mt-1 text-[12px] text-gray-400">Sort: {t.sortOrder}</p>
+                <p className="truncate text-[15px] font-medium text-foreground">{t.name}</p>
+                <p className="truncate text-[13px] text-muted">{t.role}</p>
+                <p className="mt-1 line-clamp-2 text-[13px] text-muted">&ldquo;{t.quote}&rdquo;</p>
+                <p className="mt-1 text-[12px] text-muted/70">Sort: {t.sortOrder}</p>
               </div>
               <div className="flex shrink-0 gap-2">
-                <button
-                  type="button"
-                  onClick={() => startEdit(t)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-3 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-50"
-                >
+                <button type="button" onClick={() => startEdit(t)} className={adminBtnSecondaryXs}>
                   <PencilSimple size={16} />
                   Edit
                 </button>
                 <button
                   type="button"
                   onClick={() => void handleDelete(t.id, t.name)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-red-100 px-3 py-2 text-[13px] font-medium text-red-700 hover:bg-red-50"
+                  className={adminBtnDestructiveOutline}
                 >
                   <Trash size={16} />
                   Delete

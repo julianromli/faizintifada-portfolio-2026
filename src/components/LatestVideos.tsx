@@ -30,7 +30,7 @@ function VideoCard({ video, index }: VideoCardProps) {
         rel="noopener noreferrer"
         className="group block cursor-pointer active:scale-[0.98] transition-transform duration-200 ease-out"
       >
-        <div className="overflow-hidden bg-gray-100 aspect-[4/3] rounded-[1rem] relative mb-4 transition-shadow duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
+        <div className="overflow-hidden bg-surface-nested aspect-[4/3] rounded-[1rem] relative mb-4 transition-shadow duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:shadow-elevated">
           <img
             src={video.thumbnailUrl}
             alt={video.title}
@@ -41,10 +41,10 @@ function VideoCard({ video, index }: VideoCardProps) {
           <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:bg-black/[0.03]" />
         </div>
         <div className="flex flex-col gap-y-0.5 px-1 mt-1">
-          <h3 className="text-base font-semibold text-gray-900 transition-colors duration-200 ease-out group-hover:text-gray-700">
+          <h3 className="text-base font-semibold text-foreground transition-colors duration-200 ease-out group-hover:text-muted">
             {video.title}
           </h3>
-          <span className="text-[14px] font-medium text-gray-500">{formatPublishedDate(video.publishedAt)}</span>
+          <span className="text-[14px] font-medium text-muted">{formatPublishedDate(video.publishedAt)}</span>
         </div>
       </a>
     </m.div>
@@ -62,16 +62,16 @@ export function LatestVideos() {
     <section>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
         <div>
-          <h2 className="text-3xl font-semibold tracking-tight text-gray-900">Latest Videos</h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground">Latest Videos</h2>
         </div>
         <a
           href={YOUTUBE_CHANNEL_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group"
+          className="flex items-center gap-x-2 text-[15px] font-medium text-muted hover:text-foreground theme-transition group"
         >
           <span>View YouTube</span>
-          <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+          <ArrowRight size={16} className="text-muted group-hover:text-foreground theme-transition" />
         </a>
       </div>
 

@@ -10,14 +10,14 @@ export function FeaturedProjects() {
     <section>
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
         <div>
-          <h2 className="text-3xl font-semibold tracking-tight text-gray-900">Featured Projects</h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground">Featured Projects</h2>
         </div>
         <Link
           to="/projects"
-          className="flex items-center gap-x-2 text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors group"
+          className="flex items-center gap-x-2 text-[15px] font-medium text-muted hover:text-foreground theme-transition group"
         >
           <span>View all</span>
-          <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
+          <ArrowRight size={16} className="text-muted group-hover:text-foreground theme-transition" />
         </Link>
       </div>
 
@@ -38,7 +38,7 @@ export function FeaturedProjects() {
       )}
 
       {!loading && !error && projects.length === 0 && (
-        <p className="text-[15px] text-gray-500">No featured projects yet.</p>
+        <p className="text-[15px] text-muted">No featured projects yet.</p>
       )}
 
       {!loading && !error && projects.length > 0 && (

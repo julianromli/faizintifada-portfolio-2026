@@ -114,7 +114,7 @@ export function ContactChoiceDialog({ open, onClose }: ContactChoiceDialogProps)
     <dialog
       ref={dialogRef}
       aria-labelledby={titleId}
-      className="fixed inset-0 z-50 m-auto w-full max-w-sm rounded-2xl border border-gray-100 bg-white p-6 shadow-xl backdrop:bg-gray-900/40 backdrop:backdrop-blur-[2px] open:flex open:flex-col"
+      className="fixed inset-0 z-50 m-auto w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl backdrop:bg-black/40 backdrop:backdrop-blur-[2px] open:flex open:flex-col theme-transition"
       onCancel={(event) => {
         event.preventDefault();
         onClose();
@@ -136,10 +136,10 @@ export function ContactChoiceDialog({ open, onClose }: ContactChoiceDialogProps)
             exit="exit"
             variants={panelMotion}
           >
-            <h2 id={titleId} className="text-lg font-semibold tracking-tight text-gray-900">
+            <h2 id={titleId} className="text-lg font-semibold tracking-tight text-foreground">
               Get in touch
             </h2>
-            <p className="mt-1 text-[14px] text-gray-500">Choose how you&apos;d like to reach me</p>
+            <p className="mt-1 text-[14px] text-muted">Choose how you&apos;d like to reach me</p>
             <m.div
               className="mt-6 flex items-center justify-center gap-4"
               variants={shouldReduceMotion ? undefined : iconContainerVariants}
@@ -159,7 +159,7 @@ export function ContactChoiceDialog({ open, onClose }: ContactChoiceDialogProps)
                     aria-label={channel.label}
                     variants={shouldReduceMotion ? undefined : iconItemVariants}
                     transition={{ duration: 0.2, ease: EASE_OUT }}
-                    className="flex size-12 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition-transform duration-[160ms] ease-out hover:bg-gray-50 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+                    className="flex size-12 items-center justify-center rounded-full border border-border text-foreground transition-transform duration-[160ms] ease-out hover:bg-surface active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card theme-transition"
                     onClick={() => onClose()}
                   >
                     <IconComponent

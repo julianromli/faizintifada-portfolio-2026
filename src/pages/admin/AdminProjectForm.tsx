@@ -4,6 +4,26 @@ import { ArrowLeft } from '@phosphor-icons/react';
 import type { Project } from '../../types/project';
 import { apiUrl } from '../../lib/api';
 import { adminFetch, cmsUploadThingHeaders, readAdminError } from '../../lib/admin-api';
+import {
+  adminAlertError,
+  adminBackLink,
+  adminBtnPrimary,
+  adminBtnSecondary,
+  adminDropzoneClass,
+  adminImageThumb,
+  adminInputClass,
+  adminLabelClass,
+  adminPreviewEmpty,
+  adminPreviewFrame,
+  adminTextError,
+  adminTextWarning,
+} from '../../lib/admin-styles';
+import {
+  normalizeBgClassPreset,
+  PROJECT_BG_PRESET_KEYS,
+  PROJECT_BG_PRESETS,
+  resolveProjectBgClass,
+} from '../../lib/project-bg-presets';
 import { ProjectImageDropzone } from '../../uploadthing/client';
 
 type FormState = {
@@ -32,7 +52,7 @@ function emptyForm(): FormState {
     longDescription: '',
     image: '',
     tagsRaw: '',
-    bgClass: 'bg-gray-50',
+    bgClass: 'bg-surface-neutral',
     imagePosition: 'object-top',
     client: '',
     role: '',
@@ -52,7 +72,7 @@ function projectToForm(p: Project): FormState {
     longDescription: p.longDescription,
     image: p.image,
     tagsRaw: p.tags.join(', '),
-    bgClass: p.bgClass,
+    bgClass: normalizeBgClassPreset(p.bgClass),
     imagePosition: p.imagePosition ?? '',
     client: p.client ?? '',
     role: p.role ?? '',
@@ -63,10 +83,6 @@ function projectToForm(p: Project): FormState {
     sortOrder: String(p.sortOrder ?? 0),
   };
 }
-
-const inputClass =
-  'w-full rounded-xl border border-gray-200 px-4 py-2.5 text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10';
-const labelClass = 'block text-[13px] font-medium text-gray-700 mb-1.5';
 
 function isProbablyHttpImageUrl(raw: string): boolean {
   const s = raw.trim();
@@ -83,13 +99,13 @@ function CoverPreview({ url, imagePosition }: { url: string; imagePosition: stri
   const [broken, setBroken] = useState(false);
 
   return broken ? (
-    <div className="flex min-h-[160px] items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 text-center">
-      <p className="text-[13px] text-gray-500">
+    <div className={`${adminPreviewEmpty} min-h-[160px]`}>
+      <p className="text-[13px] text-muted">
         Preview unavailable. Check that the URL is a direct image link.
       </p>
     </div>
   ) : (
-    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50">
+    <div className={adminPreviewFrame}>
       <img
         src={url}
         alt="Cover preview"
@@ -106,8 +122,8 @@ function GalleryThumb({ url }: { url: string }) {
 
   if (broken) {
     return (
-      <div className="flex aspect-square flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 p-2 text-center">
-        <span className="text-[11px] leading-snug text-gray-500">Could not load preview</span>
+      <div className={`${adminPreviewEmpty} aspect-square flex-col p-2`}>
+        <span className="text-[11px] leading-snug text-muted">Could not load preview</span>
       </div>
     );
   }
@@ -116,7 +132,7 @@ function GalleryThumb({ url }: { url: string }) {
     <img
       src={url}
       alt=""
-      className="aspect-square h-24 w-full rounded-xl border border-gray-100 object-cover"
+      className={`aspect-square h-24 w-full ${adminImageThumb}`}
       loading="lazy"
       onError={() => setBroken(true)}
     />
@@ -257,7 +273,7 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
   if (loading) {
     return (
       <main className="py-12">
-        <p className="text-[15px] text-gray-500 animate-pulse">Loading project…</p>
+        <p className="text-[15px] text-muted animate-pulse">Loading project…</p>
       </main>
     );
   }
@@ -265,8 +281,8 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
   if (loadError && isEdit) {
     return (
       <main className="py-12 space-y-4">
-        <p className="text-red-700">{loadError}</p>
-        <Link to="/admin/projects" className="text-[15px] font-medium text-gray-700 underline">
+        <p className="text-alert-error">{loadError}</p>
+        <Link to="/admin/projects" className="text-[15px] font-medium text-foreground underline">
           Back to list
         </Link>
       </main>
@@ -276,31 +292,24 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
   return (
     <main className="pb-16 space-y-8 max-w-3xl">
       <div>
-        <Link
-          to="/admin/projects"
-          className="inline-flex items-center gap-2 text-[15px] font-medium text-gray-500 hover:text-gray-900 mb-6"
-        >
+        <Link to="/admin/projects" className={adminBackLink}>
           <ArrowLeft size={18} />
           Projects
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           {isEdit ? 'Edit project' : 'New project'}
         </h1>
-        <p className="text-[15px] text-gray-500 mt-1">
+        <p className="text-[15px] text-muted mt-1">
           Slugs use lowercase letters, numbers, and hyphens. Changing a slug updates the public project URL.
         </p>
       </div>
 
       <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
-        {saveError && (
-          <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-[14px] text-red-800">
-            {saveError}
-          </div>
-        )}
+        {saveError && <div className={adminAlertError}>{saveError}</div>}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className={isEdit ? 'sm:col-span-2' : ''}>
-            <label htmlFor="slug" className={labelClass}>
+            <label htmlFor="slug" className={adminLabelClass}>
               Slug
             </label>
             <input
@@ -310,18 +319,18 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               required
               value={form.slug}
               onChange={(e) => update('slug', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
               placeholder="fintrack-dashboard"
             />
             {isEdit && (
-              <p className="mt-2 text-[13px] text-amber-700">
+              <p className={`mt-2 ${adminTextWarning}`}>
                 Changing this will move the project to a new URL and the old slug will no longer resolve.
               </p>
             )}
           </div>
 
           <div className="sm:col-span-2">
-            <label htmlFor="title" className={labelClass}>
+            <label htmlFor="title" className={adminLabelClass}>
               Title
             </label>
             <input
@@ -331,12 +340,12 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               required
               value={form.title}
               onChange={(e) => update('title', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div className="sm:col-span-2">
-            <label htmlFor="description" className={labelClass}>
+            <label htmlFor="description" className={adminLabelClass}>
               Short description
             </label>
             <textarea
@@ -347,12 +356,12 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               rows={2}
               value={form.description}
               onChange={(e) => update('description', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div className="sm:col-span-2">
-            <label htmlFor="longDescription" className={labelClass}>
+            <label htmlFor="longDescription" className={adminLabelClass}>
               Long description
             </label>
             <textarea
@@ -363,12 +372,12 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               rows={8}
               value={form.longDescription}
               onChange={(e) => update('longDescription', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div className="sm:col-span-2 space-y-2">
-            <label htmlFor="image" className={labelClass}>
+            <label htmlFor="image" className={adminLabelClass}>
               Cover image URL
             </label>
             <input
@@ -378,9 +387,9 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               required
               value={form.image}
               onChange={(e) => update('image', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
-            <p className="text-[13px] text-gray-500">
+            <p className="text-[13px] text-muted">
               Or drag and drop an image (uses UploadThing; requires being signed in to admin with a valid
               CMS token).
             </p>
@@ -396,14 +405,12 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
                 setCoverUploadError(null);
               }}
               onUploadError={(err) => setCoverUploadError(err.message)}
-              className="border border-gray-100 rounded-2xl bg-gray-50/50"
+              className={adminDropzoneClass}
             />
-            {coverUploadError && (
-              <p className="text-[13px] text-red-600">{coverUploadError}</p>
-            )}
+            {coverUploadError && <p className={adminTextError}>{coverUploadError}</p>}
             {isProbablyHttpImageUrl(coverTrimmed) ? (
               <div className="pt-2">
-                <p className={`${labelClass} text-gray-600`}>Preview</p>
+                <p className={`${adminLabelClass} text-muted`}>Preview</p>
                 <CoverPreview
                   key={coverTrimmed}
                   url={coverTrimmed}
@@ -414,7 +421,7 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
           </div>
 
           <div className="sm:col-span-2">
-            <label htmlFor="tagsRaw" className={labelClass}>
+            <label htmlFor="tagsRaw" className={adminLabelClass}>
               Tags (comma-separated)
             </label>
             <input
@@ -423,28 +430,40 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               aria-label="Tags (comma-separated)"
               value={form.tagsRaw}
               onChange={(e) => update('tagsRaw', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
               placeholder="Web Design, UI/UX"
             />
           </div>
 
           <div>
-            <label htmlFor="bgClass" className={labelClass}>
-              Background class (Tailwind)
+            <label htmlFor="bgClass" className={adminLabelClass}>
+              Cover background
             </label>
-            <input
-              id="bgClass"
-              name="bgClass"
-              aria-label="Background class (Tailwind)"
-              required
-              value={form.bgClass}
-              onChange={(e) => update('bgClass', e.target.value)}
-              className={inputClass}
-            />
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden
+                className={`size-10 shrink-0 rounded-lg border border-border ${resolveProjectBgClass(form.bgClass)}`}
+              />
+              <select
+                id="bgClass"
+                name="bgClass"
+                aria-label="Cover background preset"
+                required
+                value={form.bgClass}
+                onChange={(e) => update('bgClass', e.target.value)}
+                className={adminInputClass}
+              >
+                {PROJECT_BG_PRESET_KEYS.map((key) => (
+                  <option key={key} value={key}>
+                    {PROJECT_BG_PRESETS[key].label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div>
-            <label htmlFor="imagePosition" className={labelClass}>
+            <label htmlFor="imagePosition" className={adminLabelClass}>
               Image position (optional)
             </label>
             <input
@@ -453,13 +472,13 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               aria-label="Image position (optional)"
               value={form.imagePosition}
               onChange={(e) => update('imagePosition', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
               placeholder="object-top"
             />
           </div>
 
           <div>
-            <label htmlFor="client" className={labelClass}>
+            <label htmlFor="client" className={adminLabelClass}>
               Client
             </label>
             <input
@@ -468,12 +487,12 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               aria-label="Client"
               value={form.client}
               onChange={(e) => update('client', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div>
-            <label htmlFor="role" className={labelClass}>
+            <label htmlFor="role" className={adminLabelClass}>
               Role
             </label>
             <input
@@ -482,12 +501,12 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               aria-label="Role"
               value={form.role}
               onChange={(e) => update('role', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div>
-            <label htmlFor="timeline" className={labelClass}>
+            <label htmlFor="timeline" className={adminLabelClass}>
               Timeline
             </label>
             <input
@@ -496,12 +515,12 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               aria-label="Timeline"
               value={form.timeline}
               onChange={(e) => update('timeline', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div>
-            <label htmlFor="liveUrl" className={labelClass}>
+            <label htmlFor="liveUrl" className={adminLabelClass}>
               Live URL (optional)
             </label>
             <input
@@ -511,12 +530,12 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               aria-label="Live URL (optional)"
               value={form.liveUrl}
               onChange={(e) => update('liveUrl', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
 
           <div className="sm:col-span-2 space-y-2">
-            <label htmlFor="imagesRaw" className={labelClass}>
+            <label htmlFor="imagesRaw" className={adminLabelClass}>
               Gallery image URLs (one per line)
             </label>
             <textarea
@@ -526,9 +545,9 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               rows={4}
               value={form.imagesRaw}
               onChange={(e) => update('imagesRaw', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
-            <p className="text-[13px] text-gray-500">
+            <p className="text-[13px] text-muted">
               Or drop multiple images here to append their URLs to the list (duplicates skipped).
             </p>
             <ProjectImageDropzone
@@ -553,14 +572,12 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
                 setGalleryUploadError(null);
               }}
               onUploadError={(err) => setGalleryUploadError(err.message)}
-              className="border border-gray-100 rounded-2xl bg-gray-50/50"
+              className={adminDropzoneClass}
             />
-            {galleryUploadError && (
-              <p className="text-[13px] text-red-600">{galleryUploadError}</p>
-            )}
+            {galleryUploadError && <p className={adminTextError}>{galleryUploadError}</p>}
             {galleryUrls.length > 0 ? (
               <div className="pt-2">
-                <p className={`${labelClass} text-gray-600`}>Preview ({galleryUrls.length})</p>
+                <p className={`${adminLabelClass} text-muted`}>Preview ({galleryUrls.length})</p>
                 <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                   {galleryUrls.map((u) => (
                     <li key={u} className="min-w-0">
@@ -580,15 +597,15 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               aria-label="Featured on homepage"
               checked={form.featured}
               onChange={(e) => update('featured', e.target.checked)}
-              className="rounded border-gray-300"
+              className="rounded border-border"
             />
-            <label htmlFor="featured" className="text-[15px] text-gray-800">
+            <label htmlFor="featured" className="text-[15px] text-foreground">
               Featured on homepage
             </label>
           </div>
 
           <div>
-            <label htmlFor="sortOrder" className={labelClass}>
+            <label htmlFor="sortOrder" className={adminLabelClass}>
               Sort order
             </label>
             <input
@@ -599,23 +616,16 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
               min={0}
               value={form.sortOrder}
               onChange={(e) => update('sortOrder', e.target.value)}
-              className={inputClass}
+              className={adminInputClass}
             />
           </div>
         </div>
 
         <div className="flex flex-wrap gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-full bg-gray-900 px-6 py-3 text-[15px] font-medium text-white hover:bg-gray-800 disabled:opacity-60"
-          >
+          <button type="submit" disabled={saving} className={adminBtnPrimary}>
             {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Create project'}
           </button>
-          <Link
-            to="/admin/projects"
-            className="rounded-full border border-gray-200 px-6 py-3 text-[15px] font-medium text-gray-700 hover:bg-gray-50 inline-flex items-center"
-          >
+          <Link to="/admin/projects" className={adminBtnSecondary}>
             Cancel
           </Link>
         </div>

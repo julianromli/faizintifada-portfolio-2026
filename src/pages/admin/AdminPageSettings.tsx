@@ -3,6 +3,20 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from '@phosphor-icons/react';
 import { adminFetch, cmsUploadThingHeaders, readAdminError } from '../../lib/admin-api';
 import {
+  adminAlertError,
+  adminAlertSuccess,
+  adminAlertWarning,
+  adminBackLink,
+  adminBtnPrimary,
+  adminBtnSecondary,
+  adminDropzoneClass,
+  adminInputClass,
+  adminLabelClass,
+  adminPreviewEmpty,
+  adminSectionCard,
+  adminTextError,
+} from '../../lib/admin-styles';
+import {
   DEFAULT_PAGE_SETTINGS,
   type PageSettings,
 } from '../../lib/page-settings';
@@ -11,10 +25,6 @@ import type { Testimonial } from '../../types/testimonial';
 import { AdminTestimonialsSection } from './AdminTestimonialsSection';
 
 type ImageKey = keyof PageSettings;
-
-const inputClass =
-  'w-full rounded-xl border border-gray-200 px-4 py-2.5 text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10';
-const labelClass = 'block text-[13px] font-medium text-gray-700 mb-1.5';
 
 const imageFields: Array<{
   key: ImageKey;
@@ -64,16 +74,16 @@ function ImagePreview({ url, className }: { url: string; className: string }) {
 
   if (!isProbablyHttpImageUrl(url)) {
     return (
-      <div className="flex min-h-32 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 text-center">
-        <p className="text-[13px] text-gray-500">Enter or upload an image URL to preview it.</p>
+      <div className={`${adminPreviewEmpty} min-h-32`}>
+        <p className="text-[13px] text-muted">Enter or upload an image URL to preview it.</p>
       </div>
     );
   }
 
   if (broken) {
     return (
-      <div className="flex min-h-32 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 text-center">
-        <p className="text-[13px] text-gray-500">Preview unavailable. Check that this is a direct image link.</p>
+      <div className={`${adminPreviewEmpty} min-h-32`}>
+        <p className="text-[13px] text-muted">Preview unavailable. Check that this is a direct image link.</p>
       </div>
     );
   }
@@ -82,7 +92,7 @@ function ImagePreview({ url, className }: { url: string; className: string }) {
     <img
       src={url}
       alt=""
-      className={`w-full border border-gray-100 bg-gray-50 ${className}`}
+      className={`w-full border border-border bg-surface ${className}`}
       loading="lazy"
       onError={() => setBroken(true)}
     />
@@ -179,7 +189,7 @@ export function AdminPageSettings() {
   if (loading) {
     return (
       <main className="py-12">
-        <p className="text-[15px] text-gray-500 animate-pulse">Loading page settings…</p>
+        <p className="text-[15px] text-muted animate-pulse">Loading page settings…</p>
       </main>
     );
   }
@@ -187,45 +197,34 @@ export function AdminPageSettings() {
   return (
     <main className="max-w-4xl space-y-8 pb-16">
       <div>
-        <Link
-          to="/admin/projects"
-          className="mb-6 inline-flex items-center gap-2 text-[15px] font-medium text-gray-500 hover:text-gray-900"
-        >
+        <Link to="/admin/projects" className={adminBackLink}>
           <ArrowLeft size={18} />
           Projects
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Page settings</h1>
-        <p className="mt-1 text-[15px] text-gray-500">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Page settings</h1>
+        <p className="mt-1 text-[15px] text-muted">
           Manage the homepage hero avatar, image stack, and testimonial carousel. Uploads use the same CMS token as
           project images.
         </p>
       </div>
 
-      {loadError && (
-        <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-[14px] text-amber-900">
-          {loadError}. Showing defaults until the API can be reached.
-        </div>
-      )}
+      {loadError && <div className={adminAlertWarning}>{loadError}. Showing defaults until the API can be reached.</div>}
 
-      {saveError && (
-        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-[14px] text-red-800">
-          {saveError}
-        </div>
-      )}
+      {saveError && <div className={adminAlertError}>{saveError}</div>}
 
       {saved && (
-        <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-[14px] text-emerald-800">
+        <div className={adminAlertSuccess}>
           Page settings saved. Refresh the homepage to verify the new images.
         </div>
       )}
 
       <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
         {imageFields.map((field) => (
-          <section key={field.key} className="rounded-3xl border border-gray-100 p-5 sm:p-6">
+          <section key={field.key} className={adminSectionCard}>
             <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_220px]">
               <div className="space-y-3">
                 <div>
-                  <label htmlFor={field.key} className={labelClass}>
+                  <label htmlFor={field.key} className={adminLabelClass}>
                     {field.label}
                   </label>
                   <input
@@ -235,10 +234,10 @@ export function AdminPageSettings() {
                     required
                     value={form[field.key]}
                     onChange={(event) => update(field.key, event.target.value)}
-                    className={inputClass}
+                    className={adminInputClass}
                     placeholder="https://..."
                   />
-                  <p className="mt-2 text-[13px] text-gray-500">{field.description}</p>
+                  <p className="mt-2 text-[13px] text-muted">{field.description}</p>
                 </div>
 
                 <ProjectImageDropzone
@@ -255,15 +254,13 @@ export function AdminPageSettings() {
                   onUploadError={(err) => {
                     setUploadErrors((current) => ({ ...current, [field.key]: err.message }));
                   }}
-                  className="rounded-2xl border border-gray-100 bg-gray-50/50"
+                  className={adminDropzoneClass}
                 />
-                {uploadErrors[field.key] && (
-                  <p className="text-[13px] text-red-600">{uploadErrors[field.key]}</p>
-                )}
+                {uploadErrors[field.key] && <p className={adminTextError}>{uploadErrors[field.key]}</p>}
               </div>
 
               <div>
-                <p className={`${labelClass} text-gray-600`}>Preview</p>
+                <p className={`${adminLabelClass} text-muted`}>Preview</p>
                 <ImagePreview key={form[field.key]} url={form[field.key]} className={field.previewClassName} />
               </div>
             </div>
@@ -271,17 +268,10 @@ export function AdminPageSettings() {
         ))}
 
         <div className="flex flex-wrap gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-full bg-gray-900 px-6 py-3 text-[15px] font-medium text-white hover:bg-gray-800 disabled:opacity-60"
-          >
+          <button type="submit" disabled={saving} className={adminBtnPrimary}>
             {saving ? 'Saving…' : 'Save page settings'}
           </button>
-          <Link
-            to="/"
-            className="inline-flex items-center rounded-full border border-gray-200 px-6 py-3 text-[15px] font-medium text-gray-700 hover:bg-gray-50"
-          >
+          <Link to="/" className={adminBtnSecondary}>
             View site
           </Link>
         </div>

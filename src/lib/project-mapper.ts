@@ -1,5 +1,6 @@
 import type { Project } from '../types/project.js';
 import type { ProjectRow } from '../db/schema.js';
+import { normalizeBgClassPreset } from './project-bg-presets.js';
 
 export function rowToProject(row: ProjectRow): Project {
   let tags: string[] = [];
@@ -31,7 +32,7 @@ export function rowToProject(row: ProjectRow): Project {
     longDescription: row.longDescription,
     image: row.image,
     tags,
-    bgClass: row.bgClass,
+    bgClass: normalizeBgClassPreset(row.bgClass),
     imagePosition: row.imagePosition ?? undefined,
     client: row.client ?? undefined,
     role: row.role ?? undefined,
@@ -54,7 +55,7 @@ export function projectToInsertValues(
     longDescription: p.longDescription,
     image: p.image,
     tagsJson: JSON.stringify(p.tags),
-    bgClass: p.bgClass,
+    bgClass: normalizeBgClassPreset(p.bgClass),
     imagePosition: p.imagePosition ?? null,
     client: p.client ?? null,
     role: p.role ?? null,

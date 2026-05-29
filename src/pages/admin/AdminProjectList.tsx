@@ -3,6 +3,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PencilSimple, Plus, Trash } from '@phosphor-icons/react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { useProjects } from '../../hooks/useProjects';
+import {
+  adminAlertError,
+  adminAlertSuccess,
+  adminAlertWarning,
+  adminBtnDestructive,
+  adminBtnPrimarySm,
+  adminBtnSecondarySm,
+  adminLinkGhost,
+  adminTableContainer,
+  adminTableDivide,
+  adminTableHead,
+  adminTableRow,
+} from '../../lib/admin-styles';
 import { adminFetch, clearAdminToken, readAdminError } from '../../lib/admin-api';
 
 interface PendingDelete {
@@ -66,8 +79,8 @@ export function AdminProjectList() {
         description={
           pendingDelete ? (
             <>
-              <span className="font-medium text-gray-900">{pendingDelete.title}</span>
-              <span className="block mt-1 font-mono text-[13px] text-gray-500">{pendingDelete.slug}</span>
+              <span className="font-medium text-foreground">{pendingDelete.title}</span>
+              <span className="block mt-1 font-mono text-[13px] text-muted">{pendingDelete.slug}</span>
               <span className="block mt-2">This cannot be undone.</span>
             </>
           ) : null
@@ -80,117 +93,94 @@ export function AdminProjectList() {
         onCancel={() => setPendingDelete(null)}
       />
 
-    <main className="space-y-8 pb-12">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Projects</h1>
-          <p className="text-[15px] text-gray-500 mt-1">
-            Create, edit, or remove case studies. Public site reads from the same database.
-          </p>
+      <main className="space-y-8 pb-12">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Projects</h1>
+            <p className="text-[15px] text-muted mt-1">
+              Create, edit, or remove case studies. Public site reads from the same database.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/admin/projects/new" className={adminBtnPrimarySm}>
+              <Plus size={18} weight="bold" aria-hidden />
+              New project
+            </Link>
+            <Link to="/admin/page" className={adminBtnSecondarySm}>
+              Page settings
+            </Link>
+            <button type="button" onClick={logout} className={adminBtnSecondarySm}>
+              Sign out
+            </button>
+            <Link to="/" className={adminLinkGhost}>
+              View site
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Link
-            to="/admin/projects/new"
-            className="inline-flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2.5 text-[14px] font-medium text-white hover:bg-gray-800"
-          >
-            <Plus size={18} weight="bold" aria-hidden />
-            New project
-          </Link>
-          <Link
-            to="/admin/page"
-            className="rounded-full border border-gray-200 px-5 py-2.5 text-[14px] font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Page settings
-          </Link>
-          <button
-            type="button"
-            onClick={logout}
-            className="rounded-full border border-gray-200 px-5 py-2.5 text-[14px] font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Sign out
-          </button>
-          <Link
-            to="/"
-            className="rounded-full px-5 py-2.5 text-[14px] font-medium text-gray-600 hover:text-gray-900 self-center"
-          >
-            View site
-          </Link>
-        </div>
-      </div>
 
-      {actionError && (
-        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-[14px] text-red-800">
-          {actionError}
-        </div>
-      )}
+        {actionError && <div className={adminAlertError}>{actionError}</div>}
 
-      {actionSuccess && (
-        <div className="rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-[14px] text-green-900">
-          {actionSuccess}
-        </div>
-      )}
+        {actionSuccess && <div className={adminAlertSuccess}>{actionSuccess}</div>}
 
-      {loading && (
-        <p className="text-[15px] text-gray-500 animate-pulse">Loading projects…</p>
-      )}
+        {loading && <p className="text-[15px] text-muted animate-pulse">Loading projects…</p>}
 
-      {!loading && error && (
-        <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-[14px] text-amber-900 space-y-2">
-          <p>{error.message}</p>
-          <button type="button" onClick={() => retry()} className="underline font-medium">
-            Retry
-          </button>
-        </div>
-      )}
+        {!loading && error && (
+          <div className={`${adminAlertWarning} space-y-2`}>
+            <p>{error.message}</p>
+            <button type="button" onClick={() => retry()} className="underline font-medium">
+              Retry
+            </button>
+          </div>
+        )}
 
-      {!loading && !error && visibleProjects.length === 0 && (
-        <p className="text-[15px] text-gray-500">No projects yet. Create one to get started.</p>
-      )}
+        {!loading && !error && visibleProjects.length === 0 && (
+          <p className="text-[15px] text-muted">No projects yet. Create one to get started.</p>
+        )}
 
-      {!loading && !error && visibleProjects.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-gray-100">
-          <table className="w-full text-left text-[14px]">
-            <thead className="bg-gray-50 text-gray-600">
-              <tr>
-                <th className="px-4 py-3 font-semibold">Slug</th>
-                <th className="px-4 py-3 font-semibold">Title</th>
-                <th className="px-4 py-3 font-semibold">Featured</th>
-                <th className="px-4 py-3 font-semibold">Order</th>
-                <th className="px-4 py-3 font-semibold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {visibleProjects.map((p) => (
-                <tr key={p.slug} className="bg-white">
-                  <td className="px-4 py-3 font-mono text-[13px] text-gray-800">{p.slug}</td>
-                  <td className="px-4 py-3 text-gray-900">{p.title}</td>
-                  <td className="px-4 py-3 text-gray-600">{p.featured ? 'Yes' : 'No'}</td>
-                  <td className="px-4 py-3 text-gray-600">{p.sortOrder ?? 0}</td>
-                  <td className="px-4 py-3 text-right whitespace-nowrap">
-                    <Link
-                      to={`/admin/projects/edit/${encodeURIComponent(p.slug)}`}
-                      className="inline-flex items-center gap-1 pr-4 text-gray-700 hover:text-gray-900 font-medium"
-                    >
-                      <PencilSimple size={18} aria-hidden />
-                      Edit
-                    </Link>
-                    <button
-                      type="button"
-                      disabled={busySlug === p.slug}
-                      onClick={() => requestDelete({ slug: p.slug, title: p.title })}
-                      className="inline-flex items-center gap-1 text-red-700 hover:text-red-900 font-medium disabled:opacity-50"
-                    >
-                      <Trash size={18} aria-hidden />
-                      Delete
-                    </button>
-                  </td>
+        {!loading && !error && visibleProjects.length > 0 && (
+          <div className={adminTableContainer}>
+            <table className="w-full text-left text-[14px]">
+              <thead className={adminTableHead}>
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Slug</th>
+                  <th className="px-4 py-3 font-semibold">Title</th>
+                  <th className="px-4 py-3 font-semibold">Featured</th>
+                  <th className="px-4 py-3 font-semibold">Order</th>
+                  <th className="px-4 py-3 font-semibold text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </main>
+              </thead>
+              <tbody className={`divide-y ${adminTableDivide}`}>
+                {visibleProjects.map((p) => (
+                  <tr key={p.slug} className={adminTableRow}>
+                    <td className="px-4 py-3 font-mono text-[13px] text-foreground">{p.slug}</td>
+                    <td className="px-4 py-3 text-foreground">{p.title}</td>
+                    <td className="px-4 py-3 text-muted">{p.featured ? 'Yes' : 'No'}</td>
+                    <td className="px-4 py-3 text-muted">{p.sortOrder ?? 0}</td>
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      <Link
+                        to={`/admin/projects/edit/${encodeURIComponent(p.slug)}`}
+                        className="inline-flex items-center gap-1 pr-4 text-foreground hover:text-foreground/80 font-medium theme-transition"
+                      >
+                        <PencilSimple size={18} aria-hidden />
+                        Edit
+                      </Link>
+                      <button
+                        type="button"
+                        disabled={busySlug === p.slug}
+                        onClick={() => requestDelete({ slug: p.slug, title: p.title })}
+                        className={adminBtnDestructive}
+                      >
+                        <Trash size={18} aria-hidden />
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </main>
     </>
   );
 }

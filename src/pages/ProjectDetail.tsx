@@ -206,7 +206,7 @@ export function ProjectDetail() {
             <img
               src={project.image}
               alt={project.title}
-              className={`w-full h-full object-cover ${project.imagePosition || 'object-center'} mix-blend-multiply opacity-95`}
+              className={`w-full h-full object-cover ${project.imagePosition || 'object-center'}`}
             />
           </div>
         </m.div>

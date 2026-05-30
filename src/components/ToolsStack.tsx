@@ -1,4 +1,5 @@
 import { m } from 'motion/react';
+import { CursorIcon } from './CursorIcon';
 
 type Tool = {
   id: string;
@@ -52,7 +53,7 @@ const TOOLS: Tool[] = [
     id: 'cursor', 
     name: 'Cursor', 
     bg: 'bg-card', 
-    icon: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ8y11lI5HNL9CO2WPxU8zlIhd0i7GsmceFJDy', 
+    icon: '', 
     rotate: 9 
   },
   { 
@@ -108,11 +109,15 @@ export function ToolsStack() {
               }}
               style={{ zIndex: TOOLS.length - Math.abs(3.5 - index) }}
             >
-              <img
-                src={tool.icon}
-                alt={tool.name}
-                className={`w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-sm ${tool.imgClassName ?? ''}`.trim()}
-              />
+              {tool.id === 'cursor' ? (
+                <CursorIcon className="w-12 h-12 sm:w-16 sm:h-16 text-foreground drop-shadow-sm" />
+              ) : (
+                <img
+                  src={tool.icon}
+                  alt={tool.name}
+                  className={`w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-sm ${tool.imgClassName ?? ''}`.trim()}
+                />
+              )}
 
               {/* Tooltip */}
               <div className="absolute -top-14 bg-foreground text-canvas text-[13px] font-medium px-3.5 py-2 rounded-xl opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 ease-out pointer-events-none whitespace-nowrap shadow-xl flex flex-col items-center">

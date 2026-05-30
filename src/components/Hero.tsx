@@ -9,6 +9,7 @@ import {
 import type { Testimonial } from '../types/testimonial';
 import { HeroImage, HeroImageSkeleton } from './HeroImage';
 import { useContactDialog } from './ContactDialogProvider';
+import { CursorIcon } from './CursorIcon';
 
 export function Hero() {
   const { openContactDialog } = useContactDialog();
@@ -102,7 +103,7 @@ export function Hero() {
           <h2 className="text-[1.75rem] sm:text-4xl leading-[1.3] text-foreground tracking-tight font-medium animate-blur-reveal delay-100">
             {`Design engineer building products at the intersection of UI, code, and craft. Part of `}
             <span className="text-muted inline-flex items-center">
-              Cursor <img src="https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ8y11lI5HNL9CO2WPxU8zlIhd0i7GsmceFJDy" className="size-8 mx-2 inline-block opacity-80" alt="Cursor" /> Ambassadors
+              Cursor <CursorIcon className="size-8 mx-2 inline-block shrink-0 text-foreground opacity-80" /> Ambassadors
             </span>
           </h2>
           

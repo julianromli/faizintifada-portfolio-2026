@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { m, AnimatePresence } from 'motion/react';
+import { m, AnimatePresence, useReducedMotion } from 'motion/react';
 import { BracketsCurly, ChatCircleText, Code, FigmaLogo, PenNib, Sparkle } from '@phosphor-icons/react';
 import { apiUrl } from '../lib/api';
 import {
@@ -22,6 +22,32 @@ export function Hero() {
   const count = testimonials.length;
   const activeIndex = count === 0 ? 0 : Math.min(activeTestimonial, count - 1);
   const current = count > 0 ? testimonials[activeIndex] : null;
+
+  const shouldReduceMotion = useReducedMotion();
+
+  const testimonialVariants = shouldReduceMotion
+    ? {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { duration: 0.16 } },
+        exit: { opacity: 0, transition: { duration: 0.12 } },
+      }
+    : {
+        hidden: { opacity: 0, y: 8, scale: 0.985, filter: 'blur(2px)' },
+        visible: {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: 'blur(0px)',
+          transition: { duration: 0.26, ease: [0.23, 1, 0.32, 1] as const },
+        },
+        exit: {
+          opacity: 0,
+          y: -6,
+          scale: 0.985,
+          filter: 'blur(2px)',
+          transition: { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const },
+        },
+      };
 
   useEffect(() => {
     if (count <= 1) return;
@@ -101,9 +127,9 @@ export function Hero() {
           </div>
           
           <h2 className="text-[1.75rem] sm:text-4xl leading-[1.3] text-foreground tracking-tight font-medium animate-blur-reveal delay-100">
-            {`Design engineer building products at the intersection of UI, code, and craft. Part of `}
+            {`Design Engineer who ships products, not just mockups. Part of `}
             <span className="text-muted inline-flex items-center">
-              Cursor <CursorIcon className="size-8 mx-2 inline-block shrink-0 text-foreground opacity-80" /> Ambassadors
+              Cursor <CursorIcon className="size-8 mx-2 inline-block shrink-0 text-foreground opacity-80" /> Ambassador
             </span>
           </h2>
           
@@ -189,41 +215,55 @@ export function Hero() {
       {/* Testimonial (mobile: 3rd; desktop: col 1 bottom) */}
       {!testimonialsLoading && count > 0 && current ? (
         <div className="order-3 xl:order-none xl:col-start-1 xl:row-start-2 pt-0 xl:pt-6 w-full sm:max-w-xl animate-blur-reveal delay-250">
-          <div className="border border-border rounded-3xl p-8 bg-card shadow-subtle relative min-h-[260px] flex flex-col justify-between theme-transition">
-            <AnimatePresence mode="wait">
-              <m.div
-                key={current.id}
-                initial={{ opacity: 0, y: 10, scale: 0.98, filter: "blur(2px)" }}
-                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -10, scale: 0.98, filter: "blur(2px)" }}
-                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as const }}
-                className="flex-1 flex flex-col"
-              >
-                <p className="text-[17px] leading-relaxed text-foreground font-medium pb-4">
-                  &ldquo;{current.quote}&rdquo;
-                </p>
-                <div className="mt-auto pt-4 flex items-center gap-x-4">
-                  <div className="size-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center p-1 border border-border shrink-0">
-                    <img src={current.avatar} alt={`${current.name} Avatar`} className="w-full h-full object-cover rounded-lg" />
+          {/* Depth wrapper: stacked paper / floating card treatment for premium lift */}
+          <div className="relative z-0">
+            {/* Backing layer — subtle offset depth, slightly larger radius, extremely soft shadow. Unseen detail that compounds. */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-1.5 top-3 -bottom-2 rounded-[3.5rem] border border-border/20 bg-card/30 -z-10 pointer-events-none theme-transition dark:bg-[#181816] dark:border-[#2a2a26]/40 shadow-[0_28px_80px_-25px_rgb(0,0,0,0.13),0_12px_30px_-12px_rgb(0,0,0,0.08)] dark:shadow-[0_32px_90px_-28px_rgb(0,0,0,0.55),0_14px_36px_-14px_rgb(0,0,0,0.35)]"
+            />
+
+            <div className="border border-border rounded-3xl p-8 bg-card shadow-subtle relative min-h-[260px] flex flex-col justify-between theme-transition">
+              <AnimatePresence mode="wait">
+                <m.div
+                  key={current.id}
+                  variants={testimonialVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="flex-1 flex flex-col"
+                >
+                  <p className="text-[17px] leading-relaxed text-foreground font-medium pb-4">
+                    &ldquo;{current.quote}&rdquo;
+                  </p>
+                  <div className="mt-auto pt-4 flex items-center gap-x-4">
+                    <div className="size-10 rounded-xl bg-surface-nested flex items-center justify-center p-1 border border-border shrink-0">
+                      <img src={current.avatar} alt={`${current.name} Avatar`} className="w-full h-full object-cover rounded-lg" />
+                    </div>
+                    <div>
+                      <h4 className="text-[15px] font-semibold text-foreground">{current.name}</h4>
+                      <p className="text-[13px] text-muted font-medium mt-0.5">{current.role}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-[15px] font-semibold text-foreground">{current.name}</h4>
-                    <p className="text-[13px] text-muted font-medium mt-0.5">{current.role}</p>
-                  </div>
-                </div>
-              </m.div>
-            </AnimatePresence>
+                </m.div>
+              </AnimatePresence>
+            </div>
           </div>
+
           {count > 1 ? (
-            <div className="flex justify-center gap-x-2 mt-6">
+            <div className="flex justify-center gap-x-2 mt-5">
               {testimonials.map((testimonial, idx) => (
                 <button
                   key={testimonial.id}
                   type="button"
                   onClick={() => setActiveTestimonial(idx)}
-                  className={`h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${activeIndex === idx ? 'w-6 bg-foreground' : 'w-2 bg-surface-nested hover:bg-muted'}`}
+                  className="group h-5 -my-1.5 flex items-center justify-center rounded-full focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:ring-foreground/60 transition-all"
                   aria-label={`Go to testimonial ${idx + 1}`}
-                />
+                >
+                  <span
+                    className={`block h-2 rounded-full transition-[width,background-color,transform] duration-200 ease-out group-active:scale-[0.92] ${activeIndex === idx ? 'w-6 bg-foreground' : 'w-2 bg-border/60 hover:bg-muted'}`}
+                  />
+                </button>
               ))}
             </div>
           ) : null}

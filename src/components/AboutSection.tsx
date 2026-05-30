@@ -49,7 +49,7 @@ export function AboutSection() {
               <button
                 type="button"
                 onClick={openContactDialog}
-                className="inline-block text-white px-8 py-3.5 rounded-full font-medium text-[15px] btn-embossed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground focus:ring-offset-card"
+                className="inline-block text-white px-8 py-3.5 rounded-full font-medium text-[15px] btn-embossed focus:outline-none"
               >
                 Discuss a Project
               </button>

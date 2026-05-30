@@ -137,7 +137,7 @@ export function Hero() {
             <button
               type="button"
               onClick={openContactDialog}
-              className="inline-flex items-center gap-x-2 text-white px-6 py-4 rounded-full font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground focus:ring-offset-card btn-embossed"
+              className="inline-flex items-center gap-x-2 text-white px-6 py-4 rounded-full font-medium btn-embossed"
             >
               <ChatCircleText size={20} weight="regular" />
               <span>Discuss a Project</span>
@@ -223,7 +223,7 @@ export function Hero() {
               className="absolute inset-x-1.5 top-3 -bottom-2 rounded-[3.5rem] border border-border/20 bg-card/30 -z-10 pointer-events-none theme-transition dark:bg-[#181816] dark:border-[#2a2a26]/40 shadow-[0_28px_80px_-25px_rgb(0,0,0,0.13),0_12px_30px_-12px_rgb(0,0,0,0.08)] dark:shadow-[0_32px_90px_-28px_rgb(0,0,0,0.55),0_14px_36px_-14px_rgb(0,0,0,0.35)]"
             />
 
-            <div className="border border-border rounded-3xl p-8 bg-card shadow-subtle relative min-h-[260px] flex flex-col justify-between theme-transition">
+            <div className="border border-border rounded-3xl p-8 bg-card relative min-h-[260px] flex flex-col justify-between theme-transition">
               <AnimatePresence mode="wait">
                 <m.div
                   key={current.id}

@@ -221,7 +221,14 @@ export function ProjectDetail() {
       >
         <h2 className="text-2xl font-semibold text-foreground mb-6">About the Project</h2>
         <div className="text-lg text-muted space-y-6">
-          <p className="leading-relaxed">{project.longDescription}</p>
+          {project.longDescription
+            .split(/\n\n+/)
+            .filter(Boolean)
+            .map((paragraph) => (
+              <p key={paragraph.slice(0, 48)} className="leading-relaxed">
+                {paragraph.trim()}
+              </p>
+            ))}
         </div>
       </m.div>
 

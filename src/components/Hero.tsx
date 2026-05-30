@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { m, AnimatePresence } from 'motion/react';
-import { ChatCircleText, Globe, FigmaLogo, PenNib, Code } from '@phosphor-icons/react';
+import { BracketsCurly, ChatCircleText, Code, FigmaLogo, PenNib, Sparkle } from '@phosphor-icons/react';
 import { apiUrl } from '../lib/api';
 import {
   DEFAULT_PAGE_SETTINGS,
@@ -122,24 +122,24 @@ export function Hero() {
         {/* Skills */}
         <div className="flex flex-wrap gap-3 sm:gap-4 pt-4 animate-blur-reveal delay-200">
           <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
-            <Globe size={18} className="text-muted" />
-            <span>Web Design</span>
-          </div>
-          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
-            <FigmaLogo size={18} className="text-muted" />
-            <span>Figma</span>
-          </div>
-          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
-            <ChatCircleText size={18} className="text-muted" />
-            <span>Copywriting</span>
-          </div>
-          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
             <PenNib size={18} className="text-muted" />
-            <span>Graphic Design</span>
+            <span>Product Design</span>
           </div>
           <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
             <Code size={18} className="text-muted" />
-            <span>Front end</span>
+            <span>UI Engineering</span>
+          </div>
+          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
+            <BracketsCurly size={18} className="text-muted" />
+            <span>React / Next.js</span>
+          </div>
+          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
+            <FigmaLogo size={18} className="text-muted" />
+            <span>Design Systems</span>
+          </div>
+          <div className="flex items-center gap-x-2 px-5 py-3 rounded-full border border-border text-sm font-medium text-foreground hover:bg-surface theme-transition cursor-default">
+            <Sparkle size={18} className="text-muted" />
+            <span>Prototyping</span>
           </div>
         </div>
 

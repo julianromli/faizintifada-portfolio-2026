@@ -27,7 +27,7 @@ export function Projects() {
             />
             <span>Back to home</span>
           </Link>
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground">All projects</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">All Projects</h1>
           <p className="text-[15px] text-muted mt-2">Every case study in the archive.</p>
         </div>
       </div>

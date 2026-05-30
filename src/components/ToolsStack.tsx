@@ -83,7 +83,7 @@ export function ToolsStack() {
         className="text-center mb-12 sm:mb-16"
       >
         <h2 className="text-3xl font-semibold tracking-tight text-foreground mb-4">Tools I Use</h2>
-        <p className="text-lg text-muted">My favorite stack for designing and building digital experiences.</p>
+        <p className="text-lg text-muted">The tools I reach for when designing and building digital products.</p>
       </m.div>
       
       <m.div 

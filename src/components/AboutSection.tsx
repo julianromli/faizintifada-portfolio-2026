@@ -51,7 +51,7 @@ export function AboutSection() {
                 onClick={openContactDialog}
                 className="inline-block text-white px-8 py-3.5 rounded-full font-medium text-[15px] btn-embossed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground focus:ring-offset-card"
               >
-                Work With Me
+                Discuss a Project
               </button>
             </m.div>
           </div>
@@ -81,7 +81,7 @@ export function AboutSection() {
                 <PaperPlaneTilt size={24} className="text-foreground" weight="regular" />
               </div>
               <div>
-                <p className="text-[17px] font-medium text-foreground">Available for Freelance</p>
+                <p className="text-[17px] font-medium text-foreground">Open to freelance & collaborations</p>
               </div>
             </m.div>
           </div>

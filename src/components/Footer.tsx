@@ -19,7 +19,7 @@ export function Footer() {
   return (
     <footer className="mt-32 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-6 theme-transition">
       <p className="text-[14px] text-muted font-medium tracking-wide" suppressHydrationWarning>
-        © {new Date().getFullYear()} Faiz. All rights reserved.
+        © {new Date().getFullYear()} Faiz Intifada. All rights reserved.
       </p>
       <div className="flex items-center flex-wrap justify-center gap-6 text-muted">
         {SOCIAL_LINKS.map(({ href, label, icon }) => {

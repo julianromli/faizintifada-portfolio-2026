@@ -1,5 +1,5 @@
 import { m } from 'motion/react';
-import { CursorIcon } from './CursorIcon';
+import { isThemeAwareToolIcon, THEME_AWARE_TOOL_ICONS } from './tool-icons';
 
 type Tool = {
   id: string;
@@ -95,6 +95,9 @@ export function ToolsStack() {
       >
         {TOOLS.map((tool, index) => {
           const borderClass = tool.borderClass ?? 'border-4 border-card';
+          const ThemeIcon = isThemeAwareToolIcon(tool.id) ? THEME_AWARE_TOOL_ICONS[tool.id] : null;
+          const iconClassName = 'w-12 h-12 sm:w-16 sm:h-16 text-foreground drop-shadow-sm';
+
           return (
             <m.div
               key={tool.id}
@@ -109,13 +112,13 @@ export function ToolsStack() {
               }}
               style={{ zIndex: TOOLS.length - Math.abs(3.5 - index) }}
             >
-              {tool.id === 'cursor' ? (
-                <CursorIcon className="w-12 h-12 sm:w-16 sm:h-16 text-foreground drop-shadow-sm" />
+              {ThemeIcon ? (
+                <ThemeIcon className={iconClassName} />
               ) : (
                 <img
                   src={tool.icon}
                   alt={tool.name}
-                  className={`w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-sm ${tool.imgClassName ?? ''}`.trim()}
+                  className={`${iconClassName} object-contain ${tool.imgClassName ?? ''}`.trim()}
                 />
               )}
 

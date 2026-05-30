@@ -78,8 +78,8 @@ export function Hero() {
 
   return (
     <section className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-12 xl:gap-20 items-start">
-      {/* Left Column (Info) */}
-      <div className="flex flex-col gap-y-10">
+      {/* Left Column — intro + skills (mobile: 1st; desktop: col 1 top) */}
+      <div className="order-1 xl:order-none xl:col-start-1 xl:row-start-1 flex flex-col gap-y-10">
         {/* Header / Intro */}
         <div className="space-y-6">
           <div className="flex items-center gap-x-4 animate-blur-reveal">
@@ -142,55 +142,10 @@ export function Hero() {
             <span>Prototyping</span>
           </div>
         </div>
-
-        {/* Testimonial */}
-        {!testimonialsLoading && count > 0 && current ? (
-          <div className="pt-6 w-full sm:max-w-xl animate-blur-reveal delay-250">
-            <div className="border border-border rounded-3xl p-8 bg-card shadow-subtle relative min-h-[260px] flex flex-col justify-between theme-transition">
-              <AnimatePresence mode="wait">
-                <m.div
-                  key={current.id}
-                  initial={{ opacity: 0, y: 10, scale: 0.98, filter: "blur(2px)" }}
-                  animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -10, scale: 0.98, filter: "blur(2px)" }}
-                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as const }}
-                  className="flex-1 flex flex-col"
-                >
-                  <p className="text-[17px] leading-relaxed text-foreground font-medium pb-4">
-                    &ldquo;{current.quote}&rdquo;
-                  </p>
-                  <div className="mt-auto pt-4 flex items-center gap-x-4">
-                    <div className="size-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center p-1 border border-border shrink-0">
-                      <img src={current.avatar} alt={`${current.name} Avatar`} className="w-full h-full object-cover rounded-lg" />
-                    </div>
-                    <div>
-                      <h4 className="text-[15px] font-semibold text-foreground">{current.name}</h4>
-                      <p className="text-[13px] text-muted font-medium mt-0.5">{current.role}</p>
-                    </div>
-                  </div>
-                </m.div>
-              </AnimatePresence>
-            </div>
-            {count > 1 ? (
-              <div className="flex justify-center gap-x-2 mt-6">
-                {testimonials.map((testimonial, idx) => (
-                  <button
-                    key={testimonial.id}
-                    type="button"
-                    onClick={() => setActiveTestimonial(idx)}
-                    className={`h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${activeIndex === idx ? 'w-6 bg-foreground' : 'w-2 bg-surface-nested hover:bg-muted'}`}
-                    aria-label={`Go to testimonial ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
       </div>
 
-      {/* Right Column (Images) */}
-      <div className="flex flex-col gap-6 h-full mt-8 xl:mt-0 xl:-my-4">
+      {/* Hero images (mobile: 2nd; desktop: col 2) */}
+      <div className="order-2 xl:order-none xl:col-start-2 xl:row-start-1 xl:row-span-2 flex flex-col gap-6 h-full xl:-my-4">
         <div className="rounded-[1rem] overflow-hidden aspect-[1.91/1] xl:aspect-auto xl:flex-1 relative bg-surface-nested animate-blur-reveal delay-300">
           {settingsLoading || !pageSettings ? (
             <HeroImageSkeleton />
@@ -230,6 +185,50 @@ export function Hero() {
           )}
         </div>
       </div>
+
+      {/* Testimonial (mobile: 3rd; desktop: col 1 bottom) */}
+      {!testimonialsLoading && count > 0 && current ? (
+        <div className="order-3 xl:order-none xl:col-start-1 xl:row-start-2 pt-0 xl:pt-6 w-full sm:max-w-xl animate-blur-reveal delay-250">
+          <div className="border border-border rounded-3xl p-8 bg-card shadow-subtle relative min-h-[260px] flex flex-col justify-between theme-transition">
+            <AnimatePresence mode="wait">
+              <m.div
+                key={current.id}
+                initial={{ opacity: 0, y: 10, scale: 0.98, filter: "blur(2px)" }}
+                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -10, scale: 0.98, filter: "blur(2px)" }}
+                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as const }}
+                className="flex-1 flex flex-col"
+              >
+                <p className="text-[17px] leading-relaxed text-foreground font-medium pb-4">
+                  &ldquo;{current.quote}&rdquo;
+                </p>
+                <div className="mt-auto pt-4 flex items-center gap-x-4">
+                  <div className="size-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center p-1 border border-border shrink-0">
+                    <img src={current.avatar} alt={`${current.name} Avatar`} className="w-full h-full object-cover rounded-lg" />
+                  </div>
+                  <div>
+                    <h4 className="text-[15px] font-semibold text-foreground">{current.name}</h4>
+                    <p className="text-[13px] text-muted font-medium mt-0.5">{current.role}</p>
+                  </div>
+                </div>
+              </m.div>
+            </AnimatePresence>
+          </div>
+          {count > 1 ? (
+            <div className="flex justify-center gap-x-2 mt-6">
+              {testimonials.map((testimonial, idx) => (
+                <button
+                  key={testimonial.id}
+                  type="button"
+                  onClick={() => setActiveTestimonial(idx)}
+                  className={`h-2 rounded-full transition-[width,background-color] duration-200 ease-out ${activeIndex === idx ? 'w-6 bg-foreground' : 'w-2 bg-surface-nested hover:bg-muted'}`}
+                  aria-label={`Go to testimonial ${idx + 1}`}
+                />
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
     </section>
   );

@@ -8,7 +8,6 @@ export const SEO = {
   titleTemplate: '%s | Faiz Intifada',
   defaultDescription:
     'Faiz Intifada is a design engineer based in Indonesia. Portfolio and case studies in product design, UI engineering, and polished digital experiences.',
-  defaultOgImage: 'https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ2IcJW7L0gRb7VfrqtvwOY85P9oAypHuTnWCa',
   jobTitle: 'Design Engineer',
   locale: 'en_US',
   twitterHandle: '@faizintifada_',
@@ -23,6 +22,11 @@ export function getSiteUrl(): string {
 export function absoluteUrl(path = '/'): string {
   const normalized = path.startsWith('/') ? path : `/${path}`;
   return `${getSiteUrl()}${normalized}`;
+}
+
+/** Default Open Graph / Twitter card image (`public/og-image.png`). */
+export function getDefaultOgImage(): string {
+  return absoluteUrl('/og-image.png');
 }
 
 export function pageTitle(title?: string): string {

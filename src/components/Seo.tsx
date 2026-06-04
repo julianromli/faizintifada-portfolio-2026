@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { SEO, absoluteUrl, pageTitle, truncateDescription } from '../lib/seo';
+import { SEO, absoluteUrl, getDefaultOgImage, pageTitle, truncateDescription } from '../lib/seo';
 
 type SeoProps = {
   title?: string;
@@ -15,7 +15,7 @@ export function Seo({
   title,
   description = SEO.defaultDescription,
   path = '/',
-  image = SEO.defaultOgImage,
+  image = getDefaultOgImage(),
   type = 'website',
   noIndex = false,
   jsonLd,

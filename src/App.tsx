@@ -5,6 +5,7 @@ import { Footer } from './components/Footer';
 import { Seo } from './components/Seo';
 import { Home } from './pages/Home';
 import { Projects } from './pages/Projects';
+import { Coaching } from './pages/Coaching';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { NotFound } from './pages/NotFound';
 import { RequireAdmin } from './pages/admin/RequireAdmin';
@@ -22,6 +23,9 @@ const AdminProjectForm = lazy(() =>
 );
 const AdminPageSettings = lazy(() =>
   import('./pages/admin/AdminPageSettings').then((mod) => ({ default: mod.AdminPageSettings })),
+);
+const AdminCoachingList = lazy(() =>
+  import('./pages/admin/AdminCoachingList').then((mod) => ({ default: mod.AdminCoachingList })),
 );
 
 function AdminNoIndex() {
@@ -52,6 +56,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/coaching" element={<Coaching />} />
             <Route path="/project/:slug" element={<ProjectDetail />} />
             <Route path="/admin" element={adminRoute(<AdminLogin />)} />
             <Route
@@ -90,6 +95,16 @@ export default function App() {
                 adminRoute(
                   <RequireAdmin>
                     <AdminPageSettings />
+                  </RequireAdmin>,
+                )
+              }
+            />
+            <Route
+              path="/admin/coaching"
+              element={
+                adminRoute(
+                  <RequireAdmin>
+                    <AdminCoachingList />
                   </RequireAdmin>,
                 )
               }

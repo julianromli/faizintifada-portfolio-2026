@@ -9,6 +9,9 @@ import {
   testimonials as testimonialsTable,
 } from '../src/db/schema.js';
 import { rowToTestimonial } from '../src/lib/testimonial-mapper.js';
+import { coachingPayloadToInsertValues } from '../src/lib/coaching-mapper.js';
+import { coachingPayloadSchema } from './schemas/coachingPayload.js';
+import { coachingSubmissions as coachingSubmissionsTable } from '../src/db/schema.js';
 import { HOME_PAGE_SETTINGS_KEY, rowToPageSettings } from '../src/lib/page-settings.js';
 import { rowToProject } from '../src/lib/project-mapper.js';
 import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
@@ -155,6 +158,30 @@ app.get('/api/github/contributions', async (c) => {
   } catch (err) {
     console.error('[GET /api/github/contributions]', err);
     return c.json({ error: 'Failed to load GitHub contributions' }, 500);
+  }
+});
+
+app.post('/api/coaching', async (c) => {
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: 'Invalid JSON body' }, 400);
+  }
+
+  const parsed = coachingPayloadSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ error: 'Validation failed', details: parsed.error.flatten() }, 400);
+  }
+
+  try {
+    const db = getDb();
+    const values = coachingPayloadToInsertValues(parsed.data);
+    await db.insert(coachingSubmissionsTable).values(values);
+    return c.json({ ok: true }, 201);
+  } catch (err) {
+    console.error('[POST /api/coaching]', err);
+    return c.json({ error: 'Failed to submit. Please try again.' }, 500);
   }
 });
 

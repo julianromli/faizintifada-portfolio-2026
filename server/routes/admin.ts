@@ -1,13 +1,15 @@
 import { Hono } from 'hono';
 import { bearerAuth } from 'hono/bearer-auth';
-import { asc, eq } from 'drizzle-orm';
+import { desc, asc, eq } from 'drizzle-orm';
 import { getDb } from '../../src/db/client.js';
 import {
   pageSettings as pageSettingsTable,
   projects as projectsTable,
   testimonials as testimonialsTable,
+  coachingSubmissions as coachingSubmissionsTable,
 } from '../../src/db/schema.js';
 import { rowToTestimonial, testimonialToInsertValues } from '../../src/lib/testimonial-mapper.js';
+import { rowToCoachingSubmission } from '../../src/lib/coaching-mapper.js';
 import {
   HOME_PAGE_SETTINGS_KEY,
   pageSettingsToInsertValues,
@@ -350,6 +352,36 @@ export function createAdminApp() {
     } catch (err) {
       console.error('[DELETE /api/admin/projects/:slug]', err);
       return c.json({ error: 'Failed to delete project' }, 500);
+    }
+  });
+
+  admin.get('/coaching', async (c) => {
+    const db = getDb();
+    const rows = await db
+      .select()
+      .from(coachingSubmissionsTable)
+      .orderBy(desc(coachingSubmissionsTable.createdAt), desc(coachingSubmissionsTable.id));
+    return c.json(rows.map(rowToCoachingSubmission));
+  });
+
+  admin.delete('/coaching/:id', async (c) => {
+    const id = Number.parseInt(c.req.param('id'), 10);
+    if (!Number.isFinite(id) || id < 1) {
+      return c.json({ error: 'Invalid id' }, 400);
+    }
+    const db = getDb();
+    try {
+      const removed = await db
+        .delete(coachingSubmissionsTable)
+        .where(eq(coachingSubmissionsTable.id, id))
+        .returning({ id: coachingSubmissionsTable.id });
+      if (removed.length === 0) {
+        return c.json({ error: 'Submission not found' }, 404);
+      }
+      return c.json({ ok: true, id }, 200);
+    } catch (err) {
+      console.error('[DELETE /api/admin/coaching/:id]', err);
+      return c.json({ error: 'Failed to delete submission' }, 500);
     }
   });
 

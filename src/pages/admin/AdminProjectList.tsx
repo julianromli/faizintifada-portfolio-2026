@@ -109,6 +109,9 @@ export function AdminProjectList() {
             <Link to="/admin/page" className={adminBtnSecondarySm}>
               Page settings
             </Link>
+            <Link to="/admin/coaching" className={adminBtnSecondarySm}>
+              Coaching
+            </Link>
             <button type="button" onClick={logout} className={adminBtnSecondarySm}>
               Sign out
             </button>

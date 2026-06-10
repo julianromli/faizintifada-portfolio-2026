@@ -10,3 +10,6 @@ coverage/
 
 # local libsql file (drizzle-kit / dev)
 *.sqlite
+
+# local browser automation screenshots
+assets/admin-test/

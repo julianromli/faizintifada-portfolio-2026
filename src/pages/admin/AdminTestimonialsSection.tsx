@@ -1,5 +1,12 @@
-import { useCallback, useState, type FormEvent } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useState,
+  type FormEvent,
+} from 'react';
 import { PencilSimple, Plus, Trash } from '@phosphor-icons/react';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { adminFetch, cmsUploadThingHeaders, readAdminError } from '../../lib/admin-api';
 import {
   adminAlertError,
@@ -94,15 +101,23 @@ type EditingState = { mode: 'new' } | { mode: 'edit'; id: number };
 type Props = {
   testimonials: Testimonial[];
   onChange: (items: Testimonial[]) => void;
+  hideHeader?: boolean;
 };
 
-export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
+export type AdminTestimonialsSectionHandle = {
+  startNew: () => void;
+};
+
+export const AdminTestimonialsSection = forwardRef<AdminTestimonialsSectionHandle, Props>(
+  function AdminTestimonialsSection({ testimonials, onChange, hideHeader = false }, ref) {
   const [editing, setEditing] = useState<EditingState | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [avatarUploadError, setAvatarUploadError] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ id: number; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const sorted = [...testimonials].sort(
     (a, b) => a.sortOrder - b.sortOrder || a.id - b.id,
@@ -113,13 +128,15 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
     setSuccessMessage(null);
   }
 
-  function startNew() {
+  const startNew = useCallback(() => {
     setEditing({ mode: 'new' });
     setForm(emptyForm());
     setSaveError(null);
     setSuccessMessage(null);
     setAvatarUploadError(null);
-  }
+  }, []);
+
+  useImperativeHandle(ref, () => ({ startNew }), [startNew]);
 
   function startEdit(t: Testimonial) {
     setEditing({ mode: 'edit', id: t.id });
@@ -197,14 +214,19 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
     }
   }
 
-  async function handleDelete(id: number, name: string) {
-    if (!window.confirm(`Delete testimonial from ${name}?`)) {
+  function requestDelete(id: number, name: string) {
+    setSaveError(null);
+    setSuccessMessage(null);
+    setPendingDelete({ id, name });
+  }
+
+  async function confirmDelete() {
+    if (!pendingDelete) {
       return;
     }
 
-    setSaveError(null);
-    setSuccessMessage(null);
-
+    const { id } = pendingDelete;
+    setDeleting(true);
     try {
       const res = await adminFetch(`/api/admin/testimonials/${id}`, { method: 'DELETE' });
       if (!res.ok) {
@@ -217,25 +239,50 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
         cancelEdit();
       }
       setSuccessMessage('Testimonial deleted.');
+      setPendingDelete(null);
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setDeleting(false);
     }
   }
 
   return (
+    <>
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Delete testimonial?"
+        description={
+          pendingDelete ? (
+            <>
+              <span className="font-medium text-foreground">{pendingDelete.name}</span>
+              <span className="block mt-2">This cannot be undone.</span>
+            </>
+          ) : null
+        }
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        busy={deleting}
+        onConfirm={() => void confirmDelete()}
+        onCancel={() => setPendingDelete(null)}
+      />
+
     <section className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">Hero testimonials</h2>
-          <p className="mt-1 text-[15px] text-muted">
-            Carousel quotes on the homepage hero. Lower sort order appears first.
-          </p>
+      {!hideHeader ? (
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">Hero testimonials</h2>
+            <p className="mt-1 text-[15px] text-muted">
+              Carousel quotes on the homepage hero. Lower sort order appears first.
+            </p>
+          </div>
+          <button type="button" onClick={startNew} className={adminBtnSecondarySm}>
+            <Plus size={18} />
+            Add testimonial
+          </button>
         </div>
-        <button type="button" onClick={startNew} className={adminBtnSecondarySm}>
-          <Plus size={18} />
-          Add testimonial
-        </button>
-      </div>
+      ) : null}
 
       {saveError && <div className={adminAlertError}>{saveError}</div>}
 
@@ -372,7 +419,7 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => void handleDelete(t.id, t.name)}
+                  onClick={() => requestDelete(t.id, t.name)}
                   className={adminBtnDestructiveOutline}
                 >
                   <Trash size={16} />
@@ -384,5 +431,9 @@ export function AdminTestimonialsSection({ testimonials, onChange }: Props) {
         </ul>
       )}
     </section>
+    </>
   );
-}
+  },
+);
+
+AdminTestimonialsSection.displayName = 'AdminTestimonialsSection';

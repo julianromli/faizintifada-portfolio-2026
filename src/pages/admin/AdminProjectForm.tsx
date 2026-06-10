@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft } from '@phosphor-icons/react';
+import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
 import type { Project } from '../../types/project';
 import { apiUrl } from '../../lib/api';
 import { adminFetch, cmsUploadThingHeaders, readAdminError } from '../../lib/admin-api';
 import {
   adminAlertError,
-  adminBackLink,
   adminBtnPrimary,
   adminBtnSecondary,
   adminDropzoneClass,
@@ -271,38 +270,29 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
   }
 
   if (loading) {
-    return (
-      <main className="py-12">
-        <p className="text-[15px] text-muted animate-pulse">Loading project…</p>
-      </main>
-    );
+    return <p className="text-[15px] text-muted animate-pulse">Loading project…</p>;
   }
 
   if (loadError && isEdit) {
     return (
-      <main className="py-12 space-y-4">
+      <div className="space-y-4">
         <p className="text-alert-error">{loadError}</p>
         <Link to="/admin/projects" className="text-[15px] font-medium text-foreground underline">
           Back to list
         </Link>
-      </main>
+      </div>
     );
   }
 
+  const formTitle = isEdit ? 'Edit project' : 'New project';
+
   return (
-    <main className="pb-16 space-y-8 max-w-3xl">
-      <div>
-        <Link to="/admin/projects" className={adminBackLink}>
-          <ArrowLeft size={18} />
-          Projects
-        </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          {isEdit ? 'Edit project' : 'New project'}
-        </h1>
-        <p className="text-[15px] text-muted mt-1">
-          Slugs use lowercase letters, numbers, and hyphens. Changing a slug updates the public project URL.
-        </p>
-      </div>
+    <div className="max-w-3xl space-y-6">
+      <AdminPageHeader
+        title={formTitle}
+        description="Slugs use lowercase letters, numbers, and hyphens. Changing a slug updates the public project URL."
+        breadcrumb={{ label: 'Projects', to: '/admin/projects' }}
+      />
 
       <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
         {saveError && <div className={adminAlertError}>{saveError}</div>}
@@ -630,6 +620,6 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
           </Link>
         </div>
       </form>
-    </main>
+    </div>
   );
 }

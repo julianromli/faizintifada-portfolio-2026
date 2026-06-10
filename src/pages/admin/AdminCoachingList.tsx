@@ -1,18 +1,15 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { Trash } from '@phosphor-icons/react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
 import {
   fetchCoachingSubmissions,
   deleteCoachingSubmission,
 } from '../../lib/coaching-admin-api';
-import { clearAdminToken } from '../../lib/admin-api';
 import {
   adminAlertError,
   adminAlertSuccess,
   adminBtnDestructive,
-  adminBtnSecondarySm,
-  adminLinkGhost,
   adminTableContainer,
   adminTableDivide,
   adminTableHead,
@@ -41,7 +38,6 @@ function ideDisplay(s: CoachingSubmission): string {
 }
 
 export function AdminCoachingList() {
-  const navigate = useNavigate();
   const [items, setItems] = useState<CoachingSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,11 +63,6 @@ export function AdminCoachingList() {
   useEffect(() => {
     void load();
   }, []);
-
-  function logout() {
-    clearAdminToken();
-    navigate('/admin', { replace: true });
-  }
 
   function requestDelete(item: CoachingSubmission) {
     setActionError(null);
@@ -126,29 +117,11 @@ export function AdminCoachingList() {
         ideDisplay={ideDisplay}
       />
 
-      <main className="space-y-8 pb-12">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Coaching</h1>
-            <p className="text-[15px] text-muted mt-1">
-              Booking submissions from the public coaching page. Newest first.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Link to="/admin/projects" className={adminBtnSecondarySm}>
-              Projects
-            </Link>
-            <Link to="/admin/page" className={adminBtnSecondarySm}>
-              Page settings
-            </Link>
-            <button type="button" onClick={logout} className={adminBtnSecondarySm}>
-              Sign out
-            </button>
-            <Link to="/" className={adminLinkGhost}>
-              View site
-            </Link>
-          </div>
-        </div>
+      <div className="space-y-6">
+        <AdminPageHeader
+          title="Coaching"
+          description="Booking submissions from the public coaching page. Newest first."
+        />
 
         {actionError && <div className={adminAlertError}>{actionError}</div>}
         {actionSuccess && <div className={adminAlertSuccess}>{actionSuccess}</div>}
@@ -217,7 +190,7 @@ export function AdminCoachingList() {
             </table>
           </div>
         )}
-      </main>
+      </div>
     </>
   );
 }

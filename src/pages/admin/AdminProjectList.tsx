@@ -1,22 +1,20 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { PencilSimple, Plus, Trash } from '@phosphor-icons/react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
+import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
 import { useProjects } from '../../hooks/useProjects';
 import {
   adminAlertError,
   adminAlertSuccess,
   adminAlertWarning,
   adminBtnDestructive,
-  adminBtnPrimarySm,
-  adminBtnSecondarySm,
-  adminLinkGhost,
   adminTableContainer,
   adminTableDivide,
   adminTableHead,
   adminTableRow,
 } from '../../lib/admin-styles';
-import { adminFetch, clearAdminToken, readAdminError } from '../../lib/admin-api';
+import { adminFetch, readAdminError } from '../../lib/admin-api';
 
 interface PendingDelete {
   slug: string;
@@ -24,18 +22,12 @@ interface PendingDelete {
 }
 
 export function AdminProjectList() {
-  const navigate = useNavigate();
   const { projects, loading, error, retry } = useProjects();
   const [busySlug, setBusySlug] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [hiddenSlugs, setHiddenSlugs] = useState<Set<string>>(() => new Set());
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
-
-  function logout() {
-    clearAdminToken();
-    navigate('/admin', { replace: true });
-  }
 
   function requestDelete(project: PendingDelete) {
     setActionError(null);
@@ -93,33 +85,17 @@ export function AdminProjectList() {
         onCancel={() => setPendingDelete(null)}
       />
 
-      <main className="space-y-8 pb-12">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Projects</h1>
-            <p className="text-[15px] text-muted mt-1">
-              Create, edit, or remove case studies. Public site reads from the same database.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Link to="/admin/projects/new" className={adminBtnPrimarySm}>
-              <Plus size={18} weight="bold" aria-hidden />
-              New project
-            </Link>
-            <Link to="/admin/page" className={adminBtnSecondarySm}>
-              Page settings
-            </Link>
-            <Link to="/admin/coaching" className={adminBtnSecondarySm}>
-              Coaching
-            </Link>
-            <button type="button" onClick={logout} className={adminBtnSecondarySm}>
-              Sign out
-            </button>
-            <Link to="/" className={adminLinkGhost}>
-              View site
-            </Link>
-          </div>
-        </div>
+      <div className="space-y-6">
+        <AdminPageHeader
+          title="Projects"
+          description="Create, edit, or remove case studies. Public site reads from the same database."
+          action={{
+            type: 'link',
+            label: 'New project',
+            to: '/admin/projects/new',
+            icon: <Plus size={18} weight="bold" aria-hidden />,
+          }}
+        />
 
         {actionError && <div className={adminAlertError}>{actionError}</div>}
 
@@ -183,7 +159,7 @@ export function AdminProjectList() {
             </table>
           </div>
         )}
-      </main>
+      </div>
     </>
   );
 }

@@ -1,14 +1,10 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft } from '@phosphor-icons/react';
 import { adminFetch, cmsUploadThingHeaders, readAdminError } from '../../lib/admin-api';
 import {
   adminAlertError,
   adminAlertSuccess,
   adminAlertWarning,
-  adminBackLink,
   adminBtnPrimary,
-  adminBtnSecondary,
   adminDropzoneClass,
   adminInputClass,
   adminLabelClass,
@@ -21,8 +17,7 @@ import {
   type PageSettings,
 } from '../../lib/page-settings';
 import { ProjectImageDropzone } from '../../uploadthing/client';
-import type { Testimonial } from '../../types/testimonial';
-import { AdminTestimonialsSection } from './AdminTestimonialsSection';
+import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
 
 type ImageKey = keyof PageSettings;
 
@@ -101,7 +96,6 @@ function ImagePreview({ url, className }: { url: string; className: string }) {
 
 export function AdminPageSettings() {
   const [form, setForm] = useState<PageSettings>(DEFAULT_PAGE_SETTINGS);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -114,10 +108,7 @@ export function AdminPageSettings() {
 
     void (async () => {
       try {
-        const [settingsRes, testimonialsRes] = await Promise.all([
-          adminFetch('/api/admin/page-settings'),
-          adminFetch('/api/admin/testimonials'),
-        ]);
+        const settingsRes = await adminFetch('/api/admin/page-settings');
 
         if (!cancelled) {
           if (settingsRes.ok) {
@@ -126,11 +117,6 @@ export function AdminPageSettings() {
           } else {
             const msg = await readAdminError(settingsRes);
             throw new Error(msg);
-          }
-
-          if (testimonialsRes.ok) {
-            const items = (await testimonialsRes.json()) as Testimonial[];
-            setTestimonials(items);
           }
         }
       } catch (err) {
@@ -187,26 +173,15 @@ export function AdminPageSettings() {
   }
 
   if (loading) {
-    return (
-      <main className="py-12">
-        <p className="text-[15px] text-muted animate-pulse">Loading page settings…</p>
-      </main>
-    );
+    return <p className="text-[15px] text-muted animate-pulse">Loading page settings…</p>;
   }
 
   return (
-    <main className="max-w-4xl space-y-8 pb-16">
-      <div>
-        <Link to="/admin/projects" className={adminBackLink}>
-          <ArrowLeft size={18} />
-          Projects
-        </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Page settings</h1>
-        <p className="mt-1 text-[15px] text-muted">
-          Manage the homepage hero avatar, image stack, and testimonial carousel. Uploads use the same CMS token as
-          project images.
-        </p>
-      </div>
+    <div className="max-w-4xl space-y-6">
+      <AdminPageHeader
+        title="Page settings"
+        description="Manage the homepage hero avatar and image stack. Uploads use the same CMS token as project images."
+      />
 
       {loadError && <div className={adminAlertWarning}>{loadError}. Showing defaults until the API can be reached.</div>}
 
@@ -271,13 +246,8 @@ export function AdminPageSettings() {
           <button type="submit" disabled={saving} className={adminBtnPrimary}>
             {saving ? 'Saving…' : 'Save page settings'}
           </button>
-          <Link to="/" className={adminBtnSecondary}>
-            View site
-          </Link>
         </div>
       </form>
-
-      <AdminTestimonialsSection testimonials={testimonials} onChange={setTestimonials} />
-    </main>
+    </div>
   );
 }

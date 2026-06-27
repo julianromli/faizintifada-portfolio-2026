@@ -41,8 +41,10 @@ export function createUiKitApp() {
     const { name, email, mobile } = parsed.data;
     const amount = getPrice();
 
+    // Stage 1: create the Mayar payment (external gateway).
+    let payment: Awaited<ReturnType<typeof createPayment>>;
     try {
-      const payment = await createPayment({
+      payment = await createPayment({
         name,
         email,
         mobile,
@@ -51,7 +53,14 @@ export function createUiKitApp() {
         redirectUrl: `${getSiteUrl()}/ui/thank-you`,
         expiredAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
       });
+    } catch (err) {
+      console.error('[POST /api/checkout] mayar createPayment failed:', err);
+      return c.json({ error: 'Payment gateway error. Please try again.' }, 502);
+    }
 
+    // Stage 2: persist the pending order (our DB). Keep the Mayar ids in the log
+    // so a failed insert can still be reconciled against the gateway.
+    try {
       const db = getDb();
       await db.insert(ordersTable).values({
         name,
@@ -64,12 +73,17 @@ export function createUiKitApp() {
         mayarPaymentId: payment.id,
         createdAt: Date.now(),
       });
-
-      return c.json({ link: payment.link });
     } catch (err) {
-      console.error('[POST /api/checkout]', err);
-      return c.json({ error: 'Failed to start checkout. Please try again.' }, 502);
+      console.error('[POST /api/checkout] order persist failed:', {
+        mayarRef: payment.transactionId || payment.id,
+        mayarPaymentId: payment.id,
+        email,
+        message: err instanceof Error ? err.message : String(err),
+      });
+      return c.json({ error: 'Could not record your order. Please contact support.' }, 500);
     }
+
+    return c.json({ link: payment.link });
   });
 
   // Mayar webhook. Secret lives in the URL (Mayar has no payload signature);

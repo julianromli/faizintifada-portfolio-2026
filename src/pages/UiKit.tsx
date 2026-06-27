@@ -212,7 +212,7 @@ function PreviewSection() {
         >
           {/* #t=0.1 forces the browser to render the first frame as the poster */}
           <source
-            src="https://0nzst7ka0j.ufs.sh/f/octNiMKDR9jHBG14OjyNKvtDE8s7gZXrbcUQTa0imS6d4Puz#t=0.1"
+            src="https://0nzst7ka0j.ufs.sh/f/octNiMKDR9jHqEs1tcXGt7SWNMR1XjvU0uJxB9pDIlaZqdb6"
             type="video/mp4"
           />
           {/* TODO: replace placeholder with authored captions for the walkthrough audio */}

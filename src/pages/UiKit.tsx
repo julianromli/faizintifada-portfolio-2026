@@ -137,7 +137,7 @@ const TESTIMONIALS = [
 const sectionViewport = { once: true, margin: '-100px' } as const;
 
 const primaryCtaClass =
-  'inline-flex items-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card';
+  'inline-flex items-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white active:scale-[0.96] transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card';
 
 interface CheckoutProps {
   onCheckout: () => void;
@@ -397,11 +397,11 @@ function PricingSection({ onCheckout }: CheckoutProps) {
         <span className="inline-flex items-center gap-2 rounded-full bg-surface px-4 py-1.5 text-[13px] font-medium text-muted">
           Launch offer
         </span>
-        <div className="mt-6 flex items-end justify-center gap-3">
-          <span className="text-[3rem] leading-none font-semibold tracking-tight text-foreground">
+        <div className="mt-6 flex flex-wrap items-end justify-center gap-x-3 gap-y-1">
+          <span className="text-[2.5rem] sm:text-[3rem] leading-none font-semibold tracking-tight tabular-nums text-foreground">
             {formatIDR(price.amount)}
           </span>
-          <span className="mb-1 text-[18px] text-muted line-through">
+          <span className="mb-1 text-[16px] sm:text-[18px] text-muted line-through tabular-nums">
             {formatIDR(price.original)}
           </span>
         </div>
@@ -419,7 +419,7 @@ function PricingSection({ onCheckout }: CheckoutProps) {
         <button
           type="button"
           onClick={onCheckout}
-          className="mt-9 inline-flex w-full items-center justify-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+          className="mt-9 inline-flex w-full items-center justify-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white active:scale-[0.96] transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
         >
           Buy {name} now
         </button>
@@ -512,7 +512,7 @@ function FinalCtaSection({ onCheckout }: CheckoutProps) {
         <button
           type="button"
           onClick={onCheckout}
-          className="mt-8 inline-flex items-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+          className="mt-8 inline-flex items-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white active:scale-[0.96] transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
         >
           Get {name} now
         </button>

@@ -10,6 +10,7 @@ export interface Order {
   status: OrderStatus;
   mayarRef?: string;
   mayarPaymentId?: string;
+  couponCode?: string;
   createdAt: number;
   paidAt?: number;
   emailSentAt?: number;

@@ -56,6 +56,21 @@ export const orders = sqliteTable('orders', {
   paidAt: integer('paid_at'),
   // Set once the fulfillment email is sent, so webhook retries don't re-send.
   emailSentAt: integer('email_sent_at'),
+  // Normalized coupon code applied at checkout, if any.
+  couponCode: text('coupon_code'),
+});
+
+/** Admin-managed promo codes for the Starter Kit checkout. */
+export const coupons = sqliteTable('coupons', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  /** Stored uppercase; matched case-insensitively at checkout. */
+  code: text('code').notNull().unique(),
+  discountType: text('discount_type', { enum: ['fixed', 'percent'] }).notNull(),
+  /** Fixed IDR off, or percent 1–100 when discountType is percent. */
+  discountValue: integer('discount_value').notNull(),
+  active: integer('active', { mode: 'boolean' }).notNull().default(true),
+  expiresAt: integer('expires_at'),
+  createdAt: integer('created_at').notNull(),
 });
 
 export const coachingSubmissions = sqliteTable('coaching_submissions', {
@@ -84,3 +99,5 @@ export type CoachingSubmissionRow = typeof coachingSubmissions.$inferSelect;
 export type NewCoachingSubmissionRow = typeof coachingSubmissions.$inferInsert;
 export type OrderRow = typeof orders.$inferSelect;
 export type NewOrderRow = typeof orders.$inferInsert;
+export type CouponRow = typeof coupons.$inferSelect;
+export type NewCouponRow = typeof coupons.$inferInsert;

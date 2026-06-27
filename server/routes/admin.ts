@@ -23,6 +23,7 @@ import { pageSettingsPayloadSchema } from '../schemas/pageSettingsPayload.js';
 import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload.js';
 import { testimonialPayloadSchema } from '../schemas/testimonialPayload.js';
 import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret.js';
+import { createAdminCouponsApp } from './admin/coupons.js';
 
 function decodeParamSlug(raw: string): string {
   try {
@@ -370,6 +371,8 @@ export function createAdminApp() {
       return c.json({ error: 'Failed to load orders' }, 500);
     }
   });
+
+  admin.route('/coupons', createAdminCouponsApp());
 
   admin.get('/coaching', async (c) => {
     const db = getDb();

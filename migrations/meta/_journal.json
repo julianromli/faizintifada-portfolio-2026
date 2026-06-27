@@ -43,6 +43,13 @@
       "when": 1782522386840,
       "tag": "0005_aromatic_mastermind",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1782529631269,
+      "tag": "0006_omniscient_impossible_man",
+      "breakpoints": true
     }
   ]
 }

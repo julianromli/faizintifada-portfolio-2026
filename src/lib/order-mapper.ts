@@ -12,6 +12,7 @@ export function rowToOrder(row: OrderRow): Order {
     status: row.status as OrderStatus,
     mayarRef: row.mayarRef ?? undefined,
     mayarPaymentId: row.mayarPaymentId ?? undefined,
+    couponCode: row.couponCode ?? undefined,
     createdAt: row.createdAt,
     paidAt: row.paidAt ?? undefined,
     emailSentAt: row.emailSentAt ?? undefined,

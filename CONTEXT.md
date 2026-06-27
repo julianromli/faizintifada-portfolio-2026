@@ -53,3 +53,16 @@ A single shared static token (same for all Buyers) that authorizes use of the
 Starter Kit's private shadcn registry. Held server-side in env, emailed on
 Fulfillment.
 _Avoid_: license key, API key
+
+**Checkout Price**:
+The base one-time price for the Starter Kit before any Coupon is applied
+(currently Rp99.000, set server-side). The amount sent to Mayar is Checkout
+Price minus any valid Coupon discount.
+_Avoid_: list price, sale price (those are marketing labels on the Sales Page)
+
+**Coupon**:
+A promo code an admin creates that reduces Checkout Price when a Buyer applies
+it during Checkout. Each Coupon has a code, a discount (fixed IDR or percentage),
+and can be active, inactive, or expired. Unlimited Buyers may use the same Coupon
+while it is valid.
+_Avoid_: promo code, discount code, voucher

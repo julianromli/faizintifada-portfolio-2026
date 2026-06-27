@@ -5,6 +5,7 @@ import {
   GearSix,
   Quotes,
   Receipt,
+  Ticket,
 } from '@phosphor-icons/react';
 
 export type AdminNavItem = {
@@ -27,6 +28,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { to: '/admin/projects', label: 'Projects', icon: FolderOpen, end: true },
       { to: '/admin/coaching', label: 'Coaching', icon: ChatsCircle },
       { to: '/admin/orders', label: 'Orders', icon: Receipt },
+      { to: '/admin/coupons', label: 'Coupons', icon: Ticket },
     ],
   },
   {

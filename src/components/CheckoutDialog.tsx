@@ -1,8 +1,9 @@
 import { useCallback, useReducer, type FormEvent } from 'react';
 import { m, useReducedMotion } from 'motion/react';
 import { ArrowUpRight, X } from '@phosphor-icons/react';
-import { createCheckout } from '../lib/checkout-api';
+import { createCheckout, validateCoupon } from '../lib/checkout-api';
 import { UI_KIT } from '../constants';
+import type { AppliedCoupon } from '../types/coupon';
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -28,21 +29,57 @@ type FormState = {
   name: string;
   email: string;
   mobile: string;
+  couponInput: string;
+  applied: AppliedCoupon | null;
+  applyingCoupon: boolean;
+  couponError: string | null;
   submitting: boolean;
   error: string | null;
 };
 
 type FormAction =
   | { type: 'field'; key: 'name' | 'email' | 'mobile'; value: string }
+  | { type: 'couponInput'; value: string }
+  | { type: 'applyStart' }
+  | { type: 'applySuccess'; applied: AppliedCoupon }
+  | { type: 'applyError'; message: string }
   | { type: 'submitStart' }
   | { type: 'submitError'; message: string };
 
-const INITIAL: FormState = { name: '', email: '', mobile: '', submitting: false, error: null };
+const INITIAL: FormState = {
+  name: '',
+  email: '',
+  mobile: '',
+  couponInput: '',
+  applied: null,
+  applyingCoupon: false,
+  couponError: null,
+  submitting: false,
+  error: null,
+};
 
 function reducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
     case 'field':
       return { ...state, [action.key]: action.value };
+    case 'couponInput': {
+      const next = action.value;
+      const applied =
+        state.applied && next.trim().toUpperCase() === state.applied.code ? state.applied : null;
+      return { ...state, couponInput: next, applied, couponError: null };
+    }
+    case 'applyStart':
+      return { ...state, applyingCoupon: true, couponError: null };
+    case 'applySuccess':
+      return {
+        ...state,
+        applyingCoupon: false,
+        applied: action.applied,
+        couponInput: action.applied.code,
+        couponError: null,
+      };
+    case 'applyError':
+      return { ...state, applyingCoupon: false, applied: null, couponError: action.message };
     case 'submitStart':
       return { ...state, submitting: true, error: null };
     case 'submitError':
@@ -71,6 +108,44 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
     if (el && !el.open) el.showModal();
   }, []);
 
+  const displayAmount = state.applied?.finalAmount ?? UI_KIT.price.amount;
+  const busy = state.submitting || state.applyingCoupon;
+
+  async function handleApplyCoupon() {
+    const code = state.couponInput.trim();
+    if (!code) {
+      dispatch({ type: 'applyError', message: 'Enter a coupon code.' });
+      return;
+    }
+
+    dispatch({ type: 'applyStart' });
+    const result = await validateCoupon(code);
+    if (!result.valid) {
+      dispatch({ type: 'applyError', message: result.error });
+      return;
+    }
+
+    dispatch({ type: 'applySuccess', applied: result });
+  }
+
+  async function resolveCouponForCheckout(): Promise<AppliedCoupon | null | 'invalid'> {
+    const typed = state.couponInput.trim();
+    if (!typed) return null;
+
+    if (state.applied && typed.toUpperCase() === state.applied.code) {
+      return state.applied;
+    }
+
+    const result = await validateCoupon(typed);
+    if (!result.valid) {
+      dispatch({ type: 'submitError', message: result.error });
+      return 'invalid';
+    }
+
+    dispatch({ type: 'applySuccess', applied: result });
+    return result;
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (state.submitting) return;
@@ -83,14 +158,17 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
 
     dispatch({ type: 'submitStart' });
 
+    const applied = await resolveCouponForCheckout();
+    if (applied === 'invalid') return;
+
     const result = await createCheckout({
       name: state.name.trim(),
       email: state.email.trim(),
       mobile: state.mobile.trim(),
+      couponCode: applied?.code,
     });
 
     if (result.ok) {
-      // Hand off to Mayar's hosted payment page.
       window.location.href = result.link;
       return;
     }
@@ -119,14 +197,23 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
               Get {UI_KIT.name}
             </h2>
-            <p className="mt-0.5 text-[13px] text-muted">
-              {formatIDR(UI_KIT.price.amount)} · one-time · lifetime access
-            </p>
+            {state.applied ? (
+              <div className="mt-0.5 space-y-0.5">
+                <p className="text-[13px] text-muted line-through">{formatIDR(state.applied.checkoutPrice)}</p>
+                <p className="text-[13px] font-medium text-foreground">
+                  {formatIDR(displayAmount)} · {state.applied.discountLabel} · lifetime access
+                </p>
+              </div>
+            ) : (
+              <p className="mt-0.5 text-[13px] text-muted">
+                {formatIDR(UI_KIT.price.amount)} · one-time · lifetime access
+              </p>
+            )}
           </div>
           <button
             type="button"
             onClick={onClose}
-            disabled={state.submitting}
+            disabled={busy}
             aria-label="Close"
             className="-mr-1.5 -mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full text-muted hover:bg-surface hover:text-foreground disabled:opacity-50 theme-transition"
           >
@@ -178,11 +265,46 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
               />
             </div>
 
+            <div>
+              <label htmlFor="checkout-coupon" className={labelClass}>
+                Coupon code
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="checkout-coupon"
+                  type="text"
+                  value={state.couponInput}
+                  onChange={(e) => dispatch({ type: 'couponInput', value: e.target.value })}
+                  className={inputClass}
+                  placeholder="Optional"
+                  autoComplete="off"
+                  disabled={busy}
+                />
+                <button
+                  type="button"
+                  onClick={() => void handleApplyCoupon()}
+                  disabled={busy || !state.couponInput.trim()}
+                  className="shrink-0 rounded-xl border border-border px-4 py-2.5 text-[14px] font-medium text-foreground hover:bg-surface disabled:opacity-50 theme-transition"
+                >
+                  {state.applyingCoupon ? 'Applying…' : 'Apply'}
+                </button>
+              </div>
+              {state.applied ? (
+                <p className="mt-1.5 text-[12px] text-emerald-600 dark:text-emerald-400">
+                  Coupon applied — you pay {formatIDR(state.applied.finalAmount)}.
+                </p>
+              ) : null}
+              {state.couponError ? (
+                <p className="mt-1.5 text-[12px] text-red-600 dark:text-red-400">{state.couponError}</p>
+              ) : null}
+            </div>
+
             {state.error ? <div className="alert alert-error">{state.error}</div> : null}
 
             <p className="text-[12px] leading-relaxed text-muted">
-              You'll be redirected to Mayar to pay securely. Your access token and install
-              instructions are emailed right after payment.
+              {displayAmount === 0
+                ? 'No payment needed — your access token and install instructions are emailed right after you continue.'
+                : "You'll be redirected to Mayar to pay securely. Your access token and install instructions are emailed right after payment."}
             </p>
           </div>
 
@@ -192,7 +314,11 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
               disabled={state.submitting}
               className="inline-flex w-full items-center justify-center gap-2 rounded-full btn-embossed px-6 py-3 text-[15px] font-medium text-white disabled:opacity-60 disabled:pointer-events-none focus:outline-none"
             >
-              {state.submitting ? 'Starting checkout…' : 'Continue to payment'}
+              {state.submitting
+                ? 'Starting checkout…'
+                : displayAmount === 0
+                  ? 'Get access'
+                  : 'Continue to payment'}
               {!state.submitting ? <ArrowUpRight size={16} weight="bold" /> : null}
             </button>
           </div>

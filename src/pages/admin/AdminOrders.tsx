@@ -89,6 +89,7 @@ export function AdminOrders() {
               <tr>
                 <th className="px-4 py-3 font-semibold">Customer</th>
                 <th className="px-4 py-3 font-semibold">Amount</th>
+                <th className="px-4 py-3 font-semibold">Coupon</th>
                 <th className="px-4 py-3 font-semibold">Status</th>
                 <th className="px-4 py-3 font-semibold">Fulfilled</th>
                 <th className="px-4 py-3 font-semibold">Created</th>
@@ -102,6 +103,9 @@ export function AdminOrders() {
                     <span className="block font-mono text-[13px] text-muted">{o.email}</span>
                   </td>
                   <td className="px-4 py-3 text-muted whitespace-nowrap">{formatAmount(o)}</td>
+                  <td className="px-4 py-3 font-mono text-[13px] text-muted">
+                    {o.couponCode ?? '—'}
+                  </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={o.status} />
                   </td>

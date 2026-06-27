@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { getDb } from '../../src/db/client.js';
 import { orders as ordersTable } from '../../src/db/schema.js';
 import { checkoutPayloadSchema } from '../schemas/checkoutPayload.js';
@@ -102,11 +102,29 @@ export function createUiKitApp() {
 
     try {
       const db = getDb();
-      const [order] = await db
+      let [order] = await db
         .select()
         .from(ordersTable)
         .where(eq(ordersTable.mayarRef, transactionId))
         .limit(1);
+
+      // Fallback: Mayar's transaction-id field can vary, so also match the most
+      // recent pending order by customer email + amount.
+      if (!order) {
+        const email = String(data.customerEmail ?? '').trim();
+        const amount = Number(data.amount ?? 0);
+        if (email) {
+          const [candidate] = await db
+            .select()
+            .from(ordersTable)
+            .where(and(eq(ordersTable.email, email), eq(ordersTable.status, 'pending')))
+            .orderBy(desc(ordersTable.createdAt))
+            .limit(1);
+          if (candidate && (amount === 0 || candidate.amount === amount)) {
+            order = candidate;
+          }
+        }
+      }
 
       // Unknown transaction — not one of ours; ack so Mayar stops retrying.
       if (!order) {

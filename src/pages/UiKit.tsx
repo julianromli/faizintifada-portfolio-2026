@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   ArrowUpRight,
   Check,
@@ -8,7 +9,6 @@ import {
   Star,
   X,
 } from '@phosphor-icons/react';
-import { useState } from 'react';
 import { m } from 'motion/react';
 import { Seo } from '../components/Seo';
 import { CheckoutDialog } from '../components/CheckoutDialog';
@@ -123,13 +123,376 @@ const TESTIMONIALS = [
   },
 ] as const;
 
-export function UiKit() {
+const sectionViewport = { once: true, margin: '-100px' } as const;
+
+const primaryCtaClass =
+  'inline-flex items-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card';
+
+interface CheckoutProps {
+  onCheckout: () => void;
+}
+
+function HeroSection({ onCheckout }: CheckoutProps) {
   const { price, demoUrl, name, tagline } = UI_KIT;
+  return (
+    <m.section
+      initial="hidden"
+      animate="show"
+      variants={stagger}
+      className="flex flex-col items-center text-center pt-4"
+    >
+      <m.span
+        variants={fadeUp}
+        className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-[13px] font-medium text-muted theme-transition"
+      >
+        <Sparkle size={14} weight="fill" className="text-foreground" />
+        AI-agent starter kit
+      </m.span>
+      <m.h1
+        variants={fadeUp}
+        className="mt-6 max-w-3xl text-[2.5rem] sm:text-[3.5rem] leading-[1.05] font-semibold tracking-tight text-foreground"
+      >
+        {tagline}
+      </m.h1>
+      <m.p variants={fadeUp} className="mt-6 max-w-xl text-[17px] leading-relaxed text-muted">
+        {name} is a production-grade TanStack Start + shadcn/ui boilerplate where every
+        color, space, and radius is a semantic token. Point your AI agent at it and you
+        get on-brand UI, not AI slop — consistent on every prompt.
+      </m.p>
+      <m.div variants={fadeUp} className="mt-9 flex flex-col sm:flex-row items-center gap-3">
+        <button type="button" onClick={onCheckout} className={primaryCtaClass}>
+          Get {name} — {formatIDR(price.amount)}
+        </button>
+        <a
+          href={demoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-full border border-border px-8 py-4 text-[15px] font-medium text-foreground hover:bg-surface active:scale-[0.97] transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+        >
+          Live preview <ArrowUpRight size={16} weight="bold" />
+        </a>
+      </m.div>
+      <m.p variants={fadeUp} className="mt-4 text-[13px] text-muted">
+        One-time payment ·{' '}
+        <span className="line-through opacity-60">{formatIDR(price.original)}</span>{' '}
+        <span className="font-medium text-foreground">{formatIDR(price.amount)}</span>{' '}
+        launch price
+      </m.p>
+    </m.section>
+  );
+}
+
+function PreviewSection() {
+  const { demoUrl, name } = UI_KIT;
+  return (
+    <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={stagger}>
+      <m.div
+        variants={fadeUp}
+        className="relative aspect-video w-full overflow-hidden rounded-[2rem] border border-border bg-surface-nested theme-transition"
+      >
+        <video className="h-full w-full object-cover" controls preload="metadata" playsInline>
+          {/* #t=0.1 forces the browser to render the first frame as the poster */}
+          <source
+            src="https://0nzst7ka0j.ufs.sh/f/octNiMKDR9jHBG14OjyNKvtDE8s7gZXrbcUQTa0imS6d4Puz#t=0.1"
+            type="video/mp4"
+          />
+          {/* TODO: replace placeholder with authored captions for the walkthrough audio */}
+          <track kind="captions" srcLang="en" label="English" src="/ui-kit/walkthrough.en.vtt" />
+        </video>
+      </m.div>
+
+      <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {SCREENSHOTS.map((src, i) => (
+          <m.div
+            key={src}
+            variants={fadeUp}
+            className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface-nested theme-transition"
+          >
+            <img
+              src={src}
+              alt={`${name} screenshot ${i + 1}`}
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          </m.div>
+        ))}
+      </div>
+
+      <div className="mt-6 flex justify-center">
+        <a
+          href={demoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-[15px] font-medium text-foreground hover:opacity-80 transition-opacity"
+        >
+          Explore the live demo at ui.faizintifada.com
+          <ArrowUpRight size={16} weight="bold" />
+        </a>
+      </div>
+    </m.section>
+  );
+}
+
+function AntiSlopSection() {
+  const { name } = UI_KIT;
+  return (
+    <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={stagger}>
+      <m.h2
+        variants={fadeUp}
+        className="text-center text-[2rem] sm:text-[2.25rem] font-semibold tracking-tight text-foreground"
+      >
+        Your AI agent stops generating AI slop.
+      </m.h2>
+      <m.p
+        variants={fadeUp}
+        className="mx-auto mt-3 max-w-xl text-center text-[16px] leading-relaxed text-muted"
+      >
+        Aim an agent at a blank Tailwind project and you get random hex colors,
+        magic-number spacing, and components that drift from your brand every prompt.{' '}
+        {name} gives the agent rails.
+      </m.p>
+
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <m.div
+          variants={fadeUp}
+          className="rounded-[1.75rem] border border-border bg-surface-nested p-8 theme-transition"
+        >
+          <p className="text-[13px] font-semibold uppercase tracking-wider text-muted">
+            Without a design system
+          </p>
+          <ul className="mt-6 space-y-3">
+            {[
+              'Hardcoded values: #3b82f6, p-[13px], one-off shadows',
+              'Every screen looks subtly different',
+              'Light / dark mode breaks',
+              'You refactor whatever the agent generated',
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <X size={18} weight="bold" className="mt-0.5 shrink-0 text-muted" />
+                <span className="text-[15px] leading-relaxed text-muted">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </m.div>
+
+        <m.div
+          variants={fadeUp}
+          className="rounded-[1.75rem] border border-border bg-canvas p-8 theme-transition"
+        >
+          <p className="text-[13px] font-semibold uppercase tracking-wider text-foreground">
+            With {name}
+          </p>
+          <ul className="mt-6 space-y-3">
+            {[
+              'Agents compose from semantic tokens — bg-surface, text-muted — never raw values',
+              'One source of truth: styles.css',
+              'Consistent across every component and route',
+              'Theme-aware by default',
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <Check size={18} weight="bold" className="mt-0.5 shrink-0 text-foreground" />
+                <span className="text-[15px] leading-relaxed text-foreground">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </m.div>
+      </div>
+
+      <m.p
+        variants={fadeUp}
+        className="mx-auto mt-6 max-w-2xl text-center text-[15px] leading-relaxed text-muted"
+      >
+        One source of truth —{' '}
+        <code className="rounded-md bg-surface px-1.5 py-0.5 text-[13px] text-foreground">
+          styles.css
+        </code>
+        . Change a token there and every screen your agent ever generated updates with it.
+      </m.p>
+    </m.section>
+  );
+}
+
+function FeaturesSection() {
+  return (
+    <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={stagger}>
+      <m.h2
+        variants={fadeUp}
+        className="text-center text-[2rem] sm:text-[2.25rem] font-semibold tracking-tight text-foreground"
+      >
+        Everything inside the kit
+      </m.h2>
+      <m.p variants={fadeUp} className="mx-auto mt-3 max-w-md text-center text-[16px] text-muted">
+        Opinionated where it matters, flexible where you need it.
+      </m.p>
+      <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {FEATURES.map(({ icon: Icon, title, body }) => (
+          <m.div
+            key={title}
+            variants={fadeUp}
+            className="rounded-[1.75rem] border border-border bg-canvas p-8 theme-transition"
+          >
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-surface text-foreground">
+              <Icon size={24} weight="regular" />
+            </div>
+            <h3 className="mt-5 text-[18px] font-semibold text-foreground">{title}</h3>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted">{body}</p>
+          </m.div>
+        ))}
+      </div>
+    </m.section>
+  );
+}
+
+function PricingSection({ onCheckout }: CheckoutProps) {
+  const { price, name } = UI_KIT;
+  return (
+    <m.section
+      initial="hidden"
+      whileInView="show"
+      viewport={sectionViewport}
+      variants={stagger}
+      className="flex justify-center"
+    >
+      <m.div
+        variants={fadeUp}
+        className="w-full max-w-md rounded-[2.5rem] border border-border bg-canvas p-8 sm:p-10 text-center theme-transition"
+      >
+        <span className="inline-flex items-center gap-2 rounded-full bg-surface px-4 py-1.5 text-[13px] font-medium text-muted">
+          Launch offer
+        </span>
+        <div className="mt-6 flex items-end justify-center gap-3">
+          <span className="text-[3rem] leading-none font-semibold tracking-tight text-foreground">
+            {formatIDR(price.amount)}
+          </span>
+          <span className="mb-1 text-[18px] text-muted line-through">
+            {formatIDR(price.original)}
+          </span>
+        </div>
+        <p className="mt-2 text-[14px] text-muted">One-time payment · lifetime access</p>
+
+        <ul className="mt-8 space-y-3 text-left">
+          {INCLUDED.map((item) => (
+            <li key={item} className="flex items-start gap-3">
+              <Check size={18} weight="bold" className="mt-0.5 shrink-0 text-foreground" />
+              <span className="text-[15px] text-foreground">{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          type="button"
+          onClick={onCheckout}
+          className="mt-9 inline-flex w-full items-center justify-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+        >
+          Buy {name} now
+        </button>
+        <p className="mt-4 text-[13px] text-muted">Delivered to your email after checkout.</p>
+      </m.div>
+    </m.section>
+  );
+}
+
+function TestimonialsSection() {
+  return (
+    <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={stagger}>
+      <m.h2
+        variants={fadeUp}
+        className="text-center text-[2rem] sm:text-[2.25rem] font-semibold tracking-tight text-foreground"
+      >
+        Loved by early builders
+      </m.h2>
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
+        {TESTIMONIALS.map(({ quote, name: who, role }) => (
+          <m.figure
+            key={quote}
+            variants={fadeUp}
+            className="flex flex-col rounded-[1.75rem] border border-border bg-canvas p-8 theme-transition"
+          >
+            <div className="flex gap-0.5 text-foreground">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} size={16} weight="fill" />
+              ))}
+            </div>
+            <blockquote className="mt-5 flex-1 text-[15px] leading-relaxed text-foreground">
+              “{quote}”
+            </blockquote>
+            <figcaption className="mt-6 text-[14px]">
+              <span className="font-medium text-foreground">{who}</span>
+              <span className="text-muted"> · {role}</span>
+            </figcaption>
+          </m.figure>
+        ))}
+      </div>
+    </m.section>
+  );
+}
+
+function FaqSection() {
+  return (
+    <m.section
+      initial="hidden"
+      whileInView="show"
+      viewport={sectionViewport}
+      variants={stagger}
+      className="mx-auto w-full max-w-2xl"
+    >
+      <m.h2
+        variants={fadeUp}
+        className="text-center text-[2rem] sm:text-[2.25rem] font-semibold tracking-tight text-foreground"
+      >
+        Questions, answered
+      </m.h2>
+      <div className="mt-10 space-y-3">
+        {FAQS.map(({ q, a }) => (
+          <m.details
+            key={q}
+            variants={fadeUp}
+            className="group rounded-2xl border border-border bg-canvas px-6 py-5 theme-transition"
+          >
+            <summary className="flex cursor-pointer items-center justify-between gap-4 text-[16px] font-medium text-foreground marker:content-['']">
+              {q}
+              <span className="text-muted transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <p className="mt-3 text-[15px] leading-relaxed text-muted">{a}</p>
+          </m.details>
+        ))}
+      </div>
+    </m.section>
+  );
+}
+
+function FinalCtaSection({ onCheckout }: CheckoutProps) {
+  const { price, name } = UI_KIT;
+  return (
+    <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={fadeUp}>
+      <div className="rounded-[2.5rem] border border-border bg-canvas px-8 py-14 sm:py-20 text-center theme-transition">
+        <h2 className="mx-auto max-w-2xl text-[2rem] sm:text-[2.5rem] leading-tight font-semibold tracking-tight text-foreground">
+          Ship your next AI-agent app this weekend.
+        </h2>
+        <p className="mx-auto mt-4 max-w-md text-[16px] text-muted">
+          Grab {name} at the launch price — {formatIDR(price.amount)}, once.
+        </p>
+        <button
+          type="button"
+          onClick={onCheckout}
+          className="mt-8 inline-flex items-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+        >
+          Get {name} now
+        </button>
+      </div>
+    </m.section>
+  );
+}
+
+export function UiKit() {
+  const { name, tagline, price } = UI_KIT;
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const openCheckout = () => setCheckoutOpen(true);
 
   return (
     <>
-      <CheckoutDialog open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
+      {checkoutOpen ? <CheckoutDialog onClose={() => setCheckoutOpen(false)} /> : null}
+
       <Seo
         title="Faiz UI — AI-Agent Starter Kit"
         description="Faiz UI is a TanStack Start + shadcn/ui starter kit for AI-agent apps. 50+ components, semantic design tokens, and a living catalog. Semantic tokens keep AI-generated UI on-brand, not AI slop. One-time payment."
@@ -150,395 +513,14 @@ export function UiKit() {
       />
 
       <main className="space-y-28 sm:space-y-36">
-        {/* Hero */}
-        <m.section
-          initial="hidden"
-          animate="show"
-          variants={stagger}
-          className="flex flex-col items-center text-center pt-4"
-        >
-          <m.span
-            variants={fadeUp}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-[13px] font-medium text-muted theme-transition"
-          >
-            <Sparkle size={14} weight="fill" className="text-foreground" />
-            AI-agent starter kit
-          </m.span>
-          <m.h1
-            variants={fadeUp}
-            className="mt-6 max-w-3xl text-[2.5rem] sm:text-[3.5rem] leading-[1.05] font-semibold tracking-tight text-foreground"
-          >
-            {tagline}
-          </m.h1>
-          <m.p
-            variants={fadeUp}
-            className="mt-6 max-w-xl text-[17px] leading-relaxed text-muted"
-          >
-            {name} is a production-grade TanStack Start + shadcn/ui boilerplate
-            where every color, space, and radius is a semantic token. Point your
-            AI agent at it and you get on-brand UI, not AI slop — consistent on
-            every prompt.
-          </m.p>
-          <m.div
-            variants={fadeUp}
-            className="mt-9 flex flex-col sm:flex-row items-center gap-3"
-          >
-            <button
-              type="button"
-              onClick={() => setCheckoutOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
-            >
-              Get {name} — {formatIDR(price.amount)}
-            </button>
-            <a
-              href={demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-border px-8 py-4 text-[15px] font-medium text-foreground hover:bg-surface active:scale-[0.97] transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
-            >
-              Live preview <ArrowUpRight size={16} weight="bold" />
-            </a>
-          </m.div>
-          <m.p variants={fadeUp} className="mt-4 text-[13px] text-muted">
-            One-time payment ·{' '}
-            <span className="line-through opacity-60">{formatIDR(price.original)}</span>{' '}
-            <span className="font-medium text-foreground">
-              {formatIDR(price.amount)}
-            </span>{' '}
-            launch price
-          </m.p>
-        </m.section>
-
-        {/* Preview: video + screenshots */}
-        <m.section
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={stagger}
-        >
-          <m.div
-            variants={fadeUp}
-            className="relative aspect-video w-full overflow-hidden rounded-[2rem] border border-border bg-surface-nested theme-transition"
-          >
-            <video
-              className="h-full w-full object-cover"
-              controls
-              preload="metadata"
-              playsInline
-            >
-              {/* #t=0.1 forces the browser to render the first frame as the poster */}
-              <source
-                src="https://0nzst7ka0j.ufs.sh/f/octNiMKDR9jHBG14OjyNKvtDE8s7gZXrbcUQTa0imS6d4Puz#t=0.1"
-                type="video/mp4"
-              />
-            </video>
-          </m.div>
-
-          <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {SCREENSHOTS.map((src, i) => (
-              <m.div
-                key={src}
-                variants={fadeUp}
-                className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface-nested theme-transition"
-              >
-                <img
-                  src={src}
-                  alt={`${name} screenshot ${i + 1}`}
-                  loading="lazy"
-                  className="h-full w-full object-cover"
-                />
-              </m.div>
-            ))}
-          </div>
-
-          <div className="mt-6 flex justify-center">
-            <a
-              href={demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[15px] font-medium text-foreground hover:opacity-80 transition-opacity"
-            >
-              Explore the live demo at ui.faizintifada.com
-              <ArrowUpRight size={16} weight="bold" />
-            </a>
-          </div>
-        </m.section>
-
-        {/* No more AI slop */}
-        <m.section
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={stagger}
-        >
-          <m.h2
-            variants={fadeUp}
-            className="text-center text-[2rem] sm:text-[2.25rem] font-semibold tracking-tight text-foreground"
-          >
-            Your AI agent stops generating AI slop.
-          </m.h2>
-          <m.p
-            variants={fadeUp}
-            className="mx-auto mt-3 max-w-xl text-center text-[16px] leading-relaxed text-muted"
-          >
-            Aim an agent at a blank Tailwind project and you get random hex colors,
-            magic-number spacing, and components that drift from your brand every
-            prompt. {name} gives the agent rails.
-          </m.p>
-
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <m.div
-              variants={fadeUp}
-              className="rounded-[1.75rem] border border-border bg-surface-nested p-8 theme-transition"
-            >
-              <p className="text-[13px] font-semibold uppercase tracking-wider text-muted">
-                Without a design system
-              </p>
-              <ul className="mt-6 space-y-3">
-                {[
-                  'Hardcoded values: #3b82f6, p-[13px], one-off shadows',
-                  'Every screen looks subtly different',
-                  'Light / dark mode breaks',
-                  'You refactor whatever the agent generated',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <X
-                      size={18}
-                      weight="bold"
-                      className="mt-0.5 shrink-0 text-muted"
-                    />
-                    <span className="text-[15px] leading-relaxed text-muted">
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </m.div>
-
-            <m.div
-              variants={fadeUp}
-              className="rounded-[1.75rem] border border-border bg-canvas p-8 theme-transition"
-            >
-              <p className="text-[13px] font-semibold uppercase tracking-wider text-foreground">
-                With {name}
-              </p>
-              <ul className="mt-6 space-y-3">
-                {[
-                  'Agents compose from semantic tokens — bg-surface, text-muted — never raw values',
-                  'One source of truth: styles.css',
-                  'Consistent across every component and route',
-                  'Theme-aware by default',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <Check
-                      size={18}
-                      weight="bold"
-                      className="mt-0.5 shrink-0 text-foreground"
-                    />
-                    <span className="text-[15px] leading-relaxed text-foreground">
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </m.div>
-          </div>
-
-          <m.p
-            variants={fadeUp}
-            className="mx-auto mt-6 max-w-2xl text-center text-[15px] leading-relaxed text-muted"
-          >
-            One source of truth —{' '}
-            <code className="rounded-md bg-surface px-1.5 py-0.5 text-[13px] text-foreground">
-              styles.css
-            </code>
-            . Change a token there and every screen your agent ever generated
-            updates with it.
-          </m.p>
-        </m.section>
-
-        {/* Features */}
-        <m.section
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={stagger}
-        >
-          <m.h2
-            variants={fadeUp}
-            className="text-center text-[2rem] sm:text-[2.25rem] font-semibold tracking-tight text-foreground"
-          >
-            Everything inside the kit
-          </m.h2>
-          <m.p
-            variants={fadeUp}
-            className="mx-auto mt-3 max-w-md text-center text-[16px] text-muted"
-          >
-            Opinionated where it matters, flexible where you need it.
-          </m.p>
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {FEATURES.map(({ icon: Icon, title, body }) => (
-              <m.div
-                key={title}
-                variants={fadeUp}
-                className="rounded-[1.75rem] border border-border bg-canvas p-8 theme-transition"
-              >
-                <div className="flex size-12 items-center justify-center rounded-2xl bg-surface text-foreground">
-                  <Icon size={24} weight="regular" />
-                </div>
-                <h3 className="mt-5 text-[18px] font-semibold text-foreground">
-                  {title}
-                </h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-muted">{body}</p>
-              </m.div>
-            ))}
-          </div>
-        </m.section>
-
-        {/* Pricing */}
-        <m.section
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={stagger}
-          className="flex justify-center"
-        >
-          <m.div
-            variants={fadeUp}
-            className="w-full max-w-md rounded-[2.5rem] border border-border bg-canvas p-8 sm:p-10 text-center theme-transition"
-          >
-            <span className="inline-flex items-center gap-2 rounded-full bg-surface px-4 py-1.5 text-[13px] font-medium text-muted">
-              Launch offer
-            </span>
-            <div className="mt-6 flex items-end justify-center gap-3">
-              <span className="text-[3rem] leading-none font-semibold tracking-tight text-foreground">
-                {formatIDR(price.amount)}
-              </span>
-              <span className="mb-1 text-[18px] text-muted line-through">
-                {formatIDR(price.original)}
-              </span>
-            </div>
-            <p className="mt-2 text-[14px] text-muted">One-time payment · lifetime access</p>
-
-            <ul className="mt-8 space-y-3 text-left">
-              {INCLUDED.map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <Check
-                    size={18}
-                    weight="bold"
-                    className="mt-0.5 shrink-0 text-foreground"
-                  />
-                  <span className="text-[15px] text-foreground">{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            <button
-              type="button"
-              onClick={() => setCheckoutOpen(true)}
-              className="mt-9 inline-flex w-full items-center justify-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
-            >
-              Buy {name} now
-            </button>
-            <p className="mt-4 text-[13px] text-muted">
-              Delivered to your email after checkout.
-            </p>
-          </m.div>
-        </m.section>
-
-        {/* Testimonials */}
-        <m.section
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={stagger}
-        >
-          <m.h2
-            variants={fadeUp}
-            className="text-center text-[2rem] sm:text-[2.25rem] font-semibold tracking-tight text-foreground"
-          >
-            Loved by early builders
-          </m.h2>
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {TESTIMONIALS.map(({ quote, name: who, role }) => (
-              <m.figure
-                key={quote}
-                variants={fadeUp}
-                className="flex flex-col rounded-[1.75rem] border border-border bg-canvas p-8 theme-transition"
-              >
-                <div className="flex gap-0.5 text-foreground">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={16} weight="fill" />
-                  ))}
-                </div>
-                <blockquote className="mt-5 flex-1 text-[15px] leading-relaxed text-foreground">
-                  “{quote}”
-                </blockquote>
-                <figcaption className="mt-6 text-[14px]">
-                  <span className="font-medium text-foreground">{who}</span>
-                  <span className="text-muted"> · {role}</span>
-                </figcaption>
-              </m.figure>
-            ))}
-          </div>
-        </m.section>
-
-        {/* FAQ */}
-        <m.section
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={stagger}
-          className="mx-auto w-full max-w-2xl"
-        >
-          <m.h2
-            variants={fadeUp}
-            className="text-center text-[2rem] sm:text-[2.25rem] font-semibold tracking-tight text-foreground"
-          >
-            Questions, answered
-          </m.h2>
-          <div className="mt-10 space-y-3">
-            {FAQS.map(({ q, a }) => (
-              <m.details
-                key={q}
-                variants={fadeUp}
-                className="group rounded-2xl border border-border bg-canvas px-6 py-5 theme-transition"
-              >
-                <summary className="flex cursor-pointer items-center justify-between gap-4 text-[16px] font-medium text-foreground marker:content-['']">
-                  {q}
-                  <span className="text-muted transition-transform group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-3 text-[15px] leading-relaxed text-muted">{a}</p>
-              </m.details>
-            ))}
-          </div>
-        </m.section>
-
-        {/* Final CTA */}
-        <m.section
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-100px' }}
-          variants={fadeUp}
-        >
-          <div className="rounded-[2.5rem] border border-border bg-canvas px-8 py-14 sm:py-20 text-center theme-transition">
-            <h2 className="mx-auto max-w-2xl text-[2rem] sm:text-[2.5rem] leading-tight font-semibold tracking-tight text-foreground">
-              Ship your next AI-agent app this weekend.
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-[16px] text-muted">
-              Grab {name} at the launch price — {formatIDR(price.amount)}, once.
-            </p>
-            <button
-              type="button"
-              onClick={() => setCheckoutOpen(true)}
-              className="mt-8 inline-flex items-center gap-2 rounded-full btn-embossed px-8 py-4 text-[15px] font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
-            >
-              Get {name} now
-            </button>
-          </div>
-        </m.section>
+        <HeroSection onCheckout={openCheckout} />
+        <PreviewSection />
+        <AntiSlopSection />
+        <FeaturesSection />
+        <PricingSection onCheckout={openCheckout} />
+        <TestimonialsSection />
+        <FaqSection />
+        <FinalCtaSection onCheckout={openCheckout} />
       </main>
     </>
   );

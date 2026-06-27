@@ -25,6 +25,16 @@ const fadeUp = {
   },
 };
 
+/** Like fadeUp but without filter — CSS filter on a video ancestor breaks native control clicks. */
+const fadeUpLite = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] as const },
+  },
+};
+
 const stagger = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
@@ -191,10 +201,15 @@ function PreviewSection() {
   return (
     <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={stagger}>
       <m.div
-        variants={fadeUp}
-        className="relative aspect-video w-full overflow-hidden rounded-[2rem] border border-border bg-surface-nested theme-transition"
+        variants={fadeUpLite}
+        className="relative isolate z-0 aspect-video w-full border border-border bg-surface-nested theme-transition"
       >
-        <video className="h-full w-full object-cover" controls preload="metadata" playsInline>
+        <video
+          className="pointer-events-auto h-full w-full overflow-hidden rounded-[2rem] object-cover"
+          controls
+          preload="metadata"
+          playsInline
+        >
           {/* #t=0.1 forces the browser to render the first frame as the poster */}
           <source
             src="https://0nzst7ka0j.ufs.sh/f/octNiMKDR9jHBG14OjyNKvtDE8s7gZXrbcUQTa0imS6d4Puz#t=0.1"

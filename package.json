@@ -37,6 +37,7 @@
     "react-dom": "^19.0.0",
     "react-helmet-async": "^3.0.0",
     "react-router-dom": "^7.14.2",
+    "resend": "^6.16.0",
     "uploadthing": "^7.7.4",
     "zod": "^4.4.3"
   },

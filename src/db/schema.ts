@@ -36,6 +36,28 @@ export const testimonials = sqliteTable('testimonials', {
   sortOrder: integer('sort_order').notNull().default(0),
 });
 
+// Orders for the faiz-ui Starter Kit sales page (/ui).
+// Schema-only for now: rows are written once the Mayar webhook is wired (nextphase).
+export const orders = sqliteTable('orders', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name'),
+  email: text('email').notNull(),
+  mobile: text('mobile'),
+  amount: integer('amount').notNull(),
+  currency: text('currency').notNull().default('IDR'),
+  status: text('status', { enum: ['pending', 'paid', 'refunded'] })
+    .notNull()
+    .default('pending'),
+  // Mayar transaction id; matched against webhook data.transactionId/data.id. Unique to dedupe.
+  mayarRef: text('mayar_ref').unique(),
+  // Mayar payment-request id from create response; used for the detail re-verify GET /payment/{id}.
+  mayarPaymentId: text('mayar_payment_id'),
+  createdAt: integer('created_at').notNull(),
+  paidAt: integer('paid_at'),
+  // Set once the fulfillment email is sent, so webhook retries don't re-send.
+  emailSentAt: integer('email_sent_at'),
+});
+
 export const coachingSubmissions = sqliteTable('coaching_submissions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
@@ -60,3 +82,5 @@ export type TestimonialRow = typeof testimonials.$inferSelect;
 export type NewTestimonialRow = typeof testimonials.$inferInsert;
 export type CoachingSubmissionRow = typeof coachingSubmissions.$inferSelect;
 export type NewCoachingSubmissionRow = typeof coachingSubmissions.$inferInsert;
+export type OrderRow = typeof orders.$inferSelect;
+export type NewOrderRow = typeof orders.$inferInsert;

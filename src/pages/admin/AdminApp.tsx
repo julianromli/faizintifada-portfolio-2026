@@ -22,6 +22,9 @@ const AdminTestimonials = lazy(() =>
 const AdminCoachingList = lazy(() =>
   import('./AdminCoachingList').then((mod) => ({ default: mod.AdminCoachingList })),
 );
+const AdminOrders = lazy(() =>
+  import('./AdminOrders').then((mod) => ({ default: mod.AdminOrders })),
+);
 
 function AdminNoIndex() {
   const { pathname } = useLocation();
@@ -57,6 +60,7 @@ export function AdminApp() {
           <Route path="page" element={adminRoute(<AdminPageSettings />)} />
           <Route path="testimonials" element={adminRoute(<AdminTestimonials />)} />
           <Route path="coaching" element={adminRoute(<AdminCoachingList />)} />
+          <Route path="orders" element={adminRoute(<AdminOrders />)} />
         </Route>
       </Routes>
     </>

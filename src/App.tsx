@@ -4,6 +4,8 @@ import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
 import { Projects } from './pages/Projects';
 import { Coaching } from './pages/Coaching';
+import { UiKit } from './pages/UiKit';
+import { UiKitThankYou } from './pages/UiKitThankYou';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { NotFound } from './pages/NotFound';
 import { AdminApp } from './pages/admin/AdminApp';
@@ -37,6 +39,8 @@ export default function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/projects" element={<Projects />} />
                   <Route path="/coaching" element={<Coaching />} />
+                  <Route path="/ui" element={<UiKit />} />
+                  <Route path="/ui/thank-you" element={<UiKitThankYou />} />
                   <Route path="/project/:slug" element={<ProjectDetail />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

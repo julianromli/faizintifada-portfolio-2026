@@ -16,6 +16,7 @@ import { HOME_PAGE_SETTINGS_KEY, rowToPageSettings } from '../src/lib/page-setti
 import { rowToProject } from '../src/lib/project-mapper.js';
 import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
 import { createAdminApp } from './routes/admin.js';
+import { createUiKitApp } from './routes/uikit.js';
 import { uploadRouter } from './uploadthing.js';
 import { fetchLatestYouTubeVideos, parseVideoLimit } from './youtube.js';
 import { fetchGitHubContributions } from './github.js';
@@ -186,6 +187,7 @@ app.post('/api/coaching', async (c) => {
 });
 
 app.route('/api/admin', createAdminApp());
+app.route('/api', createUiKitApp());
 
 const uploadHandlers = createRouteHandler({
   router: uploadRouter,

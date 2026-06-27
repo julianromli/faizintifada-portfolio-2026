@@ -22,6 +22,27 @@
       "when": 1780715357120,
       "tag": "0002_fair_sunset_bain",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1782516255909,
+      "tag": "0003_plain_speedball",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1782522284492,
+      "tag": "0004_faithful_silk_fever",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1782522386840,
+      "tag": "0005_aromatic_mastermind",
+      "breakpoints": true
     }
   ]
 }

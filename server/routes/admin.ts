@@ -7,7 +7,9 @@ import {
   projects as projectsTable,
   testimonials as testimonialsTable,
   coachingSubmissions as coachingSubmissionsTable,
+  orders as ordersTable,
 } from '../../src/db/schema.js';
+import { rowToOrder } from '../../src/lib/order-mapper.js';
 import { rowToTestimonial, testimonialToInsertValues } from '../../src/lib/testimonial-mapper.js';
 import { rowToCoachingSubmission } from '../../src/lib/coaching-mapper.js';
 import {
@@ -352,6 +354,20 @@ export function createAdminApp() {
     } catch (err) {
       console.error('[DELETE /api/admin/projects/:slug]', err);
       return c.json({ error: 'Failed to delete project' }, 500);
+    }
+  });
+
+  admin.get('/orders', async (c) => {
+    try {
+      const db = getDb();
+      const rows = await db
+        .select()
+        .from(ordersTable)
+        .orderBy(desc(ordersTable.createdAt), desc(ordersTable.id));
+      return c.json(rows.map(rowToOrder));
+    } catch (err) {
+      console.error('[GET /api/admin/orders]', err);
+      return c.json({ error: 'Failed to load orders' }, 500);
     }
   });
 

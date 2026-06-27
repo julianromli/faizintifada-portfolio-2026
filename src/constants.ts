@@ -43,7 +43,17 @@ export const SOCIAL_LINKS = [
 export const NAV_LINKS = [
   { to: '/#about', label: 'About' },
   { to: '/projects', label: 'Projects' },
+  { to: '/ui', label: 'UI Kit' },
 ] as const;
+
+// faiz-ui Starter Kit sales page (/ui). Checkout is handled server-side via
+// POST /api/checkout (Mayar); see CheckoutDialog.
+export const UI_KIT = {
+  name: 'Faiz UI',
+  tagline: 'The AI-agent starter kit you ship with, not from.',
+  demoUrl: 'https://ui.faizintifada.com',
+  price: { amount: 99000, original: 199000, currency: 'IDR' },
+} as const;
 
 export const IMAGES = {
   avatar: "https://mh00j7jocs.ufs.sh/f/Qnr0iOx9K6xJ2IcJW7L0gRb7VfrqtvwOY85P9oAypHuTnWCa",

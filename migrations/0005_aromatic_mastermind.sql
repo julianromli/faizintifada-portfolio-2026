@@ -1,0 +1,1 @@
+ALTER TABLE `orders` ADD `mayar_payment_id` text;

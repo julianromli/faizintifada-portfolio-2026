@@ -1,11 +1,10 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Trash } from '@phosphor-icons/react';
+import { Star, Trash } from '@phosphor-icons/react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
 import {
-  fetchCoachingSubmissions,
-  deleteCoachingSubmission,
-} from '../../lib/coaching-admin-api';
+  fetchCoachingTestimonials,
+  deleteCoachingTestimonial,
+} from '../../lib/coaching-testimonial-admin-api';
 import {
   adminAlertError,
   adminAlertSuccess,
@@ -15,60 +14,7 @@ import {
   adminTableHead,
   adminTableRow,
 } from '../../lib/admin-styles';
-import {
-  coachingExperienceLabel,
-  coachingIdeLabel,
-  coachingOsLabel,
-} from '../../lib/coaching-options';
-import type { CoachingSubmission } from '../../types/coaching';
-import { AdminCoachingTestimonialsList } from './AdminCoachingTestimonialsList';
-
-type CoachingTab = 'bookings' | 'testimonials';
-
-const tabBase =
-  'rounded-full px-5 py-2 text-[14px] font-medium transition-colors theme-transition';
-const tabActive = `${tabBase} bg-foreground text-canvas`;
-const tabInactive = `${tabBase} text-muted hover:bg-surface hover:text-foreground`;
-
-export function AdminCoachingList() {
-  const [tab, setTab] = useState<CoachingTab>('bookings');
-
-  return (
-    <div className="space-y-6">
-      <AdminPageHeader
-        title="Coaching"
-        description={
-          tab === 'bookings'
-            ? 'Booking submissions from the public coaching page. Newest first.'
-            : 'Testimonials submitted after coaching sessions. Newest first.'
-        }
-      />
-
-      <div className="flex gap-2" role="tablist" aria-label="Coaching views">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'bookings'}
-          onClick={() => setTab('bookings')}
-          className={tab === 'bookings' ? tabActive : tabInactive}
-        >
-          Bookings
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'testimonials'}
-          onClick={() => setTab('testimonials')}
-          className={tab === 'testimonials' ? tabActive : tabInactive}
-        >
-          Testimonials
-        </button>
-      </div>
-
-      {tab === 'bookings' ? <BookingsTab /> : <AdminCoachingTestimonialsList />}
-    </div>
-  );
-}
+import type { CoachingTestimonial } from '../../types/coaching-testimonial';
 
 function formatDate(ms: number): string {
   try {
@@ -78,28 +24,37 @@ function formatDate(ms: number): string {
   }
 }
 
-function ideDisplay(s: CoachingSubmission): string {
-  if (s.ide === 'other') {
-    return s.ideOther ? `${coachingIdeLabel(s.ide)} (${s.ideOther})` : coachingIdeLabel(s.ide);
-  }
-  return coachingIdeLabel(s.ide);
+function RatingStars({ rating }: { rating: number }) {
+  return (
+    <span className="inline-flex items-center gap-0.5" aria-label={`${rating} dari 5`}>
+      {[1, 2, 3, 4, 5].map((v) => (
+        <Star
+          key={v}
+          size={15}
+          weight={v <= rating ? 'fill' : 'regular'}
+          className={v <= rating ? 'text-amber-400' : 'text-muted'}
+          aria-hidden
+        />
+      ))}
+    </span>
+  );
 }
 
-function BookingsTab() {
-  const [items, setItems] = useState<CoachingSubmission[]>([]);
+export function AdminCoachingTestimonialsList() {
+  const [items, setItems] = useState<CoachingTestimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<CoachingSubmission | null>(null);
-  const [detail, setDetail] = useState<CoachingSubmission | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<CoachingTestimonial | null>(null);
+  const [detail, setDetail] = useState<CoachingTestimonial | null>(null);
 
   async function load() {
     setLoading(true);
     setError(null);
     try {
-      const rows = await fetchCoachingSubmissions();
+      const rows = await fetchCoachingTestimonials();
       setItems(rows);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -112,7 +67,7 @@ function BookingsTab() {
     void load();
   }, []);
 
-  function requestDelete(item: CoachingSubmission) {
+  function requestDelete(item: CoachingTestimonial) {
     setActionError(null);
     setActionSuccess(null);
     setPendingDelete(item);
@@ -123,9 +78,9 @@ function BookingsTab() {
     const { id } = pendingDelete;
     setBusyId(id);
     try {
-      await deleteCoachingSubmission(id);
+      await deleteCoachingTestimonial(id);
       setItems((prev) => prev.filter((x) => x.id !== id));
-      setActionSuccess(`Deleted submission from “${pendingDelete.name}”.`);
+      setActionSuccess(`Deleted testimonial from “${pendingDelete.name}”.`);
       setPendingDelete(null);
       if (detail?.id === id) setDetail(null);
     } catch (e) {
@@ -139,14 +94,11 @@ function BookingsTab() {
     <>
       <ConfirmDialog
         open={pendingDelete !== null}
-        title="Delete submission?"
+        title="Delete testimonial?"
         description={
           pendingDelete ? (
             <>
               <span className="font-medium text-foreground">{pendingDelete.name}</span>
-              <span className="block mt-1 font-mono text-[13px] text-muted">
-                {pendingDelete.email}
-              </span>
               <span className="block mt-2">This cannot be undone.</span>
             </>
           ) : null
@@ -159,18 +111,14 @@ function BookingsTab() {
         onCancel={() => setPendingDelete(null)}
       />
 
-      <CoachingDetailDialog
-        submission={detail}
-        onClose={() => setDetail(null)}
-        ideDisplay={ideDisplay}
-      />
+      <TestimonialDetailDialog testimonial={detail} onClose={() => setDetail(null)} />
 
       <div className="space-y-6">
         {actionError && <div className={adminAlertError}>{actionError}</div>}
         {actionSuccess && <div className={adminAlertSuccess}>{actionSuccess}</div>}
 
         {loading && (
-          <p className="text-[15px] text-muted animate-pulse">Loading submissions…</p>
+          <p className="text-[15px] text-muted animate-pulse">Loading testimonials…</p>
         )}
 
         {!loading && error && (
@@ -183,7 +131,7 @@ function BookingsTab() {
         )}
 
         {!loading && !error && items.length === 0 && (
-          <p className="text-[15px] text-muted">No submissions yet.</p>
+          <p className="text-[15px] text-muted">No testimonials yet.</p>
         )}
 
         {!loading && !error && items.length > 0 && (
@@ -192,34 +140,34 @@ function BookingsTab() {
               <thead className={adminTableHead}>
                 <tr>
                   <th className="px-4 py-3 font-semibold">Name</th>
-                  <th className="px-4 py-3 font-semibold">Email</th>
-                  <th className="px-4 py-3 font-semibold">Experience</th>
+                  <th className="px-4 py-3 font-semibold">Role</th>
+                  <th className="px-4 py-3 font-semibold">Rating</th>
                   <th className="px-4 py-3 font-semibold">Submitted</th>
                   <th className="px-4 py-3 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className={`divide-y ${adminTableDivide}`}>
-                {items.map((s) => (
+                {items.map((t) => (
                   <tr
-                    key={s.id}
+                    key={t.id}
                     className={`${adminTableRow} cursor-pointer hover:bg-surface theme-transition`}
-                    onClick={() => setDetail(s)}
+                    onClick={() => setDetail(t)}
                   >
-                    <td className="px-4 py-3 text-foreground">{s.name}</td>
-                    <td className="px-4 py-3 font-mono text-[13px] text-muted">{s.email}</td>
-                    <td className="px-4 py-3 text-muted">
-                      {coachingExperienceLabel(s.experience)}
+                    <td className="px-4 py-3 text-foreground">{t.name}</td>
+                    <td className="px-4 py-3 text-muted">{t.role}</td>
+                    <td className="px-4 py-3">
+                      <RatingStars rating={t.rating} />
                     </td>
                     <td className="px-4 py-3 text-muted whitespace-nowrap">
-                      {formatDate(s.createdAt)}
+                      {formatDate(t.createdAt)}
                     </td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
                       <button
                         type="button"
-                        disabled={busyId === s.id}
+                        disabled={busyId === t.id}
                         onClick={(e) => {
                           e.stopPropagation();
-                          requestDelete(s);
+                          requestDelete(t);
                         }}
                         className={adminBtnDestructive}
                       >
@@ -238,10 +186,9 @@ function BookingsTab() {
   );
 }
 
-interface CoachingDetailDialogProps {
-  submission: CoachingSubmission | null;
+interface TestimonialDetailDialogProps {
+  testimonial: CoachingTestimonial | null;
   onClose: () => void;
-  ideDisplay: (s: CoachingSubmission) => string;
 }
 
 function DetailRow({ label, value }: { label: string; value: ReactNode }) {
@@ -255,40 +202,36 @@ function DetailRow({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-function CoachingDetailDialog({ submission, onClose, ideDisplay }: CoachingDetailDialogProps) {
-  const open = submission !== null;
+function TestimonialDetailDialog({ testimonial, onClose }: TestimonialDetailDialogProps) {
+  const open = testimonial !== null;
 
   return (
-    <ConfirmDialogShell open={open} onClose={onClose}>
-      {submission ? (
+    <DetailDialogShell open={open} onClose={onClose}>
+      {testimonial ? (
         <dl className="space-y-4">
-          <DetailRow label="Name" value={submission.name} />
-          <DetailRow label="Email" value={submission.email} />
-          {submission.contact ? (
-            <DetailRow label="WhatsApp / Telegram" value={submission.contact} />
+          <DetailRow label="Name" value={testimonial.name} />
+          <DetailRow label="Role" value={testimonial.role} />
+          <DetailRow label="Rating" value={<RatingStars rating={testimonial.rating} />} />
+          <DetailRow label="Pengalaman" value={testimonial.experience} />
+          {testimonial.outcome ? (
+            <DetailRow label="Outcome" value={testimonial.outcome} />
           ) : null}
-          <DetailRow label="OS" value={coachingOsLabel(submission.os)} />
-          <DetailRow label="IDE" value={ideDisplay(submission)} />
           <DetailRow
-            label="Experience"
-            value={coachingExperienceLabel(submission.experience)}
+            label="Izin tampil publik"
+            value={testimonial.agreedToPublish ? 'Yes' : 'No'}
           />
-          <DetailRow label="Tentang dia" value={submission.about} />
-          <DetailRow label="Mau build apa" value={submission.goal} />
-          {submission.repoUrl ? <DetailRow label="Repo" value={submission.repoUrl} /> : null}
-          <DetailRow label="Setuju ketentuan" value={submission.agreedToTerms ? 'Yes' : 'No'} />
           <DetailRow
             label="Submitted"
-            value={new Date(submission.createdAt).toLocaleString()}
+            value={new Date(testimonial.createdAt).toLocaleString()}
           />
         </dl>
       ) : null}
-    </ConfirmDialogShell>
+    </DetailDialogShell>
   );
 }
 
 /** Lightweight native <dialog> shell for read-only detail. */
-function ConfirmDialogShell({
+function DetailDialogShell({
   open,
   onClose,
   children,
@@ -297,8 +240,7 @@ function ConfirmDialogShell({
   onClose: () => void;
   children: ReactNode;
 }) {
-  const ref = useState<HTMLDialogElement | null>(null);
-  const [dialogEl, setDialogEl] = ref;
+  const [dialogEl, setDialogEl] = useState<HTMLDialogElement | null>(null);
 
   useEffect(() => {
     if (!dialogEl) return;
@@ -312,7 +254,7 @@ function ConfirmDialogShell({
   return (
     <dialog
       ref={setDialogEl}
-      aria-label="Submission detail"
+      aria-label="Testimonial detail"
       className="fixed inset-0 z-50 m-auto w-full max-w-lg rounded-3xl border border-border bg-card p-0 shadow-xl backdrop:bg-black/40 backdrop:backdrop-blur-[2px] open:flex open:flex-col theme-transition"
       onCancel={(e) => {
         e.preventDefault();
@@ -320,7 +262,7 @@ function ConfirmDialogShell({
       }}
     >
       <div className="flex items-center justify-between border-b border-border px-6 py-4">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground">Submission</h2>
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">Testimonial</h2>
         <button
           type="button"
           onClick={onClose}

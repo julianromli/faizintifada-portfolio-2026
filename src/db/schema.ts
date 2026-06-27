@@ -89,6 +89,17 @@ export const coachingSubmissions = sqliteTable('coaching_submissions', {
   createdAt: integer('created_at').notNull(),
 });
 
+export const coachingTestimonials = sqliteTable('coaching_testimonials', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  role: text('role').notNull(),
+  rating: integer('rating').notNull(),
+  experience: text('experience').notNull(),
+  outcome: text('outcome'),
+  agreedToPublish: integer('agreed_to_publish', { mode: 'boolean' }).notNull(),
+  createdAt: integer('created_at').notNull(),
+});
+
 export type ProjectRow = typeof projects.$inferSelect;
 export type NewProjectRow = typeof projects.$inferInsert;
 export type PageSettingsRow = typeof pageSettings.$inferSelect;
@@ -97,6 +108,8 @@ export type TestimonialRow = typeof testimonials.$inferSelect;
 export type NewTestimonialRow = typeof testimonials.$inferInsert;
 export type CoachingSubmissionRow = typeof coachingSubmissions.$inferSelect;
 export type NewCoachingSubmissionRow = typeof coachingSubmissions.$inferInsert;
+export type CoachingTestimonialRow = typeof coachingTestimonials.$inferSelect;
+export type NewCoachingTestimonialRow = typeof coachingTestimonials.$inferInsert;
 export type OrderRow = typeof orders.$inferSelect;
 export type NewOrderRow = typeof orders.$inferInsert;
 export type CouponRow = typeof coupons.$inferSelect;

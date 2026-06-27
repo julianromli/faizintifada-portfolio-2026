@@ -10,8 +10,13 @@ import {
 } from '../src/db/schema.js';
 import { rowToTestimonial } from '../src/lib/testimonial-mapper.js';
 import { coachingPayloadToInsertValues } from '../src/lib/coaching-mapper.js';
+import { coachingTestimonialPayloadToInsertValues } from '../src/lib/coaching-testimonial-mapper.js';
 import { coachingPayloadSchema } from './schemas/coachingPayload.js';
-import { coachingSubmissions as coachingSubmissionsTable } from '../src/db/schema.js';
+import { coachingTestimonialPayloadSchema } from './schemas/coachingTestimonialPayload.js';
+import {
+  coachingSubmissions as coachingSubmissionsTable,
+  coachingTestimonials as coachingTestimonialsTable,
+} from '../src/db/schema.js';
 import { HOME_PAGE_SETTINGS_KEY, rowToPageSettings } from '../src/lib/page-settings.js';
 import { rowToProject } from '../src/lib/project-mapper.js';
 import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
@@ -182,6 +187,30 @@ app.post('/api/coaching', async (c) => {
     return c.json({ ok: true }, 201);
   } catch (err) {
     console.error('[POST /api/coaching]', err);
+    return c.json({ error: 'Failed to submit. Please try again.' }, 500);
+  }
+});
+
+app.post('/api/coaching-testimonials', async (c) => {
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: 'Invalid JSON body' }, 400);
+  }
+
+  const parsed = coachingTestimonialPayloadSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ error: 'Validation failed', details: parsed.error.flatten() }, 400);
+  }
+
+  try {
+    const db = getDb();
+    const values = coachingTestimonialPayloadToInsertValues(parsed.data);
+    await db.insert(coachingTestimonialsTable).values(values);
+    return c.json({ ok: true }, 201);
+  } catch (err) {
+    console.error('[POST /api/coaching-testimonials]', err);
     return c.json({ error: 'Failed to submit. Please try again.' }, 500);
   }
 });

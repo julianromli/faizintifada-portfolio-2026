@@ -7,11 +7,13 @@ import {
   projects as projectsTable,
   testimonials as testimonialsTable,
   coachingSubmissions as coachingSubmissionsTable,
+  coachingTestimonials as coachingTestimonialsTable,
   orders as ordersTable,
 } from '../../src/db/schema.js';
 import { rowToOrder } from '../../src/lib/order-mapper.js';
 import { rowToTestimonial, testimonialToInsertValues } from '../../src/lib/testimonial-mapper.js';
 import { rowToCoachingSubmission } from '../../src/lib/coaching-mapper.js';
+import { rowToCoachingTestimonial } from '../../src/lib/coaching-testimonial-mapper.js';
 import {
   HOME_PAGE_SETTINGS_KEY,
   pageSettingsToInsertValues,
@@ -401,6 +403,36 @@ export function createAdminApp() {
     } catch (err) {
       console.error('[DELETE /api/admin/coaching/:id]', err);
       return c.json({ error: 'Failed to delete submission' }, 500);
+    }
+  });
+
+  admin.get('/coaching-testimonials', async (c) => {
+    const db = getDb();
+    const rows = await db
+      .select()
+      .from(coachingTestimonialsTable)
+      .orderBy(desc(coachingTestimonialsTable.createdAt), desc(coachingTestimonialsTable.id));
+    return c.json(rows.map(rowToCoachingTestimonial));
+  });
+
+  admin.delete('/coaching-testimonials/:id', async (c) => {
+    const id = Number.parseInt(c.req.param('id'), 10);
+    if (!Number.isFinite(id) || id < 1) {
+      return c.json({ error: 'Invalid id' }, 400);
+    }
+    const db = getDb();
+    try {
+      const removed = await db
+        .delete(coachingTestimonialsTable)
+        .where(eq(coachingTestimonialsTable.id, id))
+        .returning({ id: coachingTestimonialsTable.id });
+      if (removed.length === 0) {
+        return c.json({ error: 'Testimonial not found' }, 404);
+      }
+      return c.json({ ok: true, id }, 200);
+    } catch (err) {
+      console.error('[DELETE /api/admin/coaching-testimonials/:id]', err);
+      return c.json({ error: 'Failed to delete testimonial' }, 500);
     }
   });
 

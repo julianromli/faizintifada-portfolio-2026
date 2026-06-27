@@ -66,3 +66,25 @@ it during Checkout. Each Coupon has a code, a discount (fixed IDR or percentage)
 and can be active, inactive, or expired. Unlimited Buyers may use the same Coupon
 while it is valid.
 _Avoid_: promo code, discount code, voucher
+
+### Coaching
+
+**Coaching Booking**:
+A request submitted via the public `/coaching` page to book a 1-on-1 vibe coding
+session. Stored in `coaching_submissions`; reviewed under the "Bookings" tab of
+`/admin/coaching`.
+_Avoid_: coaching submission (in prose), enquiry
+
+**Coaching Testimonial**:
+Feedback a coached person submits via a public form on `/coaching` *after* a
+session — name, role, rating (1–5), their experience, an optional outcome, and
+consent to publish. Stored in `coaching_testimonials`; reviewed under the
+"Testimonials" tab of `/admin/coaching`. Distinct from the hero Testimonial.
+_Avoid_: review, feedback (in code)
+
+**Testimonial** (hero):
+An admin-authored quote shown in the homepage hero carousel (avatar, name, role,
+quote, sortOrder). Stored in `testimonials`, managed at `/admin/testimonials`.
+Written *by* the admin, NOT submitted by a visitor — the opposite of a Coaching
+Testimonial.
+_Avoid_: conflating with Coaching Testimonial

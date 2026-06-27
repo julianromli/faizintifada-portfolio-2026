@@ -12,6 +12,7 @@ import {
 import { m } from 'motion/react';
 import { Seo } from '../components/Seo';
 import { CheckoutDialog } from '../components/CheckoutDialog';
+import { ImageLightbox } from '../components/ImageLightbox';
 import { UI_KIT } from '../constants';
 
 const fadeUp = {
@@ -184,6 +185,9 @@ function HeroSection({ onCheckout }: CheckoutProps) {
 
 function PreviewSection() {
   const { demoUrl, name } = UI_KIT;
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const activeSrc = activeIndex !== null ? SCREENSHOTS[activeIndex] : null;
+
   return (
     <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={stagger}>
       <m.div
@@ -203,20 +207,38 @@ function PreviewSection() {
 
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
         {SCREENSHOTS.map((src, i) => (
-          <m.div
+          <m.button
             key={src}
+            type="button"
             variants={fadeUp}
-            className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface-nested theme-transition"
+            onClick={() => setActiveIndex(i)}
+            aria-label={`View ${name} screenshot ${i + 1} full size`}
+            className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-surface-nested text-left theme-transition focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
           >
             <img
               src={src}
               alt={`${name} screenshot ${i + 1}`}
               loading="lazy"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             />
-          </m.div>
+            <span className="pointer-events-none absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10 group-focus-visible:bg-black/10" />
+          </m.button>
         ))}
       </div>
+
+      {activeSrc !== null && activeIndex !== null ? (
+        <ImageLightbox
+          src={activeSrc}
+          alt={`${name} screenshot ${activeIndex + 1}`}
+          onClose={() => setActiveIndex(null)}
+          onPrev={activeIndex > 0 ? () => setActiveIndex(activeIndex - 1) : undefined}
+          onNext={
+            activeIndex < SCREENSHOTS.length - 1
+              ? () => setActiveIndex(activeIndex + 1)
+              : undefined
+          }
+        />
+      ) : null}
 
       <div className="mt-6 flex justify-center">
         <a

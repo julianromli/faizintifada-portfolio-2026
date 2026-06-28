@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { asc, eq } from 'drizzle-orm';
-import { createRouteHandler } from 'uploadthing/server';
 import { getDb } from '../src/db/client.js';
 import {
   pageSettings as pageSettingsTable,
@@ -22,7 +21,6 @@ import { rowToProject } from '../src/lib/project-mapper.js';
 import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
 import { createAdminApp } from './routes/admin.js';
 import { createUiKitApp } from './routes/uikit.js';
-import { uploadRouter } from './uploadthing.js';
 import { fetchLatestYouTubeVideos, parseVideoLimit } from './youtube.js';
 import { fetchGitHubContributions } from './github.js';
 import { buildSitemapXml } from './sitemap.js';
@@ -218,14 +216,44 @@ app.post('/api/coaching-testimonials', async (c) => {
 app.route('/api/admin', createAdminApp());
 app.route('/api', createUiKitApp());
 
-const uploadHandlers = createRouteHandler({
-  router: uploadRouter,
-  config: {
-    token: process.env.UPLOADTHING_TOKEN,
-    isDev: process.env.NODE_ENV !== 'production',
-  },
-});
+type UploadHandler = (request: Request) => Promise<Response>;
+let cachedUploadHandler: UploadHandler | null = null;
+let uploadHandlerDisabled = false;
 
-app.all('/api/uploadthing', (c) => uploadHandlers(c.req.raw));
+async function loadUploadHandler(): Promise<UploadHandler> {
+  const [{ createRouteHandler }, { uploadRouter }] = await Promise.all([
+    import('uploadthing/server'),
+    import('./uploadthing.js'),
+  ]);
+  return createRouteHandler({
+    router: uploadRouter,
+    config: {
+      token: process.env.UPLOADTHING_TOKEN,
+      isDev: process.env.NODE_ENV !== 'production',
+    },
+  });
+}
+
+app.all('/api/uploadthing', async (c) => {
+  if (uploadHandlerDisabled) {
+    return c.json(
+      { error: 'Uploads are not available on this hosting runtime.' },
+      503,
+    );
+  }
+  try {
+    if (!cachedUploadHandler) {
+      cachedUploadHandler = await loadUploadHandler();
+    }
+    return cachedUploadHandler(c.req.raw);
+  } catch (err) {
+    uploadHandlerDisabled = true;
+    console.error('[/api/uploadthing] failed to load on this runtime', err);
+    return c.json(
+      { error: 'Uploads are not available on this hosting runtime.' },
+      503,
+    );
+  }
+});
 
 export default app;

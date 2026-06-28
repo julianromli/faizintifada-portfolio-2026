@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "faizintifada-portfolio",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-06-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  }
+  // Non-secret config can go in "vars": {} here.
+  // Secrets MUST be set via `wrangler secret put NAME` (DATABASE_URL,
+  // DATABASE_AUTH_TOKEN, CMS_ADMIN_TOKEN, GITHUB_TOKEN, RESEND_API_KEY,
+  // MAYAR_API_KEY, MAYAR_WEBHOOK_SECRET, UPLOADTHING_TOKEN, etc.).
+}

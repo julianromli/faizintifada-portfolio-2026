@@ -28,6 +28,45 @@ Prerequisites: [Bun](https://bun.sh) 1.3+ (see `packageManager` in `package.json
 
 For production, set **`VITE_API_URL`** if the API is hosted separately, and **`CORS_ORIGIN`** to your frontend origin(s), comma-separated.
 
+## Deploy on Cloudflare Workers (primary)
+
+One Worker serves the Vite SPA (via the Static Assets binding) and the Hono API on the same origin. Config lives in [`wrangler.jsonc`](wrangler.jsonc); the entry is [`worker/index.ts`](worker/index.ts).
+
+### Build and deploy
+
+```bash
+bun install
+bun run deploy:cf      # = vite build && wrangler deploy
+bun run cf:dev         # = vite build && wrangler dev (local Miniflare)
+```
+
+Prerequisites: `wrangler login` (OAuth) or set `CLOUDFLARE_API_TOKEN`.
+
+### Secrets
+
+Set every value from [`.env`](.env.example) as a Worker secret (pick up live, no redeploy needed):
+
+```bash
+wrangler secret put DATABASE_URL
+wrangler secret put DATABASE_AUTH_TOKEN
+wrangler secret put CMS_ADMIN_TOKEN
+wrangler secret put GITHUB_TOKEN
+wrangler secret put RESEND_API_KEY
+wrangler secret put MAYAR_API_KEY
+wrangler secret put MAYAR_WEBHOOK_SECRET
+wrangler secret put UPLOADTHING_TOKEN
+wrangler secret put YOUTUBE_API_KEY
+# ...plus SITE_URL, CORS_ORIGIN, MAYAR_ENV, GITHUB_USERNAME, etc.
+```
+
+Non-secret config (`SITE_URL`, `CORS_ORIGIN`, `MAYAR_ENV`, `GITHUB_USERNAME`, `YOUTUBE_CHANNEL_HANDLE`) may alternatively go under `"vars": {}` in `wrangler.jsonc`.
+
+### Caveats
+
+- **UploadThing** (`/api/uploadthing`) is Node-only and returns `503` on Workers. CMS image uploads need an alternative (R2 presigned URLs or Cloudflare Images). The handler is isolated behind a dynamic import so the rest of the site is unaffected.
+- **Custom domain**: add a `routes` entry in `wrangler.jsonc` or via the dashboard to point `faizintifada.com` at the Worker.
+- `vercel.json`, `api/`, and `server/production.ts` remain for Vercel / VPS (Dokploy) deploys — see below.
+
 ## Deploy on Dokploy (VPS)
 
 This app serves the Vite SPA (`dist/`) and the Hono API on **one port**. [`vercel.json`](vercel.json) and [`api/[...route].ts`](api/[...route].ts) are for **Vercel only**; on a VPS use [`server/production.ts`](server/production.ts).

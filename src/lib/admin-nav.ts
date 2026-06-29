@@ -3,6 +3,7 @@ import {
   ChatsCircle,
   FolderOpen,
   GearSix,
+  MonitorPlay,
   Quotes,
   Receipt,
   Ticket,
@@ -35,6 +36,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     label: 'Site',
     items: [
       { to: '/admin/page', label: 'Page settings', icon: GearSix },
+      { to: '/admin/ui-kit', label: 'UI Kit media', icon: MonitorPlay },
       { to: '/admin/testimonials', label: 'Testimonials', icon: Quotes },
     ],
   },

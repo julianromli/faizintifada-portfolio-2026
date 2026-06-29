@@ -9,6 +9,7 @@ import {
   coachingSubmissions as coachingSubmissionsTable,
   coachingTestimonials as coachingTestimonialsTable,
   orders as ordersTable,
+  uiKitSettings as uiKitSettingsTable,
 } from '../../src/db/schema.js';
 import { rowToOrder } from '../../src/lib/order-mapper.js';
 import { rowToTestimonial, testimonialToInsertValues } from '../../src/lib/testimonial-mapper.js';
@@ -19,9 +20,16 @@ import {
   pageSettingsToInsertValues,
   rowToPageSettings,
 } from '../../src/lib/page-settings.js';
+import {
+  UI_KIT_SETTINGS_KEY,
+  rowToUiKitSettings,
+  uiKitSettingsToInsertValues,
+  type UiKitSettings,
+} from '../../src/lib/ui-kit-settings.js';
 import { projectToInsertValues, rowToProject } from '../../src/lib/project-mapper.js';
 import type { Project } from '../../src/types/project.js';
 import { pageSettingsPayloadSchema } from '../schemas/pageSettingsPayload.js';
+import { uiKitSettingsPayloadSchema } from '../schemas/uiKitSettingsPayload.js';
 import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload.js';
 import { testimonialPayloadSchema } from '../schemas/testimonialPayload.js';
 import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret.js';
@@ -137,6 +145,55 @@ export function createAdminApp() {
       });
 
     return c.json(rowToPageSettings(values));
+  });
+
+  admin.get('/ui-kit-settings', async (c) => {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(uiKitSettingsTable)
+      .where(eq(uiKitSettingsTable.key, UI_KIT_SETTINGS_KEY))
+      .limit(1);
+
+    return c.json(rowToUiKitSettings(row));
+  });
+
+  admin.put('/ui-kit-settings', async (c) => {
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'Invalid JSON body' }, 400);
+    }
+
+    const parsed = uiKitSettingsPayloadSchema.safeParse(body);
+    if (!parsed.success) {
+      return c.json({ error: 'Validation failed', details: parsed.error.flatten() }, 400);
+    }
+
+    const settings: UiKitSettings = {
+      screenshots: parsed.data.screenshots,
+      previewVideoUrl: parsed.data.previewVideoUrl,
+      featuresVideoUrl: parsed.data.featuresVideoUrl,
+      installVideoUrl: parsed.data.installVideoUrl,
+    };
+
+    const db = getDb();
+    const values = uiKitSettingsToInsertValues(settings);
+    await db
+      .insert(uiKitSettingsTable)
+      .values(values)
+      .onConflictDoUpdate({
+        target: uiKitSettingsTable.key,
+        set: {
+          screenshotsJson: values.screenshotsJson,
+          previewVideoUrl: values.previewVideoUrl,
+          featuresVideoUrl: values.featuresVideoUrl,
+          installVideoUrl: values.installVideoUrl,
+        },
+      });
+
+    return c.json(rowToUiKitSettings(values));
   });
 
   admin.get('/testimonials', async (c) => {

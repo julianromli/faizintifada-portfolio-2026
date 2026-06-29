@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ArrowUpRight,
   Check,
+  Code,
+  Cube,
   Lightning,
+  Moon,
   Package,
+  Palette,
+  Robot,
   Sparkle,
   Stack,
   Star,
@@ -14,6 +19,8 @@ import { Seo } from '../components/Seo';
 import { CheckoutDialog } from '../components/CheckoutDialog';
 import { ImageLightbox } from '../components/ImageLightbox';
 import { UI_KIT } from '../constants';
+import { apiUrl } from '../lib/api';
+import { DEFAULT_UI_KIT_SETTINGS, type UiKitSettings } from '../lib/ui-kit-settings';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16, filter: 'blur(4px)' },
@@ -44,35 +51,67 @@ function formatIDR(amount: number) {
   return `Rp${amount.toLocaleString('id-ID')}`;
 }
 
-const SCREENSHOTS = [
-  '/ui-kit/ui-kit-1.webp',
-  '/ui-kit/ui-kit-2.webp',
-  '/ui-kit/ui-kit-3.webp',
-  '/ui-kit/ui-kit-4.webp',
-  '/ui-kit/ui-kit-5.webp',
-  '/ui-kit/ui-kit-6.webp',
-] as const;
-
+// Capability grid for the "Everything inside the kit" section — everything that
+// ships in the kit, at a glance.
 const FEATURES = [
   {
     icon: Stack,
     title: 'TanStack Start + Router',
-    body: 'File-based routing, SSR-ready, wired to React 19 and Vite 8 out of the box.',
+    body: 'File-based routing, SSR-ready, and fully typed — wired to React 19 and Vite 8.',
   },
   {
     icon: Package,
     title: '50+ shadcn components',
-    body: 'A full base-luma catalog with Hugeicons, ready to compose into product UI.',
+    body: 'A complete base-luma catalog with Hugeicons, ready to compose into product UI.',
   },
   {
-    icon: Sparkle,
+    icon: Palette,
     title: 'Semantic design tokens',
-    body: 'Color, spacing, motion, shadow, and type are tokens with one source of truth in styles.css — so agent output stays consistent and on-brand.',
+    body: 'Color, spacing, radius, motion, and type live as tokens with one source of truth in styles.css.',
+  },
+  {
+    icon: Moon,
+    title: 'Light & dark by default',
+    body: 'Every component is theme-aware out of the box — no extra wiring, no broken contrast.',
+  },
+  {
+    icon: Robot,
+    title: 'Agent-ready (AGENTS.md)',
+    body: 'Ships with AGENTS.md so your AI agent learns the token rules and stays on-brand.',
+  },
+  {
+    icon: Cube,
+    title: 'Living /ui-kit catalog',
+    body: 'Browse, theme, and copy every component from a documented in-app catalog route.',
+  },
+  {
+    icon: Code,
+    title: 'TypeScript + Biome',
+    body: 'Fully typed end to end, with Biome configured for fast lint and format.',
   },
   {
     icon: Lightning,
-    title: 'Built for AI agents',
-    body: 'AGENTS.md teaches agents the token rules, so they generate design-system-matched UI instead of AI slop.',
+    title: 'Motion presets',
+    body: 'Reusable motion tokens and presets so animation stays consistent across screens.',
+  },
+] as const;
+
+const INSTALL_STEPS = [
+  {
+    title: 'Buy & get your token',
+    body: 'Complete checkout and check your email for the install command, setup guideline, and your private registry access token.',
+  },
+  {
+    title: 'Run the scaffolder',
+    body: 'Paste the one-line install command in your terminal. The scaffolder sets up TanStack Start, Tailwind v4, and the full component kit.',
+  },
+  {
+    title: 'Authenticate the registry',
+    body: 'Add your access token when prompted so the CLI can pull components from the private base-luma registry.',
+  },
+  {
+    title: 'Start building',
+    body: 'Run the dev server, open the /ui-kit catalog, and point your AI agent at AGENTS.md — it ships on-brand UI from the first prompt.',
   },
 ] as const;
 
@@ -193,10 +232,11 @@ function HeroSection({ onCheckout }: CheckoutProps) {
   );
 }
 
-function PreviewSection() {
+function PreviewSection({ settings }: { settings: UiKitSettings }) {
   const { demoUrl, name } = UI_KIT;
+  const screenshots = settings.screenshots;
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const activeSrc = activeIndex !== null ? SCREENSHOTS[activeIndex] : null;
+  const activeSrc = activeIndex !== null ? screenshots[activeIndex] ?? null : null;
 
   return (
     <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={stagger}>
@@ -204,24 +244,29 @@ function PreviewSection() {
         variants={fadeUpLite}
         className="relative isolate z-0 aspect-video w-full border border-border bg-surface-nested theme-transition"
       >
-        <video
-          className="pointer-events-auto h-full w-full overflow-hidden rounded-[2rem] object-cover"
-          controls
-          preload="metadata"
-          playsInline
-        >
-          {/* #t=0.1 forces the browser to render the first frame as the poster */}
-          <source
-            src="https://0nzst7ka0j.ufs.sh/f/octNiMKDR9jHqEs1tcXGt7SWNMR1XjvU0uJxB9pDIlaZqdb6"
-            type="video/mp4"
-          />
-          {/* TODO: replace placeholder with authored captions for the walkthrough audio */}
-          <track kind="captions" srcLang="en" label="English" src="/ui-kit/walkthrough.en.vtt" />
-        </video>
+        {settings.previewVideoUrl ? (
+          <video
+            className="pointer-events-auto h-full w-full overflow-hidden rounded-[2rem] object-cover"
+            controls
+            preload="metadata"
+            playsInline
+          >
+            {/* #t=0.1 forces the browser to render the first frame as the poster */}
+            <source src={settings.previewVideoUrl} type="video/mp4" />
+            {/* TODO: replace placeholder with authored captions for the walkthrough audio */}
+            <track kind="captions" srcLang="en" label="English" src="/ui-kit/walkthrough.en.vtt" />
+          </video>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center rounded-[2rem] px-6 text-center">
+            <p className="text-[14px] text-muted">
+              Preview video coming soon. Add it in admin → UI Kit media.
+            </p>
+          </div>
+        )}
       </m.div>
 
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {SCREENSHOTS.map((src, i) => (
+        {screenshots.map((src, i) => (
           <m.button
             key={src}
             type="button"
@@ -248,7 +293,7 @@ function PreviewSection() {
           onClose={() => setActiveIndex(null)}
           onPrev={activeIndex > 0 ? () => setActiveIndex(activeIndex - 1) : undefined}
           onNext={
-            activeIndex < SCREENSHOTS.length - 1
+            activeIndex < screenshots.length - 1
               ? () => setActiveIndex(activeIndex + 1)
               : undefined
           }
@@ -349,7 +394,7 @@ function AntiSlopSection() {
   );
 }
 
-function FeaturesSection() {
+function FeaturesSection({ settings }: { settings: UiKitSettings }) {
   return (
     <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={stagger}>
       <m.h2
@@ -361,18 +406,41 @@ function FeaturesSection() {
       <m.p variants={fadeUp} className="mx-auto mt-3 max-w-md text-center text-[16px] text-muted">
         Opinionated where it matters, flexible where you need it.
       </m.p>
-      <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+      <m.div
+        variants={fadeUpLite}
+        className="relative isolate z-0 mt-10 aspect-video w-full overflow-hidden rounded-[2rem] border border-border bg-surface-nested theme-transition"
+      >
+        {settings.featuresVideoUrl ? (
+          <video
+            className="pointer-events-auto h-full w-full object-cover"
+            controls
+            preload="metadata"
+            playsInline
+          >
+            <source src={settings.featuresVideoUrl} type="video/mp4" />
+          </video>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center px-6 text-center">
+            <p className="text-[14px] text-muted">
+              Features walkthrough coming soon. Add it in admin → UI Kit media.
+            </p>
+          </div>
+        )}
+      </m.div>
+
+      <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {FEATURES.map(({ icon: Icon, title, body }) => (
           <m.div
             key={title}
             variants={fadeUp}
-            className="rounded-[1.75rem] border border-border bg-canvas p-8 theme-transition"
+            className="rounded-[1.75rem] border border-border bg-canvas p-7 theme-transition"
           >
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-surface text-foreground">
-              <Icon size={24} weight="regular" />
+            <div className="flex size-11 items-center justify-center rounded-2xl bg-surface text-foreground">
+              <Icon size={22} weight="regular" />
             </div>
-            <h3 className="mt-5 text-[18px] font-semibold text-foreground">{title}</h3>
-            <p className="mt-2 text-[15px] leading-relaxed text-muted">{body}</p>
+            <h3 className="mt-5 text-[17px] font-semibold text-foreground">{title}</h3>
+            <p className="mt-2 text-[14px] leading-relaxed text-muted">{body}</p>
           </m.div>
         ))}
       </div>
@@ -498,6 +566,70 @@ function FaqSection() {
   );
 }
 
+function HowToInstallSection({ settings }: { settings: UiKitSettings }) {
+  const { name } = UI_KIT;
+  return (
+    <m.section initial="hidden" whileInView="show" viewport={sectionViewport} variants={stagger}>
+      <m.h2
+        variants={fadeUp}
+        className="text-center text-[2rem] sm:text-[2.25rem] font-semibold tracking-tight text-foreground"
+      >
+        How to install
+      </m.h2>
+      <m.p variants={fadeUp} className="mx-auto mt-3 max-w-md text-center text-[16px] text-muted">
+        From checkout to your first on-brand screen in four steps. Watch the walkthrough or follow along below.
+      </m.p>
+
+      <m.div
+        variants={fadeUpLite}
+        className="relative isolate z-0 mt-10 aspect-video w-full overflow-hidden rounded-[2rem] border border-border bg-surface-nested theme-transition"
+      >
+        {settings.installVideoUrl ? (
+          <video
+            className="pointer-events-auto h-full w-full object-cover"
+            controls
+            preload="metadata"
+            playsInline
+          >
+            <source src={settings.installVideoUrl} type="video/mp4" />
+          </video>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center px-6 text-center">
+            <p className="text-[14px] text-muted">
+              Install walkthrough coming soon. Add it in admin → UI Kit media.
+            </p>
+          </div>
+        )}
+      </m.div>
+
+      <ol className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {INSTALL_STEPS.map(({ title, body }, i) => (
+          <m.li
+            key={title}
+            variants={fadeUp}
+            className="flex gap-4 rounded-[1.75rem] border border-border bg-canvas p-8 theme-transition"
+          >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-[15px] font-semibold tabular-nums text-foreground">
+              {i + 1}
+            </span>
+            <div>
+              <h3 className="text-[18px] font-semibold text-foreground">{title}</h3>
+              <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{body}</p>
+            </div>
+          </m.li>
+        ))}
+      </ol>
+
+      <m.p
+        variants={fadeUp}
+        className="mx-auto mt-6 max-w-xl text-center text-[14px] leading-relaxed text-muted"
+      >
+        Everything you need to install {name} arrives by email the moment checkout completes.
+      </m.p>
+    </m.section>
+  );
+}
+
 function FinalCtaSection({ onCheckout }: CheckoutProps) {
   const { price, name } = UI_KIT;
   return (
@@ -524,7 +656,28 @@ function FinalCtaSection({ onCheckout }: CheckoutProps) {
 export function UiKit() {
   const { name, tagline, price } = UI_KIT;
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [settings, setSettings] = useState<UiKitSettings>(DEFAULT_UI_KIT_SETTINGS);
   const openCheckout = () => setCheckoutOpen(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const res = await fetch(apiUrl('/api/ui-kit-settings'));
+        if (!cancelled && res.ok) {
+          const data = (await res.json()) as UiKitSettings;
+          setSettings(data);
+        }
+      } catch {
+        // keep defaults on network error
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <>
@@ -551,9 +704,10 @@ export function UiKit() {
 
       <main className="space-y-28 sm:space-y-36">
         <HeroSection onCheckout={openCheckout} />
-        <PreviewSection />
+        <PreviewSection settings={settings} />
         <AntiSlopSection />
-        <FeaturesSection />
+        <FeaturesSection settings={settings} />
+        <HowToInstallSection settings={settings} />
         <PricingSection onCheckout={openCheckout} />
         <TestimonialsSection />
         <FaqSection />

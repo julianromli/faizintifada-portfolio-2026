@@ -16,6 +16,9 @@ const AdminProjectForm = lazy(() =>
 const AdminPageSettings = lazy(() =>
   import('./AdminPageSettings').then((mod) => ({ default: mod.AdminPageSettings })),
 );
+const AdminUiKitSettings = lazy(() =>
+  import('./AdminUiKitSettings').then((mod) => ({ default: mod.AdminUiKitSettings })),
+);
 const AdminTestimonials = lazy(() =>
   import('./AdminTestimonials').then((mod) => ({ default: mod.AdminTestimonials })),
 );
@@ -61,6 +64,7 @@ export function AdminApp() {
           <Route path="projects/new" element={adminRoute(<AdminProjectForm />)} />
           <Route path="projects/edit/:slug" element={adminRoute(<AdminProjectForm />)} />
           <Route path="page" element={adminRoute(<AdminPageSettings />)} />
+          <Route path="ui-kit" element={adminRoute(<AdminUiKitSettings />)} />
           <Route path="testimonials" element={adminRoute(<AdminTestimonials />)} />
           <Route path="coaching" element={adminRoute(<AdminCoachingList />)} />
           <Route path="orders" element={adminRoute(<AdminOrders />)} />

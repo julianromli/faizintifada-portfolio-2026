@@ -27,6 +27,17 @@ export const pageSettings = sqliteTable('page_settings', {
   heroImageBottom: text('hero_image_bottom').notNull(),
 });
 
+// CMS-managed media for the /ui (faiz-ui Starter Kit) page: screenshot gallery
+// plus the three walkthrough videos. Single row keyed by UI_KIT_SETTINGS_KEY.
+// screenshotsJson is a JSON-encoded string[] of http(s) image URLs.
+export const uiKitSettings = sqliteTable('ui_kit_settings', {
+  key: text('key').primaryKey(),
+  screenshotsJson: text('screenshots_json').notNull(),
+  previewVideoUrl: text('preview_video_url').notNull(),
+  featuresVideoUrl: text('features_video_url').notNull(),
+  installVideoUrl: text('install_video_url').notNull(),
+});
+
 export const testimonials = sqliteTable('testimonials', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   avatar: text('avatar').notNull(),
@@ -104,6 +115,8 @@ export type ProjectRow = typeof projects.$inferSelect;
 export type NewProjectRow = typeof projects.$inferInsert;
 export type PageSettingsRow = typeof pageSettings.$inferSelect;
 export type NewPageSettingsRow = typeof pageSettings.$inferInsert;
+export type UiKitSettingsRow = typeof uiKitSettings.$inferSelect;
+export type NewUiKitSettingsRow = typeof uiKitSettings.$inferInsert;
 export type TestimonialRow = typeof testimonials.$inferSelect;
 export type NewTestimonialRow = typeof testimonials.$inferInsert;
 export type CoachingSubmissionRow = typeof coachingSubmissions.$inferSelect;

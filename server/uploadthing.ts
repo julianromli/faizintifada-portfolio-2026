@@ -67,6 +67,30 @@ export const uploadRouter = {
       return {};
     })
     .onUploadComplete(() => {}),
+
+  uiKitScreenshot: f(
+    {
+      image: { maxFileSize: '16MB', maxFileCount: 10 },
+    },
+    { awaitServerData: false },
+  )
+    .middleware(({ req }) => {
+      assertCmsAuth(req);
+      return {};
+    })
+    .onUploadComplete(() => {}),
+
+  uiKitVideo: f(
+    {
+      video: { maxFileSize: '64MB', maxFileCount: 1 },
+    },
+    { awaitServerData: false },
+  )
+    .middleware(({ req }) => {
+      assertCmsAuth(req);
+      return {};
+    })
+    .onUploadComplete(() => {}),
 } satisfies FileRouter;
 
 export type AppFileRouter = typeof uploadRouter;

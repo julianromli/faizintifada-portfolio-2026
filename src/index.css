@@ -139,6 +139,14 @@
   transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .theme-transition {
     transition: none;

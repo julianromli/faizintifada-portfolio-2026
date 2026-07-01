@@ -86,22 +86,22 @@ export function ToolsStack() {
         <p className="text-lg text-muted">The tools I reach for when designing and building digital products.</p>
       </m.div>
       
-      <m.div 
+      <m.div
         initial={{ opacity: 0, y: 40, scale: 0.9 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] as const }}
-        className="flex items-center justify-center px-4 [&>*+*]:-ml-4 sm:[&>*+*]:-ml-8"
+        className="flex items-center justify-start sm:justify-center max-w-full overflow-x-auto sm:overflow-visible no-scrollbar px-4 [&>*+*]:-ml-4 sm:[&>*+*]:-ml-8"
       >
         {TOOLS.map((tool, index) => {
           const borderClass = tool.borderClass ?? 'border-4 border-card';
           const ThemeIcon = isThemeAwareToolIcon(tool.id) ? THEME_AWARE_TOOL_ICONS[tool.id] : null;
-          const iconClassName = 'w-12 h-12 sm:w-16 sm:h-16 text-foreground drop-shadow-sm';
+          const iconClassName = 'w-10 h-10 sm:w-16 sm:h-16 text-foreground drop-shadow-sm';
 
           return (
             <m.div
               key={tool.id}
-              className={`relative group w-24 h-24 sm:w-32 sm:h-32 rounded-2xl sm:rounded-3xl ${borderClass} shadow-elevated flex items-center justify-center cursor-pointer ${tool.bg} origin-bottom theme-transition`}
+              className={`relative group w-20 h-20 sm:w-32 sm:h-32 rounded-2xl sm:rounded-3xl ${borderClass} shadow-elevated flex items-center justify-center cursor-pointer ${tool.bg} origin-bottom theme-transition shrink-0`}
               initial={{ rotate: tool.rotate, y: 0 }}
               whileHover={{
                 y: -24,

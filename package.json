@@ -48,6 +48,7 @@
     "@types/node": "^22.19.19",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "agentation": "^3.0.2",
     "concurrently": "^9.2.1",
     "drizzle-kit": "^0.31.10",
     "react-doctor": "^0.2.9",

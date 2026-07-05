@@ -56,8 +56,8 @@ function formatIDR(amount: number) {
 const FEATURES = [
   {
     icon: Stack,
-    title: 'TanStack Start + Router',
-    body: 'File-based routing, SSR-ready, and fully typed — wired to React 19 and Vite 8.',
+    title: 'TanStack Start or Next.js',
+    body: 'Scaffold on TanStack Start (Vite) or Next.js (App Router) — both React 19, file-based routing, SSR-ready, and fully typed.',
   },
   {
     icon: Package,
@@ -103,7 +103,7 @@ const INSTALL_STEPS = [
   },
   {
     title: 'Run the scaffolder',
-    body: 'Paste the one-line install command in your terminal. The scaffolder sets up TanStack Start, Tailwind v4, and the full component kit.',
+    body: 'Paste the one-line install command in your terminal and pick your framework — TanStack Start or Next.js. The scaffolder sets up Tailwind v4 and the full component kit.',
   },
   {
     title: 'Authenticate the registry',
@@ -119,7 +119,7 @@ const INCLUDED = [
   'One-line install command + project scaffolder',
   '50+ shadcn (base-luma) components',
   'Semantic design tokens + living /ui-kit catalog',
-  'TanStack Start + Router + Tailwind v4 setup',
+  'TanStack Start or Next.js + Tailwind v4 setup',
   'Geist Variable type system & motion presets',
   'Access token to the private component registry',
   'Lifetime access — one-time payment',
@@ -140,7 +140,7 @@ const FAQS = [
   },
   {
     q: 'What stack does it use?',
-    a: 'React 19, TanStack Start + Router, Tailwind CSS v4, shadcn/ui (base-luma), and Bun. Fully typed with TypeScript.',
+    a: 'React 19, Tailwind CSS v4, shadcn/ui (base-luma), and Bun — fully typed with TypeScript. At scaffold time you choose your framework: TanStack Start (Vite) or Next.js (App Router).',
   },
   {
     q: 'Will an AI agent actually stay on-brand?',
@@ -205,9 +205,9 @@ function HeroSection({ onCheckout }: CheckoutProps) {
         {tagline}
       </m.h1>
       <m.p variants={fadeUp} className="mt-6 max-w-xl text-[17px] leading-relaxed text-muted">
-        {name} is a production-grade TanStack Start + shadcn/ui boilerplate where every
-        color, space, and radius is a semantic token. Point your AI agent at it and you
-        get on-brand UI, not AI slop — consistent on every prompt.
+        {name} is a production-grade shadcn/ui starter kit — scaffold it on TanStack Start
+        or Next.js — where every color, space, and radius is a semantic token. Point your
+        AI agent at it and you get on-brand UI, not AI slop — consistent on every prompt.
       </m.p>
       <m.div variants={fadeUp} className="mt-9 flex flex-col sm:flex-row items-center gap-3">
         <button type="button" onClick={onCheckout} className={primaryCtaClass}>
@@ -685,7 +685,7 @@ export function UiKit() {
 
       <Seo
         title="Faiz UI — AI-Agent Starter Kit"
-        description="Faiz UI is a TanStack Start + shadcn/ui starter kit for AI-agent apps. 50+ components, semantic design tokens, and a living catalog. Semantic tokens keep AI-generated UI on-brand, not AI slop. One-time payment."
+        description="Faiz UI is a shadcn/ui starter kit for AI-agent apps — scaffold on TanStack Start or Next.js. 50+ components, semantic design tokens, and a living catalog. Semantic tokens keep AI-generated UI on-brand, not AI slop. One-time payment."
         path="/ui"
         jsonLd={{
           '@context': 'https://schema.org',

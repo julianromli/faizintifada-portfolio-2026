@@ -22,6 +22,8 @@ import type { SpeakingEvent, SpeakingEventType } from '../../types/speaking-even
 import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { ProjectImageDropzone } from '../../uploadthing/client';
+import { compressImages } from '../../lib/compress-images';
+import { Select } from '../../components/Select';
 
 type FormState = {
   image: string;
@@ -337,6 +339,7 @@ export function AdminSpeakingEvents() {
                 endpoint="pageImage"
                 headers={cmsUploadThingHeaders}
                 aria-label="Upload event photo"
+                onBeforeUploadBegin={(files) => compressImages(files)}
                 onClientUploadComplete={(res) => {
                   const url = res[0]?.url;
                   if (typeof url === 'string') update('image', url);
@@ -370,16 +373,17 @@ export function AdminSpeakingEvents() {
               <label htmlFor="event-type" className={adminLabelClass}>
                 Type
               </label>
-              <select
+              <Select
                 id="event-type"
                 name="eventType"
+                aria-label="Event type"
                 value={form.eventType}
-                onChange={(e) => update('eventType', e.target.value as SpeakingEventType)}
-                className={adminInputClass}
-              >
-                <option value="offline">Offline event</option>
-                <option value="webinar">Webinar / online</option>
-              </select>
+                onChange={(v) => update('eventType', v as SpeakingEventType)}
+                options={[
+                  { value: 'offline', label: 'Offline event', icon: <Microphone size={15} weight="fill" /> },
+                  { value: 'webinar', label: 'Webinar / online', icon: <VideoCamera size={15} weight="fill" /> },
+                ]}
+              />
             </div>
             <div>
               <label htmlFor="event-date" className={adminLabelClass}>

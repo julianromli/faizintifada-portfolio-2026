@@ -4,6 +4,7 @@ import { FeaturedProjects } from '../components/FeaturedProjects';
 import { AboutSection } from '../components/AboutSection';
 import { ToolsStack } from '../components/ToolsStack';
 import { LatestVideos } from '../components/LatestVideos';
+import { SpeakingEvents } from '../components/SpeakingEvents';
 import { GitHubContributions } from '../components/GitHubContributions';
 import { ContactDialogProvider } from '../components/ContactDialogProvider';
 import { personSchema } from '../lib/seo';
@@ -15,6 +16,7 @@ export function Home() {
       <main className="space-y-32">
         <Hero />
         <FeaturedProjects />
+        <SpeakingEvents />
         <LatestVideos />
         <GitHubContributions />
         <ToolsStack />

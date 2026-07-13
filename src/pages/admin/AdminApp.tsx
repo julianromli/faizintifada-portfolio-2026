@@ -22,6 +22,9 @@ const AdminUiKitSettings = lazy(() =>
 const AdminTestimonials = lazy(() =>
   import('./AdminTestimonials').then((mod) => ({ default: mod.AdminTestimonials })),
 );
+const AdminSpeakingEvents = lazy(() =>
+  import('./AdminSpeakingEvents').then((mod) => ({ default: mod.AdminSpeakingEvents })),
+);
 const AdminCoachingList = lazy(() =>
   import('./AdminCoachingList').then((mod) => ({ default: mod.AdminCoachingList })),
 );
@@ -66,6 +69,7 @@ export function AdminApp() {
           <Route path="page" element={adminRoute(<AdminPageSettings />)} />
           <Route path="ui-kit" element={adminRoute(<AdminUiKitSettings />)} />
           <Route path="testimonials" element={adminRoute(<AdminTestimonials />)} />
+          <Route path="speaking" element={adminRoute(<AdminSpeakingEvents />)} />
           <Route path="coaching" element={adminRoute(<AdminCoachingList />)} />
           <Route path="orders" element={adminRoute(<AdminOrders />)} />
           <Route path="coupons" element={adminRoute(<AdminCoupons />)} />

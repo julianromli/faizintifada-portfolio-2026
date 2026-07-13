@@ -26,7 +26,7 @@ export async function buildSitemapXml(): Promise<string> {
     .from(projectsTable)
     .orderBy(asc(projectsTable.sortOrder), asc(projectsTable.slug));
 
-  const staticPaths = ['/', '/projects'];
+  const staticPaths = ['/', '/projects', '/speaking'];
   const urls = [
     ...staticPaths.map((path) => ({
       loc: `${siteUrl}${path === '/' ? '' : path}`,

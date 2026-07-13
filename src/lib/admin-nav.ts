@@ -3,6 +3,7 @@ import {
   ChatsCircle,
   FolderOpen,
   GearSix,
+  Microphone,
   MonitorPlay,
   Quotes,
   Receipt,
@@ -27,6 +28,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     label: 'Content',
     items: [
       { to: '/admin/projects', label: 'Projects', icon: FolderOpen, end: true },
+      { to: '/admin/speaking', label: 'Speaking', icon: Microphone },
       { to: '/admin/coaching', label: 'Coaching', icon: ChatsCircle },
       { to: '/admin/orders', label: 'Orders', icon: Receipt },
       { to: '/admin/coupons', label: 'Coupons', icon: Ticket },

@@ -5,10 +5,12 @@ import { getDb } from '../src/db/client.js';
 import {
   pageSettings as pageSettingsTable,
   projects as projectsTable,
+  speakingEvents as speakingEventsTable,
   testimonials as testimonialsTable,
   uiKitSettings as uiKitSettingsTable,
 } from '../src/db/schema.js';
 import { rowToTestimonial } from '../src/lib/testimonial-mapper.js';
+import { rowToSpeakingEvent } from '../src/lib/speaking-event-mapper.js';
 import { coachingPayloadToInsertValues } from '../src/lib/coaching-mapper.js';
 import { coachingTestimonialPayloadToInsertValues } from '../src/lib/coaching-testimonial-mapper.js';
 import { coachingPayloadSchema } from './schemas/coachingPayload.js';
@@ -106,6 +108,25 @@ app.get('/api/testimonials', async (c) => {
   } catch (err) {
     console.error('[GET /api/testimonials]', err);
     return c.json({ error: 'Failed to load testimonials' }, 500);
+  }
+});
+
+app.get('/api/speaking-events', async (c) => {
+  try {
+    const db = getDb();
+    const featured = c.req.query('featured');
+
+    const base = db.select().from(speakingEventsTable);
+    const rows = await (featured === '1'
+      ? base.where(eq(speakingEventsTable.featured, true))
+      : base
+    ).orderBy(asc(speakingEventsTable.sortOrder), asc(speakingEventsTable.id));
+
+    c.header('Cache-Control', 'public, max-age=60, s-maxage=60, stale-while-revalidate=600');
+    return c.json(rows.map(rowToSpeakingEvent));
+  } catch (err) {
+    console.error('[GET /api/speaking-events]', err);
+    return c.json({ error: 'Failed to load speaking events' }, 500);
   }
 });
 

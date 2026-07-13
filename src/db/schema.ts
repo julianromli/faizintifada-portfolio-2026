@@ -38,6 +38,25 @@ export const uiKitSettings = sqliteTable('ui_kit_settings', {
   installVideoUrl: text('install_video_url').notNull(),
 });
 
+// Speaking & Events portfolio shown on the homepage. Each row is one talk/event
+// where Faiz spoke about AI (offline event or online webinar), with a photo and
+// metadata used for the gallery + credibility stat strip.
+export const speakingEvents = sqliteTable('speaking_events', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  image: text('image').notNull(),
+  title: text('title').notNull(),
+  eventType: text('event_type', { enum: ['offline', 'webinar'] })
+    .notNull()
+    .default('offline'),
+  organizer: text('organizer'),
+  location: text('location'),
+  eventDate: text('event_date'),
+  audienceCount: integer('audience_count'),
+  link: text('link'),
+  featured: integer('featured', { mode: 'boolean' }).notNull().default(true),
+  sortOrder: integer('sort_order').notNull().default(0),
+});
+
 export const testimonials = sqliteTable('testimonials', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   avatar: text('avatar').notNull(),
@@ -119,6 +138,8 @@ export type UiKitSettingsRow = typeof uiKitSettings.$inferSelect;
 export type NewUiKitSettingsRow = typeof uiKitSettings.$inferInsert;
 export type TestimonialRow = typeof testimonials.$inferSelect;
 export type NewTestimonialRow = typeof testimonials.$inferInsert;
+export type SpeakingEventRow = typeof speakingEvents.$inferSelect;
+export type NewSpeakingEventRow = typeof speakingEvents.$inferInsert;
 export type CoachingSubmissionRow = typeof coachingSubmissions.$inferSelect;
 export type NewCoachingSubmissionRow = typeof coachingSubmissions.$inferInsert;
 export type CoachingTestimonialRow = typeof coachingTestimonials.$inferSelect;

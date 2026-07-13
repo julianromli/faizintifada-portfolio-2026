@@ -5,6 +5,7 @@ import { getDb } from '../../src/db/client.js';
 import {
   pageSettings as pageSettingsTable,
   projects as projectsTable,
+  speakingEvents as speakingEventsTable,
   testimonials as testimonialsTable,
   coachingSubmissions as coachingSubmissionsTable,
   coachingTestimonials as coachingTestimonialsTable,
@@ -13,6 +14,10 @@ import {
 } from '../../src/db/schema.js';
 import { rowToOrder } from '../../src/lib/order-mapper.js';
 import { rowToTestimonial, testimonialToInsertValues } from '../../src/lib/testimonial-mapper.js';
+import {
+  rowToSpeakingEvent,
+  speakingEventToInsertValues,
+} from '../../src/lib/speaking-event-mapper.js';
 import { rowToCoachingSubmission } from '../../src/lib/coaching-mapper.js';
 import { rowToCoachingTestimonial } from '../../src/lib/coaching-testimonial-mapper.js';
 import {
@@ -32,6 +37,7 @@ import { pageSettingsPayloadSchema } from '../schemas/pageSettingsPayload.js';
 import { uiKitSettingsPayloadSchema } from '../schemas/uiKitSettingsPayload.js';
 import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload.js';
 import { testimonialPayloadSchema } from '../schemas/testimonialPayload.js';
+import { speakingEventPayloadSchema } from '../schemas/speakingEventPayload.js';
 import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret.js';
 import { createAdminCouponsApp } from './admin/coupons.js';
 
@@ -49,6 +55,14 @@ function isUniqueConstraintError(err: unknown): boolean {
 }
 
 function parseTestimonialId(raw: string): number | null {
+  const id = Number.parseInt(raw, 10);
+  if (!Number.isFinite(id) || id < 1) {
+    return null;
+  }
+  return id;
+}
+
+function parseNumericId(raw: string): number | null {
   const id = Number.parseInt(raw, 10);
   if (!Number.isFinite(id) || id < 1) {
     return null;
@@ -305,6 +319,118 @@ export function createAdminApp() {
     } catch (err) {
       console.error('[DELETE /api/admin/testimonials/:id]', err);
       return c.json({ error: 'Failed to delete testimonial' }, 500);
+    }
+  });
+
+  admin.get('/speaking-events', async (c) => {
+    try {
+      const db = getDb();
+      const rows = await db
+        .select()
+        .from(speakingEventsTable)
+        .orderBy(asc(speakingEventsTable.sortOrder), asc(speakingEventsTable.id));
+      return c.json(rows.map(rowToSpeakingEvent));
+    } catch (err) {
+      console.error('[GET /api/admin/speaking-events]', err);
+      return c.json({ error: 'Failed to load speaking events' }, 500);
+    }
+  });
+
+  admin.post('/speaking-events', async (c) => {
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'Invalid JSON body' }, 400);
+    }
+
+    const parsed = speakingEventPayloadSchema.safeParse(body);
+    if (!parsed.success) {
+      return c.json({ error: 'Validation failed', details: parsed.error.flatten() }, 400);
+    }
+
+    const db = getDb();
+    const values = speakingEventToInsertValues(parsed.data);
+
+    try {
+      const inserted = await db.insert(speakingEventsTable).values(values).returning();
+      const row = inserted[0];
+      if (!row) {
+        return c.json({ error: 'Failed to create speaking event' }, 500);
+      }
+      return c.json(rowToSpeakingEvent(row), 201);
+    } catch (err) {
+      console.error('[POST /api/admin/speaking-events]', err);
+      return c.json({ error: 'Failed to create speaking event' }, 500);
+    }
+  });
+
+  admin.put('/speaking-events/:id', async (c) => {
+    const id = parseNumericId(c.req.param('id'));
+    if (id === null) {
+      return c.json({ error: 'Invalid speaking event id' }, 400);
+    }
+
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'Invalid JSON body' }, 400);
+    }
+
+    const parsed = speakingEventPayloadSchema.safeParse(body);
+    if (!parsed.success) {
+      return c.json({ error: 'Validation failed', details: parsed.error.flatten() }, 400);
+    }
+
+    const db = getDb();
+    const values = speakingEventToInsertValues(parsed.data);
+
+    try {
+      const updated = await db
+        .update(speakingEventsTable)
+        .set(values)
+        .where(eq(speakingEventsTable.id, id))
+        .returning({ id: speakingEventsTable.id });
+
+      if (updated.length === 0) {
+        return c.json({ error: 'Speaking event not found' }, 404);
+      }
+
+      const [row] = await db
+        .select()
+        .from(speakingEventsTable)
+        .where(eq(speakingEventsTable.id, id))
+        .limit(1);
+
+      return c.json(rowToSpeakingEvent(row!));
+    } catch (err) {
+      console.error('[PUT /api/admin/speaking-events/:id]', err);
+      return c.json({ error: 'Failed to update speaking event' }, 500);
+    }
+  });
+
+  admin.delete('/speaking-events/:id', async (c) => {
+    const id = parseNumericId(c.req.param('id'));
+    if (id === null) {
+      return c.json({ error: 'Invalid speaking event id' }, 400);
+    }
+
+    const db = getDb();
+    try {
+      const removed = await db
+        .delete(speakingEventsTable)
+        .where(eq(speakingEventsTable.id, id))
+        .returning({ id: speakingEventsTable.id });
+
+      if (removed.length === 0) {
+        return c.json({ error: 'Speaking event not found' }, 404);
+      }
+
+      return c.json({ ok: true, id }, 200);
+    } catch (err) {
+      console.error('[DELETE /api/admin/speaking-events/:id]', err);
+      return c.json({ error: 'Failed to delete speaking event' }, 500);
     }
   });
 

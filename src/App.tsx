@@ -4,6 +4,7 @@ import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
 import { Projects } from './pages/Projects';
 import { Coaching } from './pages/Coaching';
+import { Speaking } from './pages/Speaking';
 import { UiKit } from './pages/UiKit';
 import { UiKitThankYou } from './pages/UiKitThankYou';
 import { ProjectDetail } from './pages/ProjectDetail';
@@ -38,6 +39,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/projects" element={<Projects />} />
+                  <Route path="/speaking" element={<Speaking />} />
                   <Route path="/coaching" element={<Coaching />} />
                   <Route path="/ui" element={<UiKit />} />
                   <Route path="/ui/thank-you" element={<UiKitThankYou />} />

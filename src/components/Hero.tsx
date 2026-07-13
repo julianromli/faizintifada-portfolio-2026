@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { m, AnimatePresence, useReducedMotion } from 'motion/react';
-import { BracketsCurly, ChatCircleText, Code, FigmaLogo, PenNib, Sparkle } from '@phosphor-icons/react';
+import { BracketsCurly, ChatCircleText, Code, DownloadSimple, FigmaLogo, PenNib, Sparkle } from '@phosphor-icons/react';
 import { apiUrl } from '../lib/api';
 import {
   DEFAULT_PAGE_SETTINGS,
@@ -133,7 +133,7 @@ export function Hero() {
             </span>
           </h2>
           
-          <div className="pt-2 animate-blur-reveal delay-150">
+          <div className="pt-2 animate-blur-reveal delay-150 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={openContactDialog}
@@ -142,6 +142,15 @@ export function Hero() {
               <ChatCircleText size={20} weight="regular" />
               <span>Discuss a Project</span>
             </button>
+            <a
+              href="/faiz-intifada-cv.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-x-2 px-6 py-4 rounded-full font-medium border border-border text-foreground hover:bg-surface active:scale-95 theme-transition focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+            >
+              <DownloadSimple size={20} weight="regular" />
+              <span>Download CV</span>
+            </a>
           </div>
         </div>
 

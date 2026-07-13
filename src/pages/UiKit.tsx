@@ -21,6 +21,7 @@ import { ImageLightbox } from '../components/ImageLightbox';
 import { UI_KIT } from '../constants';
 import { apiUrl } from '../lib/api';
 import { DEFAULT_UI_KIT_SETTINGS, type UiKitSettings } from '../lib/ui-kit-settings';
+import { EASE_OUT } from '../lib/motion';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16, filter: 'blur(4px)' },
@@ -28,7 +29,7 @@ const fadeUp = {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
-    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] as const },
+    transition: { duration: 0.5, ease: EASE_OUT },
   },
 };
 
@@ -38,7 +39,7 @@ const fadeUpLite = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] as const },
+    transition: { duration: 0.5, ease: EASE_OUT },
   },
 };
 

@@ -3,6 +3,7 @@ import { m } from 'motion/react';
 import { ArrowRight } from '@phosphor-icons/react';
 import { resolveProjectBgClass } from '../lib/project-bg-presets';
 import { Skeleton } from './Skeleton';
+import { EASE_OUT } from '../lib/motion';
 
 export interface ProjectCardProps {
   slug: string;
@@ -30,7 +31,7 @@ export function ProjectCard({
       initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
       whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] as const, delay: index * 0.1 }}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay: index * 0.1 }}
     >
       <Link
         to={`/project/${slug}`}
@@ -55,7 +56,7 @@ export function ProjectCard({
             </div>
             <ArrowRight
               size={20}
-              className="shrink-0 text-muted group-hover:text-foreground group-hover:translate-x-1 transition-all duration-200 ease-out"
+              className="shrink-0 text-muted group-hover:text-foreground group-hover:translate-x-1 transition-[color,transform] duration-200 ease-out"
             />
           </div>
         ) : (

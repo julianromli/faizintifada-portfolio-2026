@@ -14,20 +14,7 @@ import {
 } from '../lib/coaching-testimonial-options';
 import { submitCoachingTestimonial } from '../lib/coaching-testimonial-api';
 import type { CoachingTestimonialInput } from '../types/coaching-testimonial';
-
-const EASE_OUT = [0.23, 1, 0.32, 1] as const;
-
-const panelVariants = {
-  hidden: { opacity: 0, scale: 0.96, y: 8 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.22, ease: EASE_OUT } },
-  exit: { opacity: 0, scale: 0.98, y: -4, transition: { duration: 0.16, ease: EASE_OUT } },
-};
-
-const panelVariantsReduced = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.15, ease: EASE_OUT } },
-  exit: { opacity: 0, transition: { duration: 0.12, ease: EASE_OUT } },
-};
+import { panelVariants, panelVariantsReduced } from '../lib/motion';
 
 export interface TestimonialFormDialogProps {
   open: boolean;

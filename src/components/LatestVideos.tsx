@@ -2,6 +2,7 @@ import { ArrowRight } from '@phosphor-icons/react';
 import { m } from 'motion/react';
 import type { YouTubeVideo } from '../types/youtube';
 import { useYouTubeVideos } from '../hooks/useYouTubeVideos';
+import { EASE_OUT } from '../lib/motion';
 
 const YOUTUBE_CHANNEL_URL = 'https://www.youtube.com/@faizintifada';
 const DEFAULT_VIDEO_LIMIT = 3;
@@ -22,7 +23,7 @@ function VideoCard({ video, index }: VideoCardProps) {
       initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
       whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] as const, delay: index * 0.1 }}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay: index * 0.1 }}
     >
       <a
         href={video.url}

@@ -3,6 +3,7 @@ import { Microphone, VideoCamera } from '@phosphor-icons/react';
 import { m } from 'motion/react';
 import type { SpeakingEvent } from '../types/speaking-event';
 import { ImageLightbox } from './ImageLightbox';
+import { EASE_OUT } from '../lib/motion';
 
 /** Bento tile sizing: the first item spans two columns/rows on larger screens. */
 function tileSpanClass(index: number): string {
@@ -38,7 +39,7 @@ function EventTile({ event, index, onOpen }: EventTileProps) {
       initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
       whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] as const, delay: Math.min(index, 6) * 0.08 }}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay: Math.min(index, 6) * 0.08 }}
       className={`group relative block w-full overflow-hidden rounded-[1.25rem] bg-surface-nested text-left transition-shadow duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:shadow-elevated focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 ${tileSpanClass(index)}`}
       aria-label={`View photo: ${event.title}`}
     >

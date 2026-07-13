@@ -1,21 +1,10 @@
-import { useCallback, useReducer, type FormEvent } from 'react';
-import { m, useReducedMotion } from 'motion/react';
+import { useCallback, useReducer, useState, type FormEvent } from 'react';
+import { AnimatePresence, m, useReducedMotion } from 'motion/react';
 import { ArrowUpRight, X } from '@phosphor-icons/react';
 import { createCheckout, validateCoupon } from '../lib/checkout-api';
 import { UI_KIT } from '../constants';
 import type { AppliedCoupon } from '../types/coupon';
-
-const EASE_OUT = [0.23, 1, 0.32, 1] as const;
-
-const panelVariants = {
-  hidden: { opacity: 0, scale: 0.96, y: 8 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.22, ease: EASE_OUT } },
-};
-
-const panelVariantsReduced = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.15, ease: EASE_OUT } },
-};
+import { panelVariants, panelVariantsReduced } from '../lib/motion';
 
 const labelClass = 'block text-[13px] font-medium text-foreground mb-1.5';
 const inputClass =
@@ -103,10 +92,14 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
   const shouldReduceMotion = useReducedMotion();
   const panelMotion = shouldReduceMotion ? panelVariantsReduced : panelVariants;
   const [state, dispatch] = useReducer(reducer, INITIAL);
+  const [closing, setClosing] = useState(false);
 
   const openOnMount = useCallback((el: HTMLDialogElement | null) => {
     if (el && !el.open) el.showModal();
   }, []);
+
+  // Play the exit animation, then unmount via the parent's onClose once it completes.
+  const requestClose = useCallback(() => setClosing(true), []);
 
   const displayAmount = state.applied?.finalAmount ?? UI_KIT.price.amount;
   const busy = state.submitting || state.applyingCoupon;
@@ -183,15 +176,19 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
       className="fixed inset-0 z-50 m-auto w-full max-w-md rounded-3xl border border-border bg-card p-0 shadow-xl backdrop:bg-black/40 backdrop:backdrop-blur-[2px] open:flex open:flex-col theme-transition"
       onCancel={(event) => {
         event.preventDefault();
-        onClose();
+        requestClose();
       }}
     >
-      <m.div
-        variants={panelMotion}
-        initial="hidden"
-        animate="visible"
-        className="flex max-h-[85vh] flex-col"
-      >
+      <AnimatePresence onExitComplete={onClose}>
+        {!closing ? (
+          <m.div
+            key="checkout-panel"
+            variants={panelMotion}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="flex max-h-[85vh] flex-col"
+          >
         <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-5">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
@@ -212,7 +209,7 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={requestClose}
             disabled={busy}
             aria-label="Close"
             className="-mr-1.5 -mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full text-muted hover:bg-surface hover:text-foreground disabled:opacity-50 theme-transition"
@@ -323,7 +320,9 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
             </button>
           </div>
         </form>
-      </m.div>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
     </dialog>
   );
 }

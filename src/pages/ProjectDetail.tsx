@@ -7,13 +7,14 @@ import { resolveProjectBgClass } from '../lib/project-bg-presets';
 import { Seo } from '../components/Seo';
 import { Skeleton } from '../components/Skeleton';
 import { creativeWorkSchema } from '../lib/seo';
+import { EASE_OUT } from '../lib/motion';
 
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.06,
       delayChildren: 0.1,
     },
   },
@@ -25,7 +26,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
-    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] as const },
+    transition: { duration: 0.5, ease: EASE_OUT },
   },
 };
 
@@ -216,7 +217,7 @@ export function ProjectDetail() {
         initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         viewport={{ once: true, margin: '-50px' }}
-        transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] as const }}
+        transition={{ duration: 0.6, ease: EASE_OUT }}
         className="max-w-3xl mx-auto mb-24"
       >
         <h2 className="text-2xl font-semibold text-foreground mb-6">About the Project</h2>
@@ -240,7 +241,7 @@ export function ProjectDetail() {
               initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
               whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] as const }}
+              transition={{ duration: 0.6, ease: EASE_OUT }}
               className="rounded-[2rem] overflow-hidden bg-surface border border-border"
             >
               <img

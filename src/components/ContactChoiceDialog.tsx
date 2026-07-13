@@ -2,42 +2,13 @@ import { useEffect, useEffectEvent, useId, useRef } from 'react';
 import { AnimatePresence, m, useReducedMotion } from 'motion/react';
 import { Envelope, InstagramLogo, WhatsappLogo } from '@phosphor-icons/react';
 import { CONTACT_CHANNELS } from '../constants';
-
-const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+import { EASE_OUT, panelVariants, panelVariantsReduced } from '../lib/motion';
 
 const CHANNEL_ICONS = {
   email: Envelope,
   whatsapp: WhatsappLogo,
   instagram: InstagramLogo,
 } as const;
-
-const panelVariants = {
-  hidden: { opacity: 0, scale: 0.96, y: 8 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { duration: 0.22, ease: EASE_OUT },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.98,
-    y: -4,
-    transition: { duration: 0.16, ease: EASE_OUT },
-  },
-};
-
-const panelVariantsReduced = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.15, ease: EASE_OUT },
-  },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.12, ease: EASE_OUT },
-  },
-};
 
 const iconContainerVariants = {
   hidden: { opacity: 0 },

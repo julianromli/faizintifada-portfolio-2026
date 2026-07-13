@@ -1,5 +1,6 @@
 import { m } from 'motion/react';
 import { isThemeAwareToolIcon, THEME_AWARE_TOOL_ICONS } from './tool-icons';
+import { EASE_OUT } from '../lib/motion';
 
 type Tool = {
   id: string;
@@ -79,7 +80,7 @@ export function ToolsStack() {
         initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] as const }}
+        transition={{ duration: 0.6, ease: EASE_OUT }}
         className="text-center mb-12 sm:mb-16"
       >
         <h2 className="text-3xl font-semibold tracking-tight text-foreground mb-4">Tools I Use</h2>
@@ -90,7 +91,7 @@ export function ToolsStack() {
         initial={{ opacity: 0, y: 40, scale: 0.9 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] as const }}
+        transition={{ duration: 0.8, ease: EASE_OUT }}
         className="flex items-center justify-start sm:justify-center max-w-full overflow-x-auto sm:overflow-visible no-scrollbar px-4 [&>*+*]:-ml-4 sm:[&>*+*]:-ml-8"
       >
         {TOOLS.map((tool, index) => {
@@ -123,7 +124,7 @@ export function ToolsStack() {
               )}
 
               {/* Tooltip */}
-              <div className="absolute -top-14 bg-foreground text-canvas text-[13px] font-medium px-3.5 py-2 rounded-xl opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 ease-out pointer-events-none whitespace-nowrap shadow-xl flex flex-col items-center">
+              <div className="absolute -top-14 bg-foreground text-canvas text-[13px] font-medium px-3.5 py-2 rounded-xl opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-[opacity,transform] duration-200 ease-out pointer-events-none whitespace-nowrap shadow-xl flex flex-col items-center">
                 {tool.name}
                 <div className="absolute -bottom-1 size-2.5 bg-foreground rotate-45 rounded-sm"></div>
               </div>

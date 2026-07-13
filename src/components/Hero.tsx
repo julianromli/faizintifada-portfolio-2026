@@ -10,6 +10,7 @@ import type { Testimonial } from '../types/testimonial';
 import { HeroImage, HeroImageSkeleton } from './HeroImage';
 import { useContactDialog } from './ContactDialogProvider';
 import { CursorIcon } from './CursorIcon';
+import { EASE_OUT } from '../lib/motion';
 
 export function Hero() {
   const { openContactDialog } = useContactDialog();
@@ -38,14 +39,14 @@ export function Hero() {
           y: 0,
           scale: 1,
           filter: 'blur(0px)',
-          transition: { duration: 0.26, ease: [0.23, 1, 0.32, 1] as const },
+          transition: { duration: 0.26, ease: EASE_OUT },
         },
         exit: {
           opacity: 0,
           y: -6,
           scale: 0.985,
           filter: 'blur(2px)',
-          transition: { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const },
+          transition: { duration: 0.2, ease: EASE_OUT },
         },
       };
 
@@ -266,7 +267,7 @@ export function Hero() {
                   key={testimonial.id}
                   type="button"
                   onClick={() => setActiveTestimonial(idx)}
-                  className="group h-5 -my-1.5 flex items-center justify-center rounded-full focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:ring-foreground/60 transition-all"
+                  className="group h-5 -my-1.5 flex items-center justify-center rounded-full focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:ring-foreground/60"
                   aria-label={`Go to testimonial ${idx + 1}`}
                 >
                   <span

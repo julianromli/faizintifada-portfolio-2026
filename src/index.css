@@ -10,8 +10,9 @@
 @theme {
   --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --animate-fade-in: fade-in 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  --animate-fade-in: fade-in 0.4s var(--ease-out) forwards;
   --animate-skeleton-shimmer: skeleton-shimmer 1.5s ease-in-out infinite;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
   /* Cursor design tokens — light defaults */
   --color-canvas-parchment: #f7f7f4;
@@ -115,7 +116,7 @@
 
 .animate-blur-reveal {
   opacity: 0;
-  animation: blur-reveal 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  animation: blur-reveal 0.6s var(--ease-out) forwards;
 }
 
 @keyframes skeleton-shimmer {
@@ -150,6 +151,12 @@
 @media (prefers-reduced-motion: reduce) {
   .theme-transition {
     transition: none;
+  }
+
+  /* Drop the load-in movement + blur; keep content visible (no fade-from-nothing). */
+  .animate-blur-reveal {
+    animation: none;
+    opacity: 1;
   }
 }
 
@@ -191,7 +198,7 @@ body {
       0px 6px 12px rgba(0, 0, 0, 0.25),
       0px 2px 4px rgba(0, 0, 0, 0.15);
     border: 1px solid #000;
-    transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), background 160ms cubic-bezier(0.23, 1, 0.32, 1);
+    transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), background 160ms var(--ease-out);
   }
   .btn-embossed:hover {
     background: linear-gradient(180deg, #3a3a3a 0%, #171717 100%);

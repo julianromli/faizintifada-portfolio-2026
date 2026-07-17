@@ -1,42 +1,13 @@
 import { useMemo } from 'react';
-import { ArrowRight, Microphone, MapPin, Users, VideoCamera } from '@phosphor-icons/react';
+import { ArrowRight } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
-import type { SpeakingEvent } from '../types/speaking-event';
 import { useSpeakingEvents } from '../hooks/useSpeakingEvents';
+import { deriveSpeakingStats, type SpeakingStat } from '../lib/speaking-stats';
 import { SpeakingGallery } from './SpeakingGallery';
 
 const HOME_EVENT_LIMIT = 9;
 
-interface Stat {
-  icon: typeof Microphone;
-  value: string;
-  label: string;
-}
-
-/** Derives the credibility stat strip from all featured events. */
-export function deriveSpeakingStats(events: SpeakingEvent[]): Stat[] {
-  if (events.length === 0) return [];
-  const totalAudience = events.reduce((sum, e) => sum + (e.audienceCount ?? 0), 0);
-  const hasWebinar = events.some((e) => e.eventType === 'webinar');
-  const hasOffline = events.some((e) => e.eventType === 'offline');
-
-  const formatCount = (n: number) => (n >= 1000 ? `${Math.floor(n / 1000)}k+` : `${n}+`);
-
-  const result: Stat[] = [
-    { icon: Microphone, value: `${events.length}+`, label: 'Events & talks' },
-  ];
-  if (totalAudience > 0) {
-    result.push({ icon: Users, value: formatCount(totalAudience), label: 'Audience reached' });
-  }
-  result.push({
-    icon: hasWebinar && hasOffline ? MapPin : hasWebinar ? VideoCamera : MapPin,
-    value: hasWebinar && hasOffline ? 'Offline & Online' : hasWebinar ? 'Online' : 'Offline',
-    label: 'Formats',
-  });
-  return result;
-}
-
-export function SpeakingStatStrip({ stats }: { stats: Stat[] }) {
+export function SpeakingStatStrip({ stats }: { stats: SpeakingStat[] }) {
   if (stats.length === 0) return null;
   return (
     <div className="mb-8 flex flex-wrap gap-x-8 gap-y-4">

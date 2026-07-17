@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from '@phosphor-icons/react';
 import { useSpeakingEvents } from '../hooks/useSpeakingEvents';
 import { SpeakingGallery } from '../components/SpeakingGallery';
-import { deriveSpeakingStats, SpeakingStatStrip } from '../components/SpeakingEvents';
+import { SpeakingStatStrip } from '../components/SpeakingEvents';
+import { deriveSpeakingStats } from '../lib/speaking-stats';
 import { Seo } from '../components/Seo';
 
 export function Speaking() {

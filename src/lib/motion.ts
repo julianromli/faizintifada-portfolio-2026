@@ -16,3 +16,21 @@ export const panelVariantsReduced: Variants = {
   visible: { opacity: 1, transition: { duration: 0.15, ease: EASE_OUT } },
   exit: { opacity: 0, transition: { duration: 0.12, ease: EASE_OUT } },
 };
+
+/** Stagger container for list/table entrance. */
+export const staggerContainer: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.05 } },
+};
+
+/** Stagger item with a gentle rise — for block/list items (<li>). */
+export const staggerItem: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', duration: 0.3, bounce: 0 } },
+};
+
+/** Stagger item, opacity only — for table rows (<tr>) where transform can disrupt table layout. */
+export const staggerItemOpacity: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.3, ease: EASE_OUT } },
+};

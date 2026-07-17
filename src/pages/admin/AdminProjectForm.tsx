@@ -108,7 +108,7 @@ function CoverPreview({ url, imagePosition }: { url: string; imagePosition: stri
       <img
         src={url}
         alt="Cover preview"
-        className={`mx-auto max-h-64 w-full max-w-xl object-contain ${imagePosition}`}
+        className={`mx-auto max-h-64 w-full max-w-xl object-contain outline outline-1 outline-black/10 dark:outline-white/10 ${imagePosition}`}
         loading="lazy"
         onError={() => setBroken(true)}
       />
@@ -270,7 +270,14 @@ function AdminProjectFormInner({ urlSlug }: { urlSlug: string | undefined }) {
   }
 
   if (loading) {
-    return <p className="text-[15px] text-muted animate-pulse">Loading project…</p>;
+    return (
+      <div className="space-y-3">
+        <div className="skeleton skeleton-shimmer h-4 w-40 rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-10 w-full rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-4 w-32 rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-10 w-full rounded-lg" />
+      </div>
+    );
   }
 
   if (loadError && isEdit) {

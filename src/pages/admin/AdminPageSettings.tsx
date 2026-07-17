@@ -87,7 +87,7 @@ function ImagePreview({ url, className }: { url: string; className: string }) {
     <img
       src={url}
       alt=""
-      className={`w-full border border-border bg-surface ${className}`}
+      className={`w-full bg-surface outline outline-1 outline-black/10 dark:outline-white/10 ${className}`}
       loading="lazy"
       onError={() => setBroken(true)}
     />
@@ -173,7 +173,14 @@ export function AdminPageSettings() {
   }
 
   if (loading) {
-    return <p className="text-[15px] text-muted animate-pulse">Loading page settings…</p>;
+    return (
+      <div className="space-y-3">
+        <div className="skeleton skeleton-shimmer h-4 w-40 rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-10 w-full rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-4 w-32 rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-10 w-full rounded-lg" />
+      </div>
+    );
   }
 
   return (

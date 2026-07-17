@@ -41,7 +41,7 @@ export function AdminLogin() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-shell p-4 font-sans theme-transition">
+    <div className="flex min-h-screen items-center justify-center bg-shell p-4 font-sans antialiased theme-transition">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm theme-transition">
         <div className="mb-8">
           <p className="text-[12px] font-semibold uppercase tracking-wider text-muted">Admin</p>

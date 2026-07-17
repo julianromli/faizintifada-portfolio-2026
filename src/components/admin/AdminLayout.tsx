@@ -6,7 +6,7 @@ export function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-shell font-sans theme-transition">
+    <div className="min-h-screen bg-shell font-sans antialiased theme-transition">
       <AdminSidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
 
       <div className="lg:pl-[240px]">

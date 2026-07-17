@@ -5,6 +5,8 @@ import {
   useState,
   type FormEvent,
 } from 'react';
+import { m } from 'motion/react';
+import { staggerContainer, staggerItem } from '../../lib/motion';
 import { PencilSimple, Plus, Trash } from '@phosphor-icons/react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { adminFetch, cmsUploadThingHeaders, readAdminError } from '../../lib/admin-api';
@@ -402,15 +404,15 @@ export const AdminTestimonialsSection = forwardRef<AdminTestimonialsSectionHandl
       {sorted.length === 0 ? (
         <p className="text-[15px] text-muted">No testimonials yet. Add one to show the hero carousel.</p>
       ) : (
-        <ul className="space-y-3">
+        <m.ul className="space-y-3" initial="hidden" animate="show" variants={staggerContainer}>
           {sorted.map((t) => (
-            <li key={t.id} className={`flex flex-wrap items-center gap-4 ${adminListItem}`}>
+            <m.li key={t.id} className={`flex flex-wrap items-center gap-4 ${adminListItem}`} variants={staggerItem}>
               <img src={t.avatar} alt="" className={`size-12 shrink-0 ${adminImageThumb}`} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[15px] font-medium text-foreground">{t.name}</p>
                 <p className="truncate text-[13px] text-muted">{t.role}</p>
                 <p className="mt-1 line-clamp-2 text-[13px] text-muted">&ldquo;{t.quote}&rdquo;</p>
-                <p className="mt-1 text-[12px] text-muted/70">Sort: {t.sortOrder}</p>
+                <p className="mt-1 tabular-nums text-[12px] text-muted/70">Sort: {t.sortOrder}</p>
               </div>
               <div className="flex shrink-0 gap-2">
                 <button type="button" onClick={() => startEdit(t)} className={adminBtnSecondaryXs}>
@@ -426,9 +428,9 @@ export const AdminTestimonialsSection = forwardRef<AdminTestimonialsSectionHandl
                   Delete
                 </button>
               </div>
-            </li>
+            </m.li>
           ))}
-        </ul>
+        </m.ul>
       )}
     </section>
     </>

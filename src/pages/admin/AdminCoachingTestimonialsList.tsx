@@ -1,4 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { AnimatePresence, m, useReducedMotion } from 'motion/react';
+import {
+  EASE_OUT,
+  panelVariants,
+  panelVariantsReduced,
+  staggerContainer,
+  staggerItemOpacity,
+} from '../../lib/motion';
 import { Star, Trash } from '@phosphor-icons/react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import {
@@ -28,13 +36,20 @@ function RatingStars({ rating }: { rating: number }) {
   return (
     <span className="inline-flex items-center gap-0.5" aria-label={`${rating} dari 5`}>
       {[1, 2, 3, 4, 5].map((v) => (
-        <Star
+        <m.span
           key={v}
-          size={15}
-          weight={v <= rating ? 'fill' : 'regular'}
-          className={v <= rating ? 'text-amber-400' : 'text-muted'}
-          aria-hidden
-        />
+          className="inline-flex"
+          initial={{ opacity: 0, scale: 0.25 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', duration: 0.3, bounce: 0, delay: v * 0.04 }}
+        >
+          <Star
+            size={15}
+            weight={v <= rating ? 'fill' : 'regular'}
+            className={v <= rating ? 'text-amber-400' : 'text-muted'}
+            aria-hidden
+          />
+        </m.span>
       ))}
     </span>
   );
@@ -118,13 +133,18 @@ export function AdminCoachingTestimonialsList() {
         {actionSuccess && <div className={adminAlertSuccess}>{actionSuccess}</div>}
 
         {loading && (
-          <p className="text-[15px] text-muted animate-pulse">Loading testimonials…</p>
+          <div className="space-y-2.5">
+            <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+            <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+            <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+            <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+          </div>
         )}
 
         {!loading && error && (
           <div className="alert alert-warning space-y-2">
             <p>{error}</p>
-            <button type="button" onClick={() => void load()} className="underline font-medium">
+            <button type="button" onClick={() => void load()} className="inline-flex min-h-10 items-center underline font-medium">
               Retry
             </button>
           </div>
@@ -146,19 +166,20 @@ export function AdminCoachingTestimonialsList() {
                   <th className="px-4 py-3 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className={`divide-y ${adminTableDivide}`}>
+              <m.tbody className={`divide-y ${adminTableDivide}`} initial="hidden" animate="show" variants={staggerContainer}>
                 {items.map((t) => (
-                  <tr
+                  <m.tr
                     key={t.id}
                     className={`${adminTableRow} cursor-pointer hover:bg-surface theme-transition`}
                     onClick={() => setDetail(t)}
+                    variants={staggerItemOpacity}
                   >
                     <td className="px-4 py-3 text-foreground">{t.name}</td>
                     <td className="px-4 py-3 text-muted">{t.role}</td>
                     <td className="px-4 py-3">
                       <RatingStars rating={t.rating} />
                     </td>
-                    <td className="px-4 py-3 text-muted whitespace-nowrap">
+                    <td className="px-4 py-3 tabular-nums text-muted whitespace-nowrap">
                       {formatDate(t.createdAt)}
                     </td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -175,9 +196,9 @@ export function AdminCoachingTestimonialsList() {
                         Delete
                       </button>
                     </td>
-                  </tr>
+                  </m.tr>
                 ))}
-              </tbody>
+              </m.tbody>
             </table>
           </div>
         )}
@@ -241,13 +262,17 @@ function DetailDialogShell({
   children: ReactNode;
 }) {
   const [dialogEl, setDialogEl] = useState<HTMLDialogElement | null>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const panelMotion = shouldReduceMotion ? panelVariantsReduced : panelVariants;
+
+  function closeDialog() {
+    if (dialogEl?.open) dialogEl.close();
+  }
 
   useEffect(() => {
     if (!dialogEl) return;
     if (open) {
       if (!dialogEl.open) dialogEl.showModal();
-    } else if (dialogEl.open) {
-      dialogEl.close();
     }
   }, [open, dialogEl]);
 
@@ -255,23 +280,44 @@ function DetailDialogShell({
     <dialog
       ref={setDialogEl}
       aria-label="Testimonial detail"
-      className="fixed inset-0 z-50 m-auto w-full max-w-lg rounded-3xl border border-border bg-card p-0 shadow-xl backdrop:bg-black/40 backdrop:backdrop-blur-[2px] open:flex open:flex-col theme-transition"
+      className="fixed inset-0 z-50 m-0 flex items-center justify-center bg-transparent p-0 backdrop:bg-transparent"
       onCancel={(e) => {
         e.preventDefault();
         onClose();
       }}
     >
-      <div className="flex items-center justify-between border-b border-border px-6 py-4">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground">Testimonial</h2>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-full px-4 py-2 text-[14px] font-medium text-muted hover:bg-surface hover:text-foreground theme-transition"
-        >
-          Close
-        </button>
-      </div>
-      <div className="max-h-[70vh] overflow-y-auto px-6 py-6">{children}</div>
+      <AnimatePresence onExitComplete={closeDialog}>
+        {open ? (
+          <m.div key="detail-root" className="fixed inset-0 flex items-center justify-center p-4">
+            <m.div
+              className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: EASE_OUT }}
+            />
+            <m.div
+              className="relative flex w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-xl theme-transition"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={panelMotion}
+            >
+              <div className="flex items-center justify-between border-b border-border px-6 py-4">
+                <h2 className="text-balance text-lg font-semibold tracking-tight text-foreground">Testimonial</h2>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="inline-flex min-h-10 items-center rounded-full px-4 py-2 text-[14px] font-medium text-muted hover:bg-surface hover:text-foreground active:scale-[0.96] transition-transform theme-transition"
+                >
+                  Close
+                </button>
+              </div>
+              <div className="max-h-[70vh] overflow-y-auto px-6 py-6">{children}</div>
+            </m.div>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
     </dialog>
   );
 }

@@ -17,7 +17,11 @@ export function EventBadge({ type }: { type: SpeakingEvent['eventType'] }) {
   const isWebinar = type === 'webinar';
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-black backdrop-blur">
-      {isWebinar ? <VideoCamera size={12} weight="fill" /> : <Microphone size={12} weight="fill" />}
+      {isWebinar ? (
+        <VideoCamera size={12} weight="fill" aria-hidden="true" />
+      ) : (
+        <Microphone size={12} weight="fill" aria-hidden="true" />
+      )}
       {isWebinar ? 'Webinar' : 'Offline'}
     </span>
   );
@@ -83,7 +87,7 @@ export function SpeakingGallery({ events }: SpeakingGalleryProps) {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 auto-rows-auto">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-4 auto-rows-auto">
         {events.map((event, index) => (
           <EventTile
             key={event.id}

@@ -38,11 +38,11 @@ export function AdminPageHeader({ title, description, breadcrumb, action }: Admi
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           {!breadcrumb ? (
-            <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{title}</h1>
+            <h1 className="text-balance text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{title}</h1>
           ) : (
             <h1 className="sr-only">{title}</h1>
           )}
-          {description ? <p className="mt-1 text-[14px] text-muted sm:text-[15px]">{description}</p> : null}
+          {description ? <p className="mt-1 text-pretty text-[14px] text-muted sm:text-[15px]">{description}</p> : null}
         </div>
 
         {action ? (

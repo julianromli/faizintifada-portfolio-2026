@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { m } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { staggerContainer, staggerItemOpacity } from '../../lib/motion';
 import { PencilSimple, Plus, Trash } from '@phosphor-icons/react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
@@ -101,12 +103,19 @@ export function AdminProjectList() {
 
         {actionSuccess && <div className={adminAlertSuccess}>{actionSuccess}</div>}
 
-        {loading && <p className="text-[15px] text-muted animate-pulse">Loading projects…</p>}
+        {loading && (
+          <div className="space-y-2.5">
+            <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+            <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+            <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+            <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+          </div>
+        )}
 
         {!loading && error && (
           <div className={`${adminAlertWarning} space-y-2`}>
             <p>{error.message}</p>
-            <button type="button" onClick={() => retry()} className="underline font-medium">
+            <button type="button" onClick={() => retry()} className="inline-flex min-h-10 items-center underline font-medium">
               Retry
             </button>
           </div>
@@ -128,17 +137,17 @@ export function AdminProjectList() {
                   <th className="px-4 py-3 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className={`divide-y ${adminTableDivide}`}>
+              <m.tbody className={`divide-y ${adminTableDivide}`} initial="hidden" animate="show" variants={staggerContainer}>
                 {visibleProjects.map((p) => (
-                  <tr key={p.slug} className={adminTableRow}>
+                  <m.tr key={p.slug} className={adminTableRow} variants={staggerItemOpacity}>
                     <td className="px-4 py-3 font-mono text-[13px] text-foreground">{p.slug}</td>
                     <td className="px-4 py-3 text-foreground">{p.title}</td>
                     <td className="px-4 py-3 text-muted">{p.featured ? 'Yes' : 'No'}</td>
-                    <td className="px-4 py-3 text-muted">{p.sortOrder ?? 0}</td>
+                    <td className="px-4 py-3 tabular-nums text-muted">{p.sortOrder ?? 0}</td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
                       <Link
                         to={`/admin/projects/edit/${encodeURIComponent(p.slug)}`}
-                        className="inline-flex items-center gap-1 pr-4 text-foreground hover:text-foreground/80 font-medium theme-transition"
+                        className="inline-flex min-h-10 items-center gap-1 pr-4 text-foreground hover:text-foreground/80 font-medium theme-transition"
                       >
                         <PencilSimple size={18} aria-hidden />
                         Edit
@@ -153,9 +162,9 @@ export function AdminProjectList() {
                         Delete
                       </button>
                     </td>
-                  </tr>
+                  </m.tr>
                 ))}
-              </tbody>
+              </m.tbody>
             </table>
           </div>
         )}

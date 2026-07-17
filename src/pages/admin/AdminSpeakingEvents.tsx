@@ -1,4 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { AnimatePresence, m } from 'motion/react';
+import { staggerContainer, staggerItem } from '../../lib/motion';
 import { Microphone, PencilSimple, Plus, Trash, VideoCamera } from '@phosphor-icons/react';
 import { adminFetch, cmsUploadThingHeaders, readAdminError } from '../../lib/admin-api';
 import {
@@ -269,7 +271,14 @@ export function AdminSpeakingEvents() {
   }
 
   if (loading) {
-    return <p className="text-[15px] text-muted animate-pulse">Loading speaking events…</p>;
+    return (
+      <div className="space-y-2.5">
+        <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+      </div>
+    );
   }
 
   return (
@@ -502,18 +511,40 @@ export function AdminSpeakingEvents() {
       {sorted.length === 0 ? (
         <p className="text-[15px] text-muted">No events yet. Add one to show the Speaking &amp; Events section.</p>
       ) : (
-        <ul className="space-y-3">
+        <m.ul className="space-y-3" initial="hidden" animate="show" variants={staggerContainer}>
           {sorted.map((e) => (
-            <li key={e.id} className={`flex flex-wrap items-center gap-4 ${adminListItem}`}>
+            <m.li key={e.id} className={`flex flex-wrap items-center gap-4 ${adminListItem}`} variants={staggerItem}>
               <img src={e.image} alt="" className={`size-14 shrink-0 ${adminImageThumb} rounded-xl`} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-muted">
-                    {e.eventType === 'webinar' ? (
-                      <VideoCamera size={11} weight="fill" />
-                    ) : (
-                      <Microphone size={11} weight="fill" />
-                    )}
+                    <span className="relative inline-flex size-[11px] items-center justify-center">
+                      <AnimatePresence mode="wait" initial={false}>
+                        {e.eventType === 'webinar' ? (
+                          <m.span
+                            key="webinar"
+                            className="absolute inset-0 flex items-center justify-center"
+                            initial={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+                            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+                            transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+                          >
+                            <VideoCamera size={11} weight="fill" />
+                          </m.span>
+                        ) : (
+                          <m.span
+                            key="offline"
+                            className="absolute inset-0 flex items-center justify-center"
+                            initial={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+                            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+                            transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+                          >
+                            <Microphone size={11} weight="fill" />
+                          </m.span>
+                        )}
+                      </AnimatePresence>
+                    </span>
                     {e.eventType === 'webinar' ? 'Webinar' : 'Offline'}
                   </span>
                   {!e.featured && (
@@ -524,7 +555,7 @@ export function AdminSpeakingEvents() {
                 <p className="truncate text-[13px] text-muted">
                   {[e.organizer, e.location, e.eventDate].filter(Boolean).join(' · ')}
                 </p>
-                <p className="mt-1 text-[12px] text-muted/70">
+                <p className="mt-1 tabular-nums text-[12px] text-muted/70">
                   Sort: {e.sortOrder}
                   {e.audienceCount ? ` · ${e.audienceCount} audience` : ''}
                 </p>
@@ -543,9 +574,9 @@ export function AdminSpeakingEvents() {
                   Delete
                 </button>
               </div>
-            </li>
+            </m.li>
           ))}
-        </ul>
+        </m.ul>
       )}
     </div>
   );

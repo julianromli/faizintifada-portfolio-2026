@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { AnimatePresence, m } from 'motion/react';
 import { ArrowSquareOut, List, Moon, SignOut, Sun, X } from '@phosphor-icons/react';
 import { ADMIN_NAV_GROUPS } from '../../lib/admin-nav';
 import { SEO } from '../../lib/seo';
@@ -33,16 +34,42 @@ function SidebarFooter() {
       <button
         type="button"
         onClick={toggleTheme}
-        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] font-medium text-muted hover:bg-surface/60 hover:text-foreground theme-transition"
+        className="flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] font-medium text-muted hover:bg-surface/60 hover:text-foreground theme-transition"
       >
-        {isDark ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
+        <span className="relative inline-flex size-[18px] items-center justify-center">
+          <AnimatePresence mode="wait" initial={false}>
+            {isDark ? (
+              <m.span
+                key="sun"
+                className="absolute inset-0 flex items-center justify-center"
+                initial={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+                transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+              >
+                <Sun size={18} aria-hidden />
+              </m.span>
+            ) : (
+              <m.span
+                key="moon"
+                className="absolute inset-0 flex items-center justify-center"
+                initial={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+                transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+              >
+                <Moon size={18} aria-hidden />
+              </m.span>
+            )}
+          </AnimatePresence>
+        </span>
         {isDark ? 'Light mode' : 'Dark mode'}
       </button>
       <a
         href="/"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] font-medium text-muted hover:bg-surface/60 hover:text-foreground theme-transition"
+        className="flex min-h-10 items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] font-medium text-muted hover:bg-surface/60 hover:text-foreground theme-transition"
       >
         <ArrowSquareOut size={18} aria-hidden />
         View site
@@ -50,7 +77,7 @@ function SidebarFooter() {
       <button
         type="button"
         onClick={signOut}
-        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] font-medium text-muted hover:bg-surface/60 hover:text-foreground theme-transition"
+        className="flex min-h-10 w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] font-medium text-muted hover:bg-surface/60 hover:text-foreground theme-transition"
       >
         <SignOut size={18} aria-hidden />
         Sign out
@@ -128,7 +155,7 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
             type="button"
             onClick={onMobileClose}
             aria-label="Close menu"
-            className="flex size-9 items-center justify-center rounded-lg text-muted hover:bg-surface hover:text-foreground theme-transition"
+            className="flex size-10 items-center justify-center rounded-lg text-muted hover:bg-surface hover:text-foreground theme-transition"
           >
             <X size={20} aria-hidden />
           </button>

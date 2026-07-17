@@ -46,7 +46,14 @@ export function AdminTestimonials() {
   }, []);
 
   if (loading) {
-    return <p className="text-[15px] text-muted animate-pulse">Loading testimonials…</p>;
+    return (
+      <div className="space-y-2.5">
+        <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+      </div>
+    );
   }
 
   return (

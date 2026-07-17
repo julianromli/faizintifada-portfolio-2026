@@ -5,7 +5,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Check, CaretUpDown } from '@phosphor-icons/react';
+import { AnimatePresence, m } from 'motion/react';
+import { Check, CaretDown } from '@phosphor-icons/react';
 
 export interface SelectOption {
   value: string;
@@ -180,25 +181,30 @@ export function Select({
         disabled={disabled}
         onClick={() => (open ? close() : openMenu())}
         onKeyDown={onKeyDown}
-        className="flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-transparent px-4 py-2.5 text-left text-[15px] text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 disabled:opacity-60 theme-transition"
+        className="flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-transparent px-4 py-2.5 text-left text-[15px] text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 active:scale-[0.96] transition-transform disabled:opacity-60 theme-transition"
       >
         <span className={`flex min-w-0 items-center gap-2 ${selected ? '' : 'text-muted'}`}>
           {selected?.icon}
           <span className="truncate">{selected ? selected.label : placeholder}</span>
         </span>
-        <CaretUpDown size={16} className="shrink-0 text-muted" aria-hidden />
+        <CaretDown size={16} className={`shrink-0 text-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`} aria-hidden />
       </button>
 
-      {open && (
-        <ul
-          id={listboxId}
-          role="listbox"
-          aria-activedescendant={
-            activeIndex >= 0 ? `${listboxId}-opt-${activeIndex}` : undefined
-          }
-          tabIndex={-1}
-          className="absolute z-50 mt-1.5 max-h-64 w-full overflow-auto rounded-xl border border-border bg-card p-1.5 shadow-elevated focus:outline-none"
-        >
+      <AnimatePresence>
+        {open && (
+          <m.ul
+            id={listboxId}
+            role="listbox"
+            aria-activedescendant={
+              activeIndex >= 0 ? `${listboxId}-opt-${activeIndex}` : undefined
+            }
+            tabIndex={-1}
+            className="absolute z-50 mt-1.5 max-h-64 w-full overflow-auto rounded-xl border border-border bg-card p-1.5 shadow-elevated focus:outline-none"
+            initial={{ opacity: 0, scale: 0.96, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: -2 }}
+            transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+          >
           {options.map((opt, index) => {
             const isSelected = opt.value === value;
             const isActive = index === activeIndex;
@@ -213,7 +219,7 @@ export function Select({
                 aria-selected={isSelected}
                 onClick={() => commit(index)}
                 onMouseEnter={() => setActiveIndex(index)}
-                className={`flex cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-[14px] theme-transition ${
+                className={`flex cursor-pointer items-center justify-between gap-2 rounded-md px-3 py-2 text-[14px] theme-transition ${
                   isActive ? 'bg-surface text-foreground' : 'text-foreground'
                 }`}
               >
@@ -227,8 +233,9 @@ export function Select({
               </li>
             );
           })}
-        </ul>
-      )}
+          </m.ul>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

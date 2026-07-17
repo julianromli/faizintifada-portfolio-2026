@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { m } from 'motion/react';
+import { staggerContainer, staggerItemOpacity } from '../../lib/motion';
 import { PencilSimple, Plus, Trash } from '@phosphor-icons/react';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
@@ -202,12 +204,19 @@ export function AdminCoupons() {
         }}
       />
 
-      {loading && <p className="text-[15px] text-muted animate-pulse">Loading coupons…</p>}
+      {loading && (
+        <div className="space-y-2.5">
+          <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+          <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+          <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+          <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+        </div>
+      )}
 
       {!loading && error && (
         <div className={`${adminAlertWarning} space-y-2`}>
           <p>{error}</p>
-          <button type="button" onClick={() => void load()} className="underline font-medium">
+          <button type="button" onClick={() => void load()} className="inline-flex min-h-10 items-center underline font-medium">
             Retry
           </button>
         </div>
@@ -322,11 +331,11 @@ export function AdminCoupons() {
                 <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody className={`divide-y ${adminTableDivide}`}>
+            <m.tbody className={`divide-y ${adminTableDivide}`} initial="hidden" animate="show" variants={staggerContainer}>
               {items.map((coupon) => (
-                <tr key={coupon.id} className={adminTableRow}>
+                <m.tr key={coupon.id} className={adminTableRow} variants={staggerItemOpacity}>
                   <td className="px-4 py-3 font-mono text-foreground">{coupon.code}</td>
-                  <td className="px-4 py-3 text-muted">{formatDiscount(coupon)}</td>
+                  <td className="px-4 py-3 tabular-nums text-muted">{formatDiscount(coupon)}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full px-2.5 py-0.5 text-[12px] font-medium ${
@@ -338,7 +347,7 @@ export function AdminCoupons() {
                       {coupon.active ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-muted whitespace-nowrap">
+                  <td className="px-4 py-3 tabular-nums text-muted whitespace-nowrap">
                     {formatExpiry(coupon.expiresAt)}
                   </td>
                   <td className="px-4 py-3">
@@ -361,9 +370,9 @@ export function AdminCoupons() {
                       </button>
                     </div>
                   </td>
-                </tr>
+                </m.tr>
               ))}
-            </tbody>
+            </m.tbody>
           </table>
         </div>
       )}

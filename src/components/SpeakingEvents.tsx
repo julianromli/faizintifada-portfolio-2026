@@ -44,7 +44,7 @@ export function SpeakingStatStrip({ stats }: { stats: Stat[] }) {
         const Icon = stat.icon;
         return (
           <div key={stat.label} className="flex items-center gap-3">
-            <Icon size={22} className="text-foreground" weight="regular" />
+            <Icon size={22} className="text-foreground" weight="regular" aria-hidden="true" />
             <div>
               <p className="text-[18px] font-semibold leading-none text-foreground">{stat.value}</p>
               <p className="mt-1 text-[13px] font-medium text-muted">{stat.label}</p>
@@ -73,9 +73,9 @@ export function SpeakingEvents() {
     <section id="speaking">
       <div className="mb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground">Speaking &amp; Events</h2>
+          <h2 className="text-balance text-3xl font-semibold tracking-tight text-foreground">Speaking &amp; Events</h2>
           <div className="flex flex-col gap-3 sm:items-end">
-            <p className="max-w-md text-[15px] leading-relaxed text-muted">
+            <p className="max-w-md text-[15px] font-medium leading-relaxed text-muted">
               Sharing about AI at offline events and online webinars — from hands-on workshops to keynote talks.
             </p>
             {hasMore && (
@@ -84,7 +84,7 @@ export function SpeakingEvents() {
                 className="flex items-center gap-x-2 text-[15px] font-medium text-muted hover:text-foreground theme-transition group"
               >
                 <span>View all</span>
-                <ArrowRight size={16} className="text-muted group-hover:text-foreground theme-transition" />
+                <ArrowRight size={16} className="text-muted group-hover:text-foreground theme-transition" aria-hidden="true" />
               </Link>
             )}
           </div>

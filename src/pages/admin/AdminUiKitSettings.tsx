@@ -112,7 +112,7 @@ function VideoPreview({ url }: { url: string }) {
   return (
     <div className={adminPreviewFrame}>
       <video
-        className="aspect-video h-full w-full object-cover"
+        className="aspect-video h-full w-full object-cover outline outline-1 outline-black/10 dark:outline-white/10"
         controls
         preload="metadata"
         playsInline
@@ -217,7 +217,14 @@ export function AdminUiKitSettings() {
   }
 
   if (loading) {
-    return <p className="text-[15px] text-muted animate-pulse">Loading UI Kit media settings…</p>;
+    return (
+      <div className="space-y-3">
+        <div className="skeleton skeleton-shimmer h-4 w-40 rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-10 w-full rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-4 w-32 rounded-lg" />
+        <div className="skeleton skeleton-shimmer h-10 w-full rounded-lg" />
+      </div>
+    );
   }
 
   return (

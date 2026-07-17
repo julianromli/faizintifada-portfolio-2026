@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { m } from 'motion/react';
+import { staggerContainer, staggerItemOpacity } from '../../lib/motion';
 import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
 import { fetchOrders } from '../../lib/orders-admin-api';
 import {
@@ -67,12 +69,19 @@ export function AdminOrders() {
         description="Faiz UI checkout orders. Newest first. Paid orders are fulfilled by email automatically."
       />
 
-      {loading && <p className="text-[15px] text-muted animate-pulse">Loading orders…</p>}
+      {loading && (
+        <div className="space-y-2.5">
+          <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+          <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+          <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+          <div className="skeleton skeleton-shimmer h-9 w-full rounded-lg" />
+        </div>
+      )}
 
       {!loading && error && (
         <div className="alert alert-warning space-y-2">
           <p>{error}</p>
-          <button type="button" onClick={() => void load()} className="underline font-medium">
+          <button type="button" onClick={() => void load()} className="inline-flex min-h-10 items-center underline font-medium">
             Retry
           </button>
         </div>
@@ -95,29 +104,29 @@ export function AdminOrders() {
                 <th className="px-4 py-3 font-semibold">Created</th>
               </tr>
             </thead>
-            <tbody className={`divide-y ${adminTableDivide}`}>
+            <m.tbody className={`divide-y ${adminTableDivide}`} initial="hidden" animate="show" variants={staggerContainer}>
               {items.map((o) => (
-                <tr key={o.id} className={adminTableRow}>
+                <m.tr key={o.id} className={adminTableRow} variants={staggerItemOpacity}>
                   <td className="px-4 py-3">
                     <span className="text-foreground">{o.name || '—'}</span>
                     <span className="block font-mono text-[13px] text-muted">{o.email}</span>
                   </td>
-                  <td className="px-4 py-3 text-muted whitespace-nowrap">{formatAmount(o)}</td>
+                  <td className="px-4 py-3 font-mono tabular-nums text-muted whitespace-nowrap">{formatAmount(o)}</td>
                   <td className="px-4 py-3 font-mono text-[13px] text-muted">
                     {o.couponCode ?? '—'}
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={o.status} />
                   </td>
-                  <td className="px-4 py-3 text-muted whitespace-nowrap">
+                  <td className="px-4 py-3 tabular-nums text-muted whitespace-nowrap">
                     {o.emailSentAt ? formatDate(o.emailSentAt) : '—'}
                   </td>
-                  <td className="px-4 py-3 text-muted whitespace-nowrap">
+                  <td className="px-4 py-3 tabular-nums text-muted whitespace-nowrap">
                     {formatDate(o.createdAt)}
                   </td>
-                </tr>
+                </m.tr>
               ))}
-            </tbody>
+            </m.tbody>
           </table>
         </div>
       )}

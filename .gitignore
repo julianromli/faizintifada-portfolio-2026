@@ -15,3 +15,4 @@ coverage/
 
 # local browser automation screenshots
 assets/admin-test/
+.firecrawl/

@@ -1,17 +1,25 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
-import { Home } from './pages/Home';
-import { Projects } from './pages/Projects';
-import { Coaching } from './pages/Coaching';
-import { Speaking } from './pages/Speaking';
-import { UiKit } from './pages/UiKit';
-import { UiKitThankYou } from './pages/UiKitThankYou';
-import { ProjectDetail } from './pages/ProjectDetail';
-import { NotFound } from './pages/NotFound';
-import { AdminApp } from './pages/admin/AdminApp';
 import { BodyOverlayScrollbars } from './components/BodyOverlayScrollbars';
 import { LazyMotionProvider } from './components/LazyMotionProvider';
+
+const Home = lazy(() => import('./pages/Home').then((mod) => ({ default: mod.Home })));
+const Projects = lazy(() => import('./pages/Projects').then((mod) => ({ default: mod.Projects })));
+const Coaching = lazy(() => import('./pages/Coaching').then((mod) => ({ default: mod.Coaching })));
+const Speaking = lazy(() => import('./pages/Speaking').then((mod) => ({ default: mod.Speaking })));
+const UiKit = lazy(() => import('./pages/UiKit').then((mod) => ({ default: mod.UiKit })));
+const UiKitThankYou = lazy(() =>
+  import('./pages/UiKitThankYou').then((mod) => ({ default: mod.UiKitThankYou })),
+);
+const ProjectDetail = lazy(() =>
+  import('./pages/ProjectDetail').then((mod) => ({ default: mod.ProjectDetail })),
+);
+const NotFound = lazy(() => import('./pages/NotFound').then((mod) => ({ default: mod.NotFound })));
+const AdminApp = lazy(() =>
+  import('./pages/admin/AdminApp').then((mod) => ({ default: mod.AdminApp })),
+);
 
 function PublicShell({ children }: { children: React.ReactNode }) {
   return (
@@ -31,21 +39,34 @@ export default function App() {
       <Router>
         <BodyOverlayScrollbars />
         <Routes>
-          <Route path="/admin/*" element={<AdminApp />} />
+          <Route
+            path="/admin/*"
+            element={
+              <Suspense
+                fallback={<p className="py-12 text-[15px] text-muted animate-pulse">Loading…</p>}
+              >
+                <AdminApp />
+              </Suspense>
+            }
+          />
           <Route
             path="*"
             element={
               <PublicShell>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/projects" element={<Projects />} />
-                  <Route path="/speaking" element={<Speaking />} />
-                  <Route path="/coaching" element={<Coaching />} />
-                  <Route path="/ui" element={<UiKit />} />
-                  <Route path="/ui/thank-you" element={<UiKitThankYou />} />
-                  <Route path="/project/:slug" element={<ProjectDetail />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <Suspense
+                  fallback={<p className="py-12 text-[15px] text-muted animate-pulse">Loading…</p>}
+                >
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/speaking" element={<Speaking />} />
+                    <Route path="/coaching" element={<Coaching />} />
+                    <Route path="/ui" element={<UiKit />} />
+                    <Route path="/ui/thank-you" element={<UiKitThankYou />} />
+                    <Route path="/project/:slug" element={<ProjectDetail />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
               </PublicShell>
             }
           />

@@ -1,3 +1,4 @@
+import './uploadthing.css';
 import { generateUploadDropzone } from '@uploadthing/react';
 import type { AppFileRouter } from '../../server/uploadthing';
 import { apiUrl } from '../lib/api';

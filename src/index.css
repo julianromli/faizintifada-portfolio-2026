@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@import "uploadthing/tw/v4";
-
 @font-face {
   font-family: 'Satoshi';
   font-style: normal;
@@ -44,8 +42,6 @@
   font-display: swap;
   src: url('/fonts/jetbrains-mono-latin.woff2') format('woff2');
 }
-
-@source "../node_modules/@uploadthing/react/dist";
 
 @custom-variant dark (&:where(.dark, .dark *));
 

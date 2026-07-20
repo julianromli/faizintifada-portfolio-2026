@@ -16,6 +16,13 @@ export interface CompressImagesOptions {
   maxSizeMB?: number;
 }
 
+/** Hero testimonial thumbs are size-10 (40px); 96px covers ~2.4× retina + scale-110. */
+const TESTIMONIAL_AVATAR_MAX_EDGE = 96;
+/** Soft ceiling; 96px AVIF/WebP is typically a few KB. */
+const TESTIMONIAL_AVATAR_MAX_MB = 0.05;
+const TESTIMONIAL_AVATAR_AVIF_QUALITY = 0.6;
+const TESTIMONIAL_AVATAR_WEBP_QUALITY = 0.75;
+
 export async function compressImages(
   files: File[],
   options?: CompressImagesOptions,
@@ -43,4 +50,61 @@ export async function compressImages(
       }
     }),
   );
+}
+
+function stemFromFileName(name: string): string {
+  const stem = name.replace(/\.[^.]+$/, '').trim();
+  return stem || 'avatar';
+}
+
+function asNamedFile(blob: Blob, fileName: string, mime: string): File {
+  return new File([blob], fileName, { type: mime, lastModified: Date.now() });
+}
+
+/**
+ * Resize + convert testimonial avatars before UploadThing.
+ * Prefers AVIF; falls back to WebP when the browser cannot encode AVIF.
+ */
+export async function compressTestimonialAvatars(files: File[]): Promise<File[]> {
+  return Promise.all(files.map(compressTestimonialAvatar));
+}
+
+async function compressTestimonialAvatar(file: File): Promise<File> {
+  if (!file.type.startsWith('image/')) {
+    return file;
+  }
+
+  const stem = stemFromFileName(file.name);
+
+  try {
+    const avif = await imageCompression(file, {
+      maxWidthOrHeight: TESTIMONIAL_AVATAR_MAX_EDGE,
+      maxSizeMB: TESTIMONIAL_AVATAR_MAX_MB,
+      useWebWorker: true,
+      fileType: 'image/avif',
+      initialQuality: TESTIMONIAL_AVATAR_AVIF_QUALITY,
+    });
+    if (avif.type === 'image/avif') {
+      return asNamedFile(avif, `${stem}.avif`, 'image/avif');
+    }
+  } catch {
+    // Encode unsupported or compression failed — try WebP next.
+  }
+
+  try {
+    const webp = await imageCompression(file, {
+      maxWidthOrHeight: TESTIMONIAL_AVATAR_MAX_EDGE,
+      maxSizeMB: TESTIMONIAL_AVATAR_MAX_MB,
+      useWebWorker: true,
+      fileType: 'image/webp',
+      initialQuality: TESTIMONIAL_AVATAR_WEBP_QUALITY,
+    });
+    if (webp.type === 'image/webp') {
+      return asNamedFile(webp, `${stem}.webp`, 'image/webp');
+    }
+  } catch {
+    // Keep original so the upload still succeeds.
+  }
+
+  return file;
 }

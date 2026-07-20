@@ -27,6 +27,7 @@ import {
   adminTextError,
 } from '../../lib/admin-styles';
 import type { Testimonial } from '../../types/testimonial';
+import { compressTestimonialAvatars } from '../../lib/compress-images';
 import { ProjectImageDropzone } from '../../uploadthing/client';
 
 type FormState = {
@@ -316,6 +317,7 @@ export const AdminTestimonialsSection = forwardRef<AdminTestimonialsSectionHandl
                 endpoint="pageImage"
                 headers={cmsUploadThingHeaders}
                 aria-label="Upload testimonial avatar"
+                onBeforeUploadBegin={(files) => compressTestimonialAvatars(files)}
                 onClientUploadComplete={(res) => {
                   const url = res[0]?.url;
                   if (typeof url === 'string') {
@@ -326,6 +328,9 @@ export const AdminTestimonialsSection = forwardRef<AdminTestimonialsSectionHandl
                 onUploadError={(err) => setAvatarUploadError(err.message)}
                 className={adminDropzoneClass}
               />
+              <p className="mt-2 text-[13px] text-muted">
+                Compressed to 96×96 AVIF (WebP fallback) on upload.
+              </p>
               {avatarUploadError && <p className={adminTextError}>{avatarUploadError}</p>}
             </div>
             <ImagePreview url={form.avatar} className="rounded-xl" />

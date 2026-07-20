@@ -1,8 +1,11 @@
 import { ArrowRight } from '@phosphor-icons/react';
-import { useMemo } from 'react';
+import { lazy, Suspense, useMemo } from 'react';
 import type { GithubContribution } from './unlumen-ui/github-graph';
-import { GithubGraph } from './unlumen-ui/github-graph';
 import { useGitHubContributions } from '../hooks/useGitHubContributions';
+
+const GithubGraph = lazy(() =>
+  import('./unlumen-ui/github-graph').then((mod) => ({ default: mod.GithubGraph })),
+);
 
 export function GitHubContributions() {
   const { contributions, loading, error } = useGitHubContributions();
@@ -42,18 +45,20 @@ export function GitHubContributions() {
       </div>
 
       <div className="overflow-x-auto rounded-[1rem] border border-border bg-card p-5 theme-transition sm:p-6">
-        <GithubGraph
-          account={contributions.username}
-          data={data}
-          months={12}
-          showAccount={false}
-          showLegend
-          animation="wave"
-          ambientEffect="twinkle"
-          cellSize={14}
-          cellGap={3}
-          className="mx-auto"
-        />
+        <Suspense fallback={null}>
+          <GithubGraph
+            account={contributions.username}
+            data={data}
+            months={12}
+            showAccount={false}
+            showLegend
+            animation="wave"
+            ambientEffect="twinkle"
+            cellSize={14}
+            cellGap={3}
+            className="mx-auto"
+          />
+        </Suspense>
       </div>
     </section>
   );

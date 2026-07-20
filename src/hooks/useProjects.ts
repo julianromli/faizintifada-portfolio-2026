@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { Project } from '../types/project';
+import type { ProjectSummary } from '../types/project';
 import { apiUrl } from '../lib/api';
 
 interface UseProjectsState {
-  projects: Project[];
+  projects: ProjectSummary[];
   loading: boolean;
   error: Error | null;
 }
@@ -27,7 +27,7 @@ export function useProjects(options?: { featuredOnly?: boolean }): UseProjectsSt
       if (!res.ok) {
         throw new Error(`Projects request failed (${res.status})`);
       }
-      const data = (await res.json()) as Project[];
+      const data = (await res.json()) as ProjectSummary[];
       setState({ projects: data, loading: false, error: null });
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));

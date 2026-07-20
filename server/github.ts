@@ -15,8 +15,6 @@ const CONTRIBUTIONS_QUERY = `
             contributionDays {
               contributionCount
               date
-              weekday
-              color
             }
           }
         }
@@ -24,6 +22,11 @@ const CONTRIBUTIONS_QUERY = `
     }
   }
 `;
+
+interface GitHubGraphQLContributionDay {
+  contributionCount: number;
+  date: string;
+}
 
 interface GitHubGraphQLResponse {
   data?: {
@@ -33,7 +36,7 @@ interface GitHubGraphQLResponse {
       contributionsCollection: {
         contributionCalendar: {
           totalContributions: number;
-          weeks: GitHubContributions['weeks'];
+          weeks: Array<{ contributionDays: GitHubGraphQLContributionDay[] }>;
         };
       };
     } | null;
@@ -82,6 +85,11 @@ export async function fetchGitHubContributions(): Promise<GitHubContributions> {
     username: user.login,
     profileUrl: user.url,
     totalContributions: calendar.totalContributions,
-    weeks: calendar.weeks,
+    weeks: calendar.weeks.map((week) => ({
+      contributionDays: week.contributionDays.map((day) => ({
+        date: day.date,
+        contributionCount: day.contributionCount,
+      })),
+    })),
   };
 }

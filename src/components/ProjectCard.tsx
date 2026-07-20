@@ -45,6 +45,8 @@ export function ProjectCard({
               <img
                 src={image}
                 alt={title}
+                loading="lazy"
+                decoding="async"
                 className={`w-full h-full object-cover ${imagePosition} transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.035]`}
               />
             </div>
@@ -67,6 +69,8 @@ export function ProjectCard({
               <img
                 src={image}
                 alt={title}
+                loading="lazy"
+                decoding="async"
                 className={`w-full h-full object-cover ${imagePosition} transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.035]`}
               />
               <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:bg-black/[0.03]" />

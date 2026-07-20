@@ -7,7 +7,7 @@ import {
   type PageSettings,
 } from '../lib/page-settings';
 import type { Testimonial } from '../types/testimonial';
-import { HeroImage, HeroImageSkeleton, HeroStackImageSkeleton } from './HeroImage';
+import { HeroImage } from './HeroImage';
 import { useContactDialog } from './ContactDialogProvider';
 import { CursorIcon } from './CursorIcon';
 
@@ -16,8 +16,7 @@ export function Hero() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [testimonialsLoading, setTestimonialsLoading] = useState(true);
-  const [pageSettings, setPageSettings] = useState<PageSettings | null>(null);
-  const [settingsLoading, setSettingsLoading] = useState(true);
+  const [pageSettings, setPageSettings] = useState<PageSettings>(DEFAULT_PAGE_SETTINGS);
 
   const count = testimonials.length;
   const activeIndex = count === 0 ? 0 : Math.min(activeTestimonial, count - 1);
@@ -70,7 +69,6 @@ export function Hero() {
         }
       } finally {
         if (!cancelled) {
-          setSettingsLoading(false);
           setTestimonialsLoading(false);
         }
       }
@@ -89,18 +87,13 @@ export function Hero() {
         <div className="space-y-6">
           <div className="flex items-center gap-x-4 animate-blur-reveal">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-orange-50/50 dark:bg-orange-950/30 border-4 border-card overflow-hidden flex items-center justify-center shadow-[0px_6px_12px_rgba(0,0,0,0.25),0px_2px_4px_rgba(0,0,0,0.15)] transform transition-transform duration-200 ease-out hover:scale-110 hover:-rotate-12 cursor-pointer relative">
-              {settingsLoading || !pageSettings ? (
-                <HeroImageSkeleton />
-              ) : (
-                <HeroImage
-                  key={pageSettings.avatarImage}
-                  src={pageSettings.avatarImage}
-                  alt="Faiz Avatar"
-                  imgClassName="absolute inset-0 w-full h-full object-cover rounded-1xl"
-                  loading="eager"
-                  fetchPriority="high"
-                />
-              )}
+              <HeroImage
+                key={pageSettings.avatarImage}
+                src={pageSettings.avatarImage}
+                alt="Faiz Avatar"
+                imgClassName="absolute inset-0 w-full h-full object-cover rounded-1xl"
+                loading="eager"
+              />
             </div>
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-foreground">Faiz Intifada</h1>
           </div>
@@ -161,41 +154,28 @@ export function Hero() {
       </div>
 
       {/* Hero images (mobile: 2nd; desktop: col 2) — each in its own grid row so image 2 aligns with the testimonial */}
-      {settingsLoading || !pageSettings ? (
-        <>
-          <div className="order-2 aspect-[4/3] xl:order-none xl:col-start-2 xl:row-start-1">
-            <HeroStackImageSkeleton className="h-full rounded-[1rem] animate-blur-reveal delay-300" fill />
-          </div>
-          <div className="order-2 aspect-[4/3] xl:order-none xl:col-start-2 xl:row-start-2">
-            <HeroStackImageSkeleton className="h-full rounded-[1rem] animate-blur-reveal delay-400" fill />
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="order-2 aspect-[4/3] xl:order-none xl:col-start-2 xl:row-start-1">
-            <HeroImage
-              key={pageSettings.heroImageTop}
-              src={pageSettings.heroImageTop}
-              alt="Faiz Intifada — design engineer portfolio hero"
-              className="h-full rounded-[1rem] animate-blur-reveal delay-300"
-                imgClassName="absolute inset-0 w-full h-full object-cover object-center"
-              loading="eager"
-              fetchPriority="high"
-              fill
-            />
-          </div>
-          <div className="order-2 aspect-[4/3] xl:order-none xl:col-start-2 xl:row-start-2">
-            <HeroImage
-              key={pageSettings.heroImageMiddle}
-              src={pageSettings.heroImageMiddle}
-              alt="Design engineer work — UI and product visuals"
-              className="h-full rounded-[1rem] animate-blur-reveal delay-400"
-                imgClassName="absolute inset-0 w-full h-full object-cover object-center"
-              fill
-            />
-          </div>
-        </>
-      )}
+      <div className="order-2 aspect-[4/3] xl:order-none xl:col-start-2 xl:row-start-1">
+        <HeroImage
+          key={pageSettings.heroImageTop}
+          src={pageSettings.heroImageTop}
+          alt="Faiz Intifada — design engineer portfolio hero"
+          className="h-full rounded-[1rem] animate-blur-reveal delay-300"
+          imgClassName="absolute inset-0 w-full h-full object-cover object-center"
+          loading="eager"
+          fetchPriority="high"
+          fill
+        />
+      </div>
+      <div className="order-2 aspect-[4/3] xl:order-none xl:col-start-2 xl:row-start-2">
+        <HeroImage
+          key={pageSettings.heroImageMiddle}
+          src={pageSettings.heroImageMiddle}
+          alt="Design engineer work — UI and product visuals"
+          className="h-full rounded-[1rem] animate-blur-reveal delay-400"
+          imgClassName="absolute inset-0 w-full h-full object-cover object-center"
+          fill
+        />
+      </div>
 
       {/* Testimonial (mobile: 3rd; desktop: col 1 bottom) — minimal cross-fade */}
       {!testimonialsLoading && count > 0 && current ? (

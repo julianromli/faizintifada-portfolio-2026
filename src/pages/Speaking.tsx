@@ -3,12 +3,12 @@ import { ArrowLeft } from '@phosphor-icons/react';
 import { useSpeakingEvents } from '../hooks/useSpeakingEvents';
 import { SpeakingGallery } from '../components/SpeakingGallery';
 import { SpeakingStatStrip } from '../components/SpeakingEvents';
-import { deriveSpeakingStats } from '../lib/speaking-stats';
+import { speakingStatsToStrip } from '../lib/speaking-stats';
 import { Seo } from '../components/Seo';
 
 export function Speaking() {
-  const { events, loading, error, retry } = useSpeakingEvents({ featuredOnly: true });
-  const stats = deriveSpeakingStats(events);
+  const { events, stats, loading, error, retry } = useSpeakingEvents({ featuredOnly: true });
+  const statStrip = speakingStatsToStrip(stats);
 
   return (
     <>
@@ -69,7 +69,7 @@ export function Speaking() {
 
         {!loading && !error && events.length > 0 && (
           <>
-            <SpeakingStatStrip stats={stats} />
+            <SpeakingStatStrip stats={statStrip} />
             <SpeakingGallery events={events} />
           </>
         )}

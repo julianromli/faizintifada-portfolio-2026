@@ -1,17 +1,34 @@
-import type { Project } from '../types/project.js';
+import type { Project, ProjectSummary } from '../types/project.js';
 import type { ProjectRow } from '../db/schema.js';
 import { normalizeBgClassPreset } from './project-bg-presets.js';
 
-export function rowToProject(row: ProjectRow): Project {
-  let tags: string[] = [];
+function parseTagsJson(tagsJson: string): string[] {
   try {
-    const parsed = JSON.parse(row.tagsJson) as unknown;
+    const parsed = JSON.parse(tagsJson) as unknown;
     if (Array.isArray(parsed) && parsed.every((t) => typeof t === 'string')) {
-      tags = parsed;
+      return parsed;
     }
   } catch {
-    tags = [];
+    // fall through
   }
+  return [];
+}
+
+export function rowToProjectSummary(row: ProjectRow): ProjectSummary {
+  return {
+    slug: row.slug,
+    title: row.title,
+    image: row.image,
+    tags: parseTagsJson(row.tagsJson),
+    bgClass: normalizeBgClassPreset(row.bgClass),
+    imagePosition: row.imagePosition ?? undefined,
+    featured: row.featured,
+    sortOrder: row.sortOrder,
+  };
+}
+
+export function rowToProject(row: ProjectRow): Project {
+  const tags = parseTagsJson(row.tagsJson);
 
   let images: string[] | undefined;
   if (row.imagesJson) {

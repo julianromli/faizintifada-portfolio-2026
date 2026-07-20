@@ -1,3 +1,14 @@
+export interface ProjectSummary {
+  slug: string;
+  title: string;
+  image: string;
+  tags: string[];
+  bgClass: string;
+  imagePosition?: string;
+  featured?: boolean;
+  sortOrder?: number;
+}
+
 export interface Project {
   slug: string;
   title: string;

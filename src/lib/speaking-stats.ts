@@ -7,24 +7,38 @@ export interface SpeakingStat {
   label: string;
 }
 
-/** Derives the credibility stat strip from all featured events. */
-export function deriveSpeakingStats(events: SpeakingEvent[]): SpeakingStat[] {
-  if (events.length === 0) return [];
-  const totalAudience = events.reduce((sum, e) => sum + (e.audienceCount ?? 0), 0);
-  const hasWebinar = events.some((e) => e.eventType === 'webinar');
-  const hasOffline = events.some((e) => e.eventType === 'offline');
+export interface SpeakingStatsData {
+  totalEvents: number;
+  totalAudience: number;
+  hasWebinar: boolean;
+  hasOffline: boolean;
+}
+
+/** Computes aggregate stats from the full featured (or filtered) event set. */
+export function computeSpeakingStats(events: SpeakingEvent[]): SpeakingStatsData {
+  return {
+    totalEvents: events.length,
+    totalAudience: events.reduce((sum, e) => sum + (e.audienceCount ?? 0), 0),
+    hasWebinar: events.some((e) => e.eventType === 'webinar'),
+    hasOffline: events.some((e) => e.eventType === 'offline'),
+  };
+}
+
+/** Maps server stats into the homepage / speaking page stat strip. */
+export function speakingStatsToStrip(stats: SpeakingStatsData): SpeakingStat[] {
+  if (stats.totalEvents === 0) return [];
 
   const formatCount = (n: number) => (n >= 1000 ? `${Math.floor(n / 1000)}k+` : `${n}+`);
 
   const result: SpeakingStat[] = [
-    { icon: Microphone, value: `${events.length}+`, label: 'Events & talks' },
+    { icon: Microphone, value: `${stats.totalEvents}+`, label: 'Events & talks' },
   ];
-  if (totalAudience > 0) {
-    result.push({ icon: Users, value: formatCount(totalAudience), label: 'Audience reached' });
+  if (stats.totalAudience > 0) {
+    result.push({ icon: Users, value: formatCount(stats.totalAudience), label: 'Audience reached' });
   }
   result.push({
-    icon: hasWebinar && hasOffline ? MapPin : hasWebinar ? VideoCamera : MapPin,
-    value: hasWebinar && hasOffline ? 'Offline & Online' : hasWebinar ? 'Online' : 'Offline',
+    icon: stats.hasWebinar && stats.hasOffline ? MapPin : stats.hasWebinar ? VideoCamera : MapPin,
+    value: stats.hasWebinar && stats.hasOffline ? 'Offline & Online' : stats.hasWebinar ? 'Online' : 'Offline',
     label: 'Formats',
   });
   return result;

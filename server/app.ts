@@ -21,13 +21,30 @@ import {
 } from '../src/db/schema.js';
 import { HOME_PAGE_SETTINGS_KEY, rowToPageSettings } from '../src/lib/page-settings.js';
 import { UI_KIT_SETTINGS_KEY, rowToUiKitSettings } from '../src/lib/ui-kit-settings.js';
-import { rowToProject } from '../src/lib/project-mapper.js';
+import { rowToProject, rowToProjectSummary } from '../src/lib/project-mapper.js';
 import { CMS_UPLOAD_TOKEN_HEADER } from '../src/lib/cms-auth-headers.js';
 import { createAdminApp } from './routes/admin.js';
 import { createUiKitApp } from './routes/uikit.js';
 import { fetchLatestYouTubeVideos, parseVideoLimit } from './youtube.js';
 import { fetchGitHubContributions } from './github.js';
 import { buildSitemapXml } from './sitemap.js';
+import type { SpeakingEvent } from '../src/types/speaking-event.js';
+
+interface SpeakingStatsData {
+  totalEvents: number;
+  totalAudience: number;
+  hasWebinar: boolean;
+  hasOffline: boolean;
+}
+
+function computeSpeakingStats(events: SpeakingEvent[]): SpeakingStatsData {
+  return {
+    totalEvents: events.length,
+    totalAudience: events.reduce((sum, e) => sum + (e.audienceCount ?? 0), 0),
+    hasWebinar: events.some((e) => e.eventType === 'webinar'),
+    hasOffline: events.some((e) => e.eventType === 'offline'),
+  };
+}
 
 const app = new Hono();
 
@@ -68,7 +85,8 @@ app.get('/api/projects', async (c) => {
       : base
     ).orderBy(asc(projectsTable.sortOrder), asc(projectsTable.slug));
 
-    const body = rows.map(rowToProject);
+    const body = rows.map(rowToProjectSummary);
+    c.header('Cache-Control', 'public, max-age=60, s-maxage=60, stale-while-revalidate=600');
     return c.json(body);
   } catch (err) {
     console.error('[GET /api/projects]', err);
@@ -90,6 +108,7 @@ app.get('/api/projects/:slug', async (c) => {
       return c.json({ error: 'Not found' }, 404);
     }
 
+    c.header('Cache-Control', 'public, max-age=60, s-maxage=60, stale-while-revalidate=600');
     return c.json(rowToProject(row));
   } catch (err) {
     console.error('[GET /api/projects/:slug]', err);
@@ -104,6 +123,7 @@ app.get('/api/testimonials', async (c) => {
       .select()
       .from(testimonialsTable)
       .orderBy(asc(testimonialsTable.sortOrder), asc(testimonialsTable.id));
+    c.header('Cache-Control', 'public, max-age=60, s-maxage=60, stale-while-revalidate=600');
     return c.json(rows.map(rowToTestimonial));
   } catch (err) {
     console.error('[GET /api/testimonials]', err);
@@ -115,6 +135,8 @@ app.get('/api/speaking-events', async (c) => {
   try {
     const db = getDb();
     const featured = c.req.query('featured');
+    const limitRaw = c.req.query('limit');
+    const limit = limitRaw ? Number.parseInt(limitRaw, 10) : 0;
 
     const base = db.select().from(speakingEventsTable);
     const rows = await (featured === '1'
@@ -122,8 +144,12 @@ app.get('/api/speaking-events', async (c) => {
       : base
     ).orderBy(asc(speakingEventsTable.sortOrder), asc(speakingEventsTable.id));
 
+    const events = rows.map(rowToSpeakingEvent);
+    const stats = computeSpeakingStats(events);
+    const slicedEvents = limit > 0 ? events.slice(0, limit) : events;
+
     c.header('Cache-Control', 'public, max-age=60, s-maxage=60, stale-while-revalidate=600');
-    return c.json(rows.map(rowToSpeakingEvent));
+    return c.json({ events: slicedEvents, stats });
   } catch (err) {
     console.error('[GET /api/speaking-events]', err);
     return c.json({ error: 'Failed to load speaking events' }, 500);
@@ -139,6 +165,7 @@ app.get('/api/page-settings', async (c) => {
       .where(eq(pageSettingsTable.key, HOME_PAGE_SETTINGS_KEY))
       .limit(1);
 
+    c.header('Cache-Control', 'public, max-age=60, s-maxage=60, stale-while-revalidate=600');
     return c.json(rowToPageSettings(row));
   } catch (err) {
     console.error('[GET /api/page-settings]', err);

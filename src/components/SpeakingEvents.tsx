@@ -1,8 +1,7 @@
-import { useMemo } from 'react';
 import { ArrowRight } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import { useSpeakingEvents } from '../hooks/useSpeakingEvents';
-import { deriveSpeakingStats, type SpeakingStat } from '../lib/speaking-stats';
+import { speakingStatsToStrip, type SpeakingStat } from '../lib/speaking-stats';
 import { SpeakingGallery } from './SpeakingGallery';
 
 const HOME_EVENT_LIMIT = 9;
@@ -28,17 +27,17 @@ export function SpeakingStatStrip({ stats }: { stats: SpeakingStat[] }) {
 }
 
 export function SpeakingEvents() {
-  const { events, loading, error } = useSpeakingEvents({ featuredOnly: true });
-
-  // Stats reflect all featured events; the grid is capped for the homepage.
-  const stats = useMemo(() => deriveSpeakingStats(events), [events]);
+  const { events, stats, loading, error } = useSpeakingEvents({
+    featuredOnly: true,
+    limit: HOME_EVENT_LIMIT,
+  });
 
   if (loading || error || events.length === 0) {
     return null;
   }
 
-  const visibleEvents = events.slice(0, HOME_EVENT_LIMIT);
-  const hasMore = events.length > HOME_EVENT_LIMIT;
+  const statStrip = speakingStatsToStrip(stats);
+  const hasMore = stats.totalEvents > events.length;
 
   return (
     <section id="speaking">
@@ -62,9 +61,9 @@ export function SpeakingEvents() {
         </div>
       </div>
 
-      <SpeakingStatStrip stats={stats} />
+      <SpeakingStatStrip stats={statStrip} />
 
-      <SpeakingGallery events={visibleEvents} />
+      <SpeakingGallery events={events} />
     </section>
   );
 }

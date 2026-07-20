@@ -3,6 +3,7 @@ import type { ProjectRow } from '../db/schema.js';
 import { normalizeBgClassPreset } from './project-bg-presets.js';
 
 function parseTagsJson(tagsJson: string): string[] {
+  if (!tagsJson) return [];
   try {
     const parsed = JSON.parse(tagsJson) as unknown;
     if (Array.isArray(parsed) && parsed.every((t) => typeof t === 'string')) {

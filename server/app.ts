@@ -28,23 +28,7 @@ import { createUiKitApp } from './routes/uikit.js';
 import { fetchLatestYouTubeVideos, parseVideoLimit } from './youtube.js';
 import { fetchGitHubContributions } from './github.js';
 import { buildSitemapXml } from './sitemap.js';
-import type { SpeakingEvent } from '../src/types/speaking-event.js';
-
-interface SpeakingStatsData {
-  totalEvents: number;
-  totalAudience: number;
-  hasWebinar: boolean;
-  hasOffline: boolean;
-}
-
-function computeSpeakingStats(events: SpeakingEvent[]): SpeakingStatsData {
-  return {
-    totalEvents: events.length,
-    totalAudience: events.reduce((sum, e) => sum + (e.audienceCount ?? 0), 0),
-    hasWebinar: events.some((e) => e.eventType === 'webinar'),
-    hasOffline: events.some((e) => e.eventType === 'offline'),
-  };
-}
+import { computeSpeakingStats } from '../src/lib/speaking-stats-core.js';
 
 const app = new Hono();
 

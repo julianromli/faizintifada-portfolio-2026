@@ -1,27 +1,13 @@
 import { Microphone, MapPin, Users, VideoCamera } from '@phosphor-icons/react';
-import type { SpeakingEvent } from '../types/speaking-event';
+import type { SpeakingStatsData } from './speaking-stats-core';
+
+export type { SpeakingStatsData } from './speaking-stats-core';
+export { computeSpeakingStats } from './speaking-stats-core';
 
 export interface SpeakingStat {
   icon: typeof Microphone;
   value: string;
   label: string;
-}
-
-export interface SpeakingStatsData {
-  totalEvents: number;
-  totalAudience: number;
-  hasWebinar: boolean;
-  hasOffline: boolean;
-}
-
-/** Computes aggregate stats from the full featured (or filtered) event set. */
-export function computeSpeakingStats(events: SpeakingEvent[]): SpeakingStatsData {
-  return {
-    totalEvents: events.length,
-    totalAudience: events.reduce((sum, e) => sum + (e.audienceCount ?? 0), 0),
-    hasWebinar: events.some((e) => e.eventType === 'webinar'),
-    hasOffline: events.some((e) => e.eventType === 'offline'),
-  };
 }
 
 /** Maps server stats into the homepage / speaking page stat strip. */

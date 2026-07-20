@@ -119,6 +119,8 @@ export function ToolsStack() {
                 <img
                   src={tool.icon}
                   alt={tool.name}
+                  loading="lazy"
+                  decoding="async"
                   className={`${iconClassName} object-contain ${tool.imgClassName ?? ''}`.trim()}
                 />
               )}

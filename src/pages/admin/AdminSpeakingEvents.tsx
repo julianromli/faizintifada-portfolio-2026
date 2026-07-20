@@ -24,7 +24,6 @@ import type { SpeakingEvent, SpeakingEventType } from '../../types/speaking-even
 import { AdminPageHeader } from '../../components/admin/AdminPageHeader';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { ProjectImageDropzone } from '../../uploadthing/client';
-import { compressImages } from '../../lib/compress-images';
 import { Select } from '../../components/Select';
 
 type FormState = {
@@ -348,7 +347,6 @@ export function AdminSpeakingEvents() {
                 endpoint="pageImage"
                 headers={cmsUploadThingHeaders}
                 aria-label="Upload event photo"
-                onBeforeUploadBegin={(files) => compressImages(files)}
                 onClientUploadComplete={(res) => {
                   const url = res[0]?.url;
                   if (typeof url === 'string') update('image', url);

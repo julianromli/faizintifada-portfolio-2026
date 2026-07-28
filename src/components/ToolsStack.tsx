@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { HandTap } from '@phosphor-icons/react';
 import { m } from 'motion/react';
 import { isThemeAwareToolIcon, THEME_AWARE_TOOL_ICONS } from './tool-icons';
 import { EASE_OUT } from '../lib/motion';
@@ -73,6 +75,13 @@ const TOOLS: Tool[] = [
   },
 ];
 
+const MOBILE_CARD = 68;
+const MOBILE_GAP = 8;
+const MOBILE_COLS = 4;
+const MOBILE_MID = (TOOLS.length - 1) / 2;
+const MOBILE_LABEL_SLOT = 26;
+const SPRING = { type: 'spring' as const, stiffness: 380, damping: 28 };
+
 function ToolIcon({
   tool,
   className,
@@ -89,7 +98,7 @@ function ToolIcon({
   return (
     <img
       src={tool.icon}
-      alt={tool.name}
+      alt=""
       loading="lazy"
       decoding="async"
       className={`${className} object-contain ${tool.imgClassName ?? ''}`.trim()}
@@ -97,39 +106,96 @@ function ToolIcon({
   );
 }
 
-function MobileToolsGrid() {
-  return (
-    <m.ul
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.6, ease: EASE_OUT }}
-      className="grid w-full grid-cols-4 gap-3 sm:hidden"
-      aria-label="Tools I use"
-    >
-      {TOOLS.map((tool, index) => {
-        const borderClass = tool.borderClass ?? 'border-4 border-card';
+function MobileToolsTapFan() {
+  const [expanded, setExpanded] = useState(false);
 
-        return (
-          <m.li
-            key={tool.id}
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.4, delay: index * 0.04, ease: EASE_OUT }}
-            className="min-w-0"
+  return (
+    <div className="w-full sm:hidden">
+      <button
+        type="button"
+        onClick={() => setExpanded((value) => !value)}
+        aria-expanded={expanded}
+        aria-controls="mobile-tools-fan"
+        className="mx-auto flex w-full max-w-sm flex-col items-center rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+      >
+        <div
+          id="mobile-tools-fan"
+          className={`relative w-full ${
+            expanded
+              ? 'h-[196px]'
+              : 'h-[120px]'
+          }`}
+        >
+          {TOOLS.map((tool, index) => {
+            const borderClass = tool.borderClass ?? 'border-4 border-card';
+            const offset = index - MOBILE_MID;
+            const col = index % MOBILE_COLS;
+            const row = Math.floor(index / MOBILE_COLS);
+
+            return (
+              <m.div
+                key={tool.id}
+                className={`absolute top-2 left-1/2 flex items-center justify-center rounded-2xl ${borderClass} shadow-elevated ${tool.bg} origin-bottom theme-transition`}
+                style={{
+                  width: MOBILE_CARD,
+                  height: MOBILE_CARD,
+                  marginLeft: -MOBILE_CARD / 2,
+                }}
+                initial={false}
+                animate={
+                  expanded
+                    ? {
+                        x: (col - (MOBILE_COLS - 1) / 2) * (MOBILE_CARD + MOBILE_GAP),
+                        y: row * (MOBILE_CARD + MOBILE_LABEL_SLOT),
+                        rotate: 0,
+                        zIndex: index + 1,
+                      }
+                    : {
+                        x: offset * 18,
+                        y: Math.abs(offset) * 2,
+                        rotate: tool.rotate * 0.85,
+                        zIndex: TOOLS.length - Math.abs(offset),
+                      }
+                }
+                transition={SPRING}
+              >
+                <ToolIcon tool={tool} className="h-8 w-8 text-foreground drop-shadow-sm" />
+                <m.span
+                  className="pointer-events-none absolute top-full left-1/2 mt-1 w-[4.25rem] -translate-x-1/2 truncate text-center text-[10px] font-medium leading-tight text-foreground"
+                  initial={false}
+                  animate={{ opacity: expanded ? 1 : 0, y: expanded ? 0 : 4 }}
+                  transition={{ duration: 0.2, ease: EASE_OUT }}
+                >
+                  {tool.name}
+                </m.span>
+                <span className="sr-only">{tool.name}</span>
+              </m.div>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 flex flex-col items-center gap-1">
+          <m.span
+            aria-hidden="true"
+            animate={{ scale: expanded ? 0.92 : [1, 1.08, 1] }}
+            transition={
+              expanded
+                ? { duration: 0.2 }
+                : { duration: 1.6, repeat: Infinity, ease: 'easeInOut' }
+            }
+            className="text-muted"
           >
-            <div
-              className={`relative aspect-square w-full rounded-2xl ${borderClass} shadow-elevated flex items-center justify-center ${tool.bg} theme-transition`}
-              title={tool.name}
-            >
-              <ToolIcon tool={tool} className="w-9 h-9 text-foreground drop-shadow-sm" />
-              <span className="sr-only">{tool.name}</span>
-            </div>
-          </m.li>
-        );
-      })}
-    </m.ul>
+            <HandTap className="size-5" weight="duotone" />
+          </m.span>
+          <span className="text-sm font-medium text-foreground">
+            {expanded ? 'Tap to collapse' : 'Tap to expand'}
+          </span>
+          <span className="text-xs text-muted">
+            {expanded ? 'Hide the full tool list' : 'Explore all tools I use'}
+          </span>
+        </div>
+      </button>
+    </div>
   );
 }
 
@@ -186,7 +252,7 @@ export function ToolsStack() {
         <p className="text-lg text-muted">The tools I reach for when designing and building digital products.</p>
       </m.div>
 
-      <MobileToolsGrid />
+      <MobileToolsTapFan />
       <DesktopToolsFan />
     </section>
   );

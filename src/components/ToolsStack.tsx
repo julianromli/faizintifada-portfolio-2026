@@ -135,7 +135,7 @@ function MobileToolsTapFan() {
             return (
               <m.div
                 key={tool.id}
-                className={`absolute top-2 left-1/2 flex items-center justify-center rounded-2xl ${borderClass} shadow-elevated ${tool.bg} origin-bottom theme-transition`}
+                className={`absolute top-2 left-1/2 flex items-center justify-center rounded-2xl ${borderClass} shadow-[0_2px_8px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)] ${tool.bg} origin-bottom theme-transition`}
                 style={{
                   width: MOBILE_CARD,
                   height: MOBILE_CARD,

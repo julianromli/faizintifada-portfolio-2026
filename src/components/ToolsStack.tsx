@@ -73,9 +73,108 @@ const TOOLS: Tool[] = [
   },
 ];
 
+function ToolIcon({
+  tool,
+  className,
+}: {
+  tool: Tool;
+  className: string;
+}) {
+  const ThemeIcon = isThemeAwareToolIcon(tool.id) ? THEME_AWARE_TOOL_ICONS[tool.id] : null;
+
+  if (ThemeIcon) {
+    return <ThemeIcon className={className} />;
+  }
+
+  return (
+    <img
+      src={tool.icon}
+      alt={tool.name}
+      loading="lazy"
+      decoding="async"
+      className={`${className} object-contain ${tool.imgClassName ?? ''}`.trim()}
+    />
+  );
+}
+
+function MobileToolsGrid() {
+  return (
+    <m.ul
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.6, ease: EASE_OUT }}
+      className="grid w-full grid-cols-4 gap-3 sm:hidden"
+      aria-label="Tools I use"
+    >
+      {TOOLS.map((tool, index) => {
+        const borderClass = tool.borderClass ?? 'border-4 border-card';
+
+        return (
+          <m.li
+            key={tool.id}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.4, delay: index * 0.04, ease: EASE_OUT }}
+            className="min-w-0"
+          >
+            <div
+              className={`relative aspect-square w-full rounded-2xl ${borderClass} shadow-elevated flex items-center justify-center ${tool.bg} theme-transition`}
+              title={tool.name}
+            >
+              <ToolIcon tool={tool} className="w-9 h-9 text-foreground drop-shadow-sm" />
+              <span className="sr-only">{tool.name}</span>
+            </div>
+          </m.li>
+        );
+      })}
+    </m.ul>
+  );
+}
+
+function DesktopToolsFan() {
+  return (
+    <m.div
+      initial={{ opacity: 0, y: 40, scale: 0.9 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.8, ease: EASE_OUT }}
+      className="hidden sm:flex items-center justify-center overflow-visible [&>*+*]:-ml-8"
+    >
+      {TOOLS.map((tool, index) => {
+        const borderClass = tool.borderClass ?? 'border-4 border-card';
+
+        return (
+          <m.div
+            key={tool.id}
+            className={`relative group w-32 h-32 rounded-3xl ${borderClass} shadow-elevated flex items-center justify-center cursor-pointer ${tool.bg} origin-bottom theme-transition shrink-0`}
+            initial={{ rotate: tool.rotate, y: 0 }}
+            whileHover={{
+              y: -24,
+              rotate: 0,
+              scale: 1.15,
+              zIndex: 50,
+              transition: { type: 'spring', stiffness: 400, damping: 20 },
+            }}
+            style={{ zIndex: TOOLS.length - Math.abs(3.5 - index) }}
+          >
+            <ToolIcon tool={tool} className="w-16 h-16 text-foreground drop-shadow-sm" />
+
+            <div className="absolute -top-14 bg-foreground text-canvas text-[13px] font-medium px-3.5 py-2 rounded-xl opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-[opacity,transform] duration-200 ease-out pointer-events-none whitespace-nowrap shadow-xl flex flex-col items-center">
+              {tool.name}
+              <div className="absolute -bottom-1 size-2.5 bg-foreground rotate-45 rounded-sm"></div>
+            </div>
+          </m.div>
+        );
+      })}
+    </m.div>
+  );
+}
+
 export function ToolsStack() {
   return (
-    <section className="flex flex-col items-center justify-center overflow-visible">
+    <section className="flex w-full min-w-0 flex-col items-center justify-center">
       <m.div 
         initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -86,54 +185,9 @@ export function ToolsStack() {
         <h2 className="text-3xl font-semibold tracking-tight text-foreground mb-4">Tools I Use</h2>
         <p className="text-lg text-muted">The tools I reach for when designing and building digital products.</p>
       </m.div>
-      
-      <m.div
-        initial={{ opacity: 0, y: 40, scale: 0.9 }}
-        whileInView={{ opacity: 1, y: 0, scale: 1 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.8, ease: EASE_OUT }}
-        className="flex items-center justify-start sm:justify-center max-w-full overflow-x-auto sm:overflow-visible no-scrollbar px-4 [&>*+*]:-ml-4 sm:[&>*+*]:-ml-8"
-      >
-        {TOOLS.map((tool, index) => {
-          const borderClass = tool.borderClass ?? 'border-4 border-card';
-          const ThemeIcon = isThemeAwareToolIcon(tool.id) ? THEME_AWARE_TOOL_ICONS[tool.id] : null;
-          const iconClassName = 'w-10 h-10 sm:w-16 sm:h-16 text-foreground drop-shadow-sm';
 
-          return (
-            <m.div
-              key={tool.id}
-              className={`relative group w-20 h-20 sm:w-32 sm:h-32 rounded-2xl sm:rounded-3xl ${borderClass} shadow-elevated flex items-center justify-center cursor-pointer ${tool.bg} origin-bottom theme-transition shrink-0`}
-              initial={{ rotate: tool.rotate, y: 0 }}
-              whileHover={{
-                y: -24,
-                rotate: 0,
-                scale: 1.15,
-                zIndex: 50,
-                transition: { type: 'spring', stiffness: 400, damping: 20 },
-              }}
-              style={{ zIndex: TOOLS.length - Math.abs(3.5 - index) }}
-            >
-              {ThemeIcon ? (
-                <ThemeIcon className={iconClassName} />
-              ) : (
-                <img
-                  src={tool.icon}
-                  alt={tool.name}
-                  loading="lazy"
-                  decoding="async"
-                  className={`${iconClassName} object-contain ${tool.imgClassName ?? ''}`.trim()}
-                />
-              )}
-
-              {/* Tooltip */}
-              <div className="absolute -top-14 bg-foreground text-canvas text-[13px] font-medium px-3.5 py-2 rounded-xl opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-[opacity,transform] duration-200 ease-out pointer-events-none whitespace-nowrap shadow-xl flex flex-col items-center">
-                {tool.name}
-                <div className="absolute -bottom-1 size-2.5 bg-foreground rotate-45 rounded-sm"></div>
-              </div>
-            </m.div>
-          );
-        })}
-      </m.div>
+      <MobileToolsGrid />
+      <DesktopToolsFan />
     </section>
   );
 }

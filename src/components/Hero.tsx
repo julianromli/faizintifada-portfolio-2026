@@ -16,7 +16,14 @@ export function Hero() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [testimonialsLoading, setTestimonialsLoading] = useState(true);
-  const [pageSettings, setPageSettings] = useState<PageSettings>(DEFAULT_PAGE_SETTINGS);
+  // Hero image srcs start empty so only the shimmer shows until settings arrive —
+  // initializing with DEFAULT_PAGE_SETTINGS would flash the default images first.
+  const [pageSettings, setPageSettings] = useState<PageSettings>({
+    ...DEFAULT_PAGE_SETTINGS,
+    heroImageTop: '',
+    heroImageMiddle: '',
+    heroImageBottom: '',
+  });
 
   const count = testimonials.length;
   const activeIndex = count === 0 ? 0 : Math.min(activeTestimonial, count - 1);

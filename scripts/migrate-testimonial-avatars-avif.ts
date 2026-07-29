@@ -70,7 +70,7 @@ async function main() {
     process.stdout.write(`… ${label} `);
     const original = await download(row.avatar);
     const avif = await toAvif(original);
-    const file = new UTFile([avif], `${slugify(row.name)}-avatar.avif`, {
+    const file = new UTFile([new Uint8Array(avif)], `${slugify(row.name)}-avatar.avif`, {
       type: 'image/avif',
     });
     const result = await utapi.uploadFiles(file);

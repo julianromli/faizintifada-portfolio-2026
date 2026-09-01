@@ -23,9 +23,6 @@ export const adminBtnSecondaryXs =
 export const adminLinkGhost =
   'text-[15px] font-medium text-muted hover:text-foreground self-center theme-transition';
 
-export const adminBackLink =
-  'inline-flex items-center gap-2 text-[15px] font-medium text-muted hover:text-foreground mb-6 theme-transition';
-
 export const adminSectionCard = 'rounded-3xl border border-border p-4 sm:p-5 theme-transition';
 
 export const adminListItem = 'rounded-2xl border border-border p-2 sm:p-3 theme-transition';
@@ -42,9 +39,6 @@ export const adminImageThumb =
 
 export const adminTableContainer =
   'overflow-hidden rounded-2xl border border-border shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.12)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.3),0_8px_24px_-12px_rgba(0,0,0,0.5)]';
-
-export const adminShadowCard =
-  'shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.12)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.3),0_8px_24px_-12px_rgba(0,0,0,0.5)]';
 
 export const adminTableHead = 'bg-surface text-muted';
 

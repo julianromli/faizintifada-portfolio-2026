@@ -36,31 +36,6 @@ type HeroImageProps = {
   fill?: boolean;
 };
 
-/** Absolute fill skeleton for fixed-size frames (e.g. avatar). */
-export function HeroImageSkeleton() {
-  return <Skeleton className="absolute inset-0" />;
-}
-
-/** Skeleton frame that reserves space at a known/fallback aspect ratio. */
-export function HeroStackImageSkeleton({
-  className = '',
-  aspectRatio = DEFAULT_HERO_ASPECT_RATIO,
-  fill = false,
-}: {
-  className?: string;
-  aspectRatio?: number;
-  fill?: boolean;
-}) {
-  return (
-    <div
-      className={`relative w-full overflow-hidden bg-surface-nested ${fill ? 'h-full' : ''} ${className}`}
-      style={fill ? undefined : { aspectRatio }}
-    >
-      <Skeleton className="absolute inset-0" />
-    </div>
-  );
-}
-
 function HeroImageComponent({
   src,
   alt,

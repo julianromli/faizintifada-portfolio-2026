@@ -14,3 +14,5 @@ All application source files in this Vite SPA are reachable from `index.html` �
 ## deslop/unused-dev-dependency
 
 - `react-doctor` — used via `package.json` `"doctor"` script and local triage workflow
+- `@cloudflare/workers-types` — referenced by `worker/index.ts` (`/// <reference types="@cloudflare/workers-types" />`)
+- `react-email` — used via `package.json` `"email"` script (`email dev --dir emails`)

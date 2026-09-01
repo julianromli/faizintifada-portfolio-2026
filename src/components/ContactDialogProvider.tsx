@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { ContactChoiceDialog } from './ContactChoiceDialog';
 
 interface ContactDialogContextValue {
@@ -19,8 +19,13 @@ export function ContactDialogProvider({ children }: { children: ReactNode }) {
     setOpen(false);
   }, []);
 
+  const value = useMemo(
+    () => ({ openContactDialog, closeContactDialog }),
+    [openContactDialog, closeContactDialog],
+  );
+
   return (
-    <ContactDialogContext.Provider value={{ openContactDialog, closeContactDialog }}>
+    <ContactDialogContext.Provider value={value}>
       {children}
       <ContactChoiceDialog open={open} onClose={closeContactDialog} />
     </ContactDialogContext.Provider>

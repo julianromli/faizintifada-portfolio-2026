@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, m, useReducedMotion } from 'motion/react';
 import { List, X } from '@phosphor-icons/react';
@@ -31,16 +31,12 @@ export function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const locationKey = `${location.pathname}${location.hash}`;
-  const prevLocationKeyRef = useRef(locationKey);
   const reduce = useReducedMotion();
   const menuMotion = reduce ? menuVariantsReduced : menuVariants;
 
-  if (locationKey !== prevLocationKeyRef.current) {
-    prevLocationKeyRef.current = locationKey;
-    if (menuOpen) {
-      setMenuOpen(false);
-    }
-  }
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [locationKey]);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';

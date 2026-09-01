@@ -50,11 +50,18 @@ export async function createPayment(
     body: JSON.stringify(input),
   });
 
+  if (!res.ok) {
+    const json = (await res.json().catch(() => null)) as { messages?: string } | null;
+    throw new Error(
+      `Mayar create payment failed (${res.status}): ${json?.messages ?? 'unknown error'}`,
+    );
+  }
+
   const json = (await res.json().catch(() => null)) as
     | { statusCode?: number; messages?: string; data?: Partial<CreatePaymentResult> }
     | null;
 
-  if (!res.ok || !json?.data?.link) {
+  if (!json?.data?.link) {
     throw new Error(
       `Mayar create payment failed (${res.status}): ${json?.messages ?? 'unknown error'}`,
     );
@@ -80,11 +87,13 @@ export async function getPayment(id: string): Promise<MayarPaymentDetail | null>
     headers: { Authorization: `Bearer ${getApiKey()}` },
   });
 
+  if (!res.ok) return null;
+
   const json = (await res.json().catch(() => null)) as
     | { data?: { id?: string; status?: string; amount?: number } }
     | null;
 
-  if (!res.ok || !json?.data) return null;
+  if (!json?.data) return null;
 
   return {
     id: String(json.data.id ?? id),

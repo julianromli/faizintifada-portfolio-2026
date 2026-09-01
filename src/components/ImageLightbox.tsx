@@ -34,15 +34,18 @@ export function ImageLightbox({ src, alt, onClose, onPrev, onNext }: ImageLightb
     <dialog
       ref={openOnMount}
       aria-label={alt}
-      className="fixed inset-0 z-50 m-0 flex h-full max-h-none w-full max-w-none items-center justify-center border-0 bg-black/80 p-4 sm:p-8 backdrop:bg-black/80 open:flex"
+      className="fixed inset-0 z-50 m-0 flex h-full max-h-none w-full max-w-none items-center justify-center border-0 bg-transparent p-4 sm:p-8 backdrop:bg-black/80 open:flex"
       onCancel={(event) => {
         event.preventDefault();
         onClose();
       }}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
     >
+      <button
+        type="button"
+        aria-label="Close lightbox"
+        className="absolute inset-0 bg-black/80"
+        onClick={onClose}
+      />
       <button
         type="button"
         onClick={onClose}
@@ -77,7 +80,7 @@ export function ImageLightbox({ src, alt, onClose, onPrev, onNext }: ImageLightb
       <img
         src={src}
         alt={alt}
-        className="max-h-[calc(100vh-4rem)] max-w-full rounded-xl object-contain shadow-2xl"
+        className="relative z-10 max-h-[calc(100vh-4rem)] max-w-full rounded-xl object-contain shadow-2xl"
       />
     </dialog>
   );

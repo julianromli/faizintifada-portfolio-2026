@@ -32,7 +32,6 @@ export const coachingTestimonialPayloadSchema = z
       .string()
       .max(0, 'Spam detected')
       .optional(),
-  })
-  .strip();
+  });
 
 export type CoachingTestimonialPayload = z.infer<typeof coachingTestimonialPayloadSchema>;

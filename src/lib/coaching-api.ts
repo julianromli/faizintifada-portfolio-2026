@@ -28,18 +28,18 @@ export async function submitCoaching(
     return { ok: false, message: 'Tidak bisa terhubung ke server. Coba lagi.' };
   }
 
-  if (res.ok) {
-    return { ok: true };
+  if (!res.ok) {
+    let message = 'Gagal mengirim. Coba lagi.';
+    try {
+      const j = (await res.json()) as { error?: string };
+      if (typeof j.error === 'string') {
+        message = j.error;
+      }
+    } catch {
+      // keep default
+    }
+    return { ok: false, message };
   }
 
-  let message = 'Gagal mengirim. Coba lagi.';
-  try {
-    const j = (await res.json()) as { error?: string };
-    if (typeof j.error === 'string') {
-      message = j.error;
-    }
-  } catch {
-    // keep default
-  }
-  return { ok: false, message };
+  return { ok: true };
 }

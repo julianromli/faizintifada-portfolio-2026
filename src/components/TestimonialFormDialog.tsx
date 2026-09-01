@@ -73,20 +73,9 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
       if (!dialog.open) {
         dialog.showModal();
       }
-      setError(null);
       window.requestAnimationFrame(() => firstFieldRef.current?.focus());
     } else if (dialog.open) {
       dialog.close();
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) {
-      setForm(EMPTY_FORM);
-      setHoneypot('');
-      setSuccess(false);
-      setError(null);
-      setSubmitting(false);
     }
   }, [open]);
 
@@ -139,13 +128,15 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
       agreedToPublish: true,
     };
 
-    const result = await submitCoachingTestimonial(input, honeypot);
-    setSubmitting(false);
-
-    if (result.ok) {
-      setSuccess(true);
-    } else {
-      setError(result.message);
+    try {
+      const result = await submitCoachingTestimonial(input, honeypot);
+      if (result.ok) {
+        setSuccess(true);
+      } else {
+        setError(result.message);
+      }
+    } finally {
+      setSubmitting(false);
     }
   }
 

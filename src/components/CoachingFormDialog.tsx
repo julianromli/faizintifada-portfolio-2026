@@ -90,22 +90,9 @@ export function CoachingFormDialog({ open, onClose }: CoachingFormDialogProps) {
       if (!dialog.open) {
         dialog.showModal();
       }
-      // Reset transient state each time it opens fresh.
-      setError(null);
       window.requestAnimationFrame(() => firstFieldRef.current?.focus());
     } else if (dialog.open) {
       dialog.close();
-    }
-  }, [open]);
-
-  // When fully closed, reset the form so a reopen starts clean.
-  useEffect(() => {
-    if (!open) {
-      setForm(EMPTY_FORM);
-      setHoneypot('');
-      setSuccess(false);
-      setError(null);
-      setSubmitting(false);
     }
   }, [open]);
 
@@ -166,13 +153,15 @@ export function CoachingFormDialog({ open, onClose }: CoachingFormDialogProps) {
       agreedToTerms: true,
     };
 
-    const result = await submitCoaching(input, honeypot);
-    setSubmitting(false);
-
-    if (result.ok) {
-      setSuccess(true);
-    } else {
-      setError(result.message);
+    try {
+      const result = await submitCoaching(input, honeypot);
+      if (result.ok) {
+        setSuccess(true);
+      } else {
+        setError(result.message);
+      }
+    } finally {
+      setSubmitting(false);
     }
   }
 

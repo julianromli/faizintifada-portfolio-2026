@@ -39,6 +39,18 @@ export async function validateCoupon(code: string): Promise<ValidateCouponResult
     return { valid: false, error: 'Could not reach the server. Please try again.' };
   }
 
+  if (!res.ok) {
+    try {
+      const data: unknown = await res.json();
+      if (data && typeof data === 'object' && typeof (data as { error?: unknown }).error === 'string') {
+        return { valid: false, error: (data as { error: string }).error };
+      }
+    } catch {
+      // keep default
+    }
+    return { valid: false, error: 'Could not validate coupon. Please try again.' };
+  }
+
   let data: unknown;
   try {
     data = await res.json();
@@ -48,10 +60,6 @@ export async function validateCoupon(code: string): Promise<ValidateCouponResult
 
   if (isValidateCouponResult(data)) {
     return data;
-  }
-
-  if (!res.ok && data && typeof data === 'object' && typeof (data as { error?: unknown }).error === 'string') {
-    return { valid: false, error: (data as { error: string }).error };
   }
 
   return { valid: false, error: 'Could not validate coupon. Please try again.' };
@@ -70,23 +78,23 @@ export async function createCheckout(input: CheckoutInput): Promise<CreateChecko
     return { ok: false, message: 'Could not reach the server. Please try again.' };
   }
 
-  if (res.ok) {
-    const data = (await res.json().catch(() => null)) as { link?: string } | null;
-    if (data?.link) {
-      return { ok: true, link: data.link };
+  if (!res.ok) {
+    let message =
+      res.status === 503
+        ? 'Checkout is not available right now. Please try again later.'
+        : 'Failed to start checkout. Please try again.';
+    try {
+      const j = (await res.json()) as { error?: string };
+      if (typeof j.error === 'string') message = j.error;
+    } catch {
+      // keep default
     }
-    return { ok: false, message: 'Checkout did not return a payment link.' };
+    return { ok: false, message };
   }
 
-  let message =
-    res.status === 503
-      ? 'Checkout is not available right now. Please try again later.'
-      : 'Failed to start checkout. Please try again.';
-  try {
-    const j = (await res.json()) as { error?: string };
-    if (typeof j.error === 'string') message = j.error;
-  } catch {
-    // keep default
+  const data = (await res.json().catch(() => null)) as { link?: string } | null;
+  if (data?.link) {
+    return { ok: true, link: data.link };
   }
-  return { ok: false, message };
+  return { ok: false, message: 'Checkout did not return a payment link.' };
 }

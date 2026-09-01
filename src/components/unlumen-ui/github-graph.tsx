@@ -93,13 +93,13 @@ function fallbackLevel(count: number, maxCount: number): number {
 }
 
 /** Returns a valid GitHub handle without its optional @ prefix. */
-export function normalizeGithubAccount(account: string): string | null {
+function normalizeGithubAccount(account: string): string | null {
   const normalized = account.trim().replace(/^@+/, '');
   return /^(?!-)[a-z\d](?:[a-z\d-]{0,37}[a-z\d])?$/i.test(normalized) ? normalized : null;
 }
 
 /** Builds Sunday-first calendar columns and fills missing dates with level zero. */
-export function buildContributionWeeks(contributions: GithubContribution[]): GithubContributionWeek[] {
+function buildContributionWeeks(contributions: GithubContribution[]): GithubContributionWeek[] {
   const valid = contributions
     .map((item) => ({ ...item, parsedDate: dateFromISO(item.date) }))
     .filter((item): item is GithubContribution & { parsedDate: Date } => item.parsedDate !== null && Number.isFinite(item.count))
@@ -146,14 +146,22 @@ function selectRecentContributions(contributions: GithubContribution[], months: 
 
   const start = new Date(latest);
   start.setUTCMonth(start.getUTCMonth() - Math.max(1, Math.min(12, Math.round(months))));
-  return parsed.filter((item) => item.date >= start).map((item) => item.contribution);
+  const recent: GithubContribution[] = [];
+  for (const item of parsed) {
+    if (item.date >= start) {
+      recent.push(item.contribution);
+    }
+  }
+  return recent;
 }
 
+const contributionDateFormat = new Intl.DateTimeFormat('en', {
+  month: 'short',
+  day: 'numeric',
+});
+
 function formatContributionLabel(contribution: GithubContributionCell): string {
-  const date = new Intl.DateTimeFormat('en', {
-    month: 'short',
-    day: 'numeric',
-  }).format(dateFromISO(contribution.date) ?? new Date());
+  const date = contributionDateFormat.format(dateFromISO(contribution.date) ?? new Date());
   const label = contribution.count === 1 ? 'contribution' : 'contributions';
   return `${contribution.count} ${label} · ${date}`;
 }
@@ -435,43 +443,46 @@ export function GithubGraph({
                 })}
               </div>
             ))}
-            <AnimatePresence>
-              {hoveredContribution && (
-                <m.span
-                  role="tooltip"
-                  className="pointer-events-none fixed z-50 whitespace-nowrap rounded-full bg-foreground px-3 py-1.5 text-sm font-medium text-card ring-1 ring-foreground/15"
-                  initial={{
-                    opacity: 0,
-                    scale: 0.92,
-                    left: hoveredContribution.originLeft,
-                    top: hoveredContribution.originTop,
-                    x: '-50%',
-                    y: hoveredContribution.placement === 'above' ? '-100%' : '0%',
-                  }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    left: hoveredContribution.left,
-                    top: hoveredContribution.top,
-                    x: '-50%',
-                    y: hoveredContribution.placement === 'above' ? '-100%' : '0%',
-                  }}
-                  exit={{ opacity: 0, scale: 0.92 }}
-                  transition={{
-                    opacity: { duration: 0.12 },
-                    scale: { duration: 0.12 },
-                    left: { type: 'spring', stiffness: 620, damping: 42 },
-                    top: { type: 'spring', stiffness: 620, damping: 42 },
-                    y: { duration: 0.12 },
-                  }}
-                >
-                  {formatContributionLabel(hoveredContribution.contribution)}
-                </m.span>
-              )}
-            </AnimatePresence>
           </div>
         </div>
       )}
+      <AnimatePresence>
+        {hoveredContribution ? (
+          <m.span
+            key="contribution-tooltip"
+            role="tooltip"
+            className="pointer-events-none fixed z-50 whitespace-nowrap rounded-full bg-foreground px-3 py-1.5 text-sm font-medium text-card ring-1 ring-foreground/15"
+            style={{
+              left: hoveredContribution.left,
+              top: hoveredContribution.top,
+            }}
+            initial={{
+              opacity: 0,
+              scale: 0.92,
+              x: `calc(-50% + ${hoveredContribution.originLeft - hoveredContribution.left}px)`,
+              y:
+                hoveredContribution.placement === 'above'
+                  ? `calc(-100% + ${hoveredContribution.originTop - hoveredContribution.top}px)`
+                  : hoveredContribution.originTop - hoveredContribution.top,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              x: '-50%',
+              y: hoveredContribution.placement === 'above' ? '-100%' : '0%',
+            }}
+            exit={{ opacity: 0, scale: 0.92 }}
+            transition={{
+              opacity: { duration: 0.12 },
+              scale: { duration: 0.12 },
+              x: { type: 'spring', stiffness: 620, damping: 42 },
+              y: { type: 'spring', stiffness: 620, damping: 42 },
+            }}
+          >
+            {formatContributionLabel(hoveredContribution.contribution)}
+          </m.span>
+        ) : null}
+      </AnimatePresence>
 
       {showLegend && resource.status === 'ready' && (
         <div className="mt-4 flex items-center gap-1.5 text-[13px] font-medium text-muted" aria-label="Contribution activity legend">

@@ -13,7 +13,7 @@ function tileSpanClass(index: number): string {
   return 'aspect-[4/3]';
 }
 
-export function EventBadge({ type }: { type: SpeakingEvent['eventType'] }) {
+function EventBadge({ type }: { type: SpeakingEvent['eventType'] }) {
   const isWebinar = type === 'webinar';
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-black backdrop-blur">

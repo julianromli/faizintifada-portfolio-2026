@@ -1,10 +1,8 @@
 import { z } from 'zod';
 
-export const validateCouponPayloadSchema = z
-  .object({
-    code: z.string().trim().min(1, 'Coupon code is required').max(64),
-  })
-  .strip();
+export const validateCouponPayloadSchema = z.object({
+  code: z.string().trim().min(1, 'Coupon code is required').max(64),
+});
 
 export const couponPayloadSchema = z
   .object({
@@ -14,7 +12,6 @@ export const couponPayloadSchema = z
     active: z.boolean(),
     expiresAt: z.number().int().positive().nullable().optional(),
   })
-  .strip()
   .superRefine((data, ctx) => {
     if (data.discountType === 'percent' && data.discountValue > 100) {
       ctx.addIssue({

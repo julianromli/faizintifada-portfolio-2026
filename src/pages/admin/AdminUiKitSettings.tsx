@@ -124,7 +124,7 @@ function VideoPreview({ url }: { url: string }) {
 
 export function AdminUiKitSettings() {
   const [screenshotsRaw, setScreenshotsRaw] = useState(
-    screenshotsToRaw(DEFAULT_UI_KIT_SETTINGS.screenshots),
+    () => screenshotsToRaw(DEFAULT_UI_KIT_SETTINGS.screenshots),
   );
   const [previewVideoUrl, setPreviewVideoUrl] = useState(DEFAULT_UI_KIT_SETTINGS.previewVideoUrl);
   const [featuresVideoUrl, setFeaturesVideoUrl] = useState(DEFAULT_UI_KIT_SETTINGS.featuresVideoUrl);

@@ -11,7 +11,6 @@ export const checkoutPayloadSchema = z
       .email('Invalid email'),
     mobile: z.string().trim().min(6, 'WhatsApp number is required').max(40),
     couponCode: z.string().trim().max(64).optional(),
-  })
-  .strip();
+  });
 
 export type CheckoutPayload = z.infer<typeof checkoutPayloadSchema>;

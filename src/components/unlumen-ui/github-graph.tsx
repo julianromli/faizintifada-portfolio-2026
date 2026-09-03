@@ -93,13 +93,13 @@ function fallbackLevel(count: number, maxCount: number): number {
 }
 
 /** Returns a valid GitHub handle without its optional @ prefix. */
-export function normalizeGithubAccount(account: string): string | null {
+function normalizeGithubAccount(account: string): string | null {
   const normalized = account.trim().replace(/^@+/, '');
   return /^(?!-)[a-z\d](?:[a-z\d-]{0,37}[a-z\d])?$/i.test(normalized) ? normalized : null;
 }
 
 /** Builds Sunday-first calendar columns and fills missing dates with level zero. */
-export function buildContributionWeeks(contributions: GithubContribution[]): GithubContributionWeek[] {
+function buildContributionWeeks(contributions: GithubContribution[]): GithubContributionWeek[] {
   const valid = contributions
     .map((item) => ({ ...item, parsedDate: dateFromISO(item.date) }))
     .filter((item): item is GithubContribution & { parsedDate: Date } => item.parsedDate !== null && Number.isFinite(item.count))
@@ -149,11 +149,13 @@ function selectRecentContributions(contributions: GithubContribution[], months: 
   return parsed.filter((item) => item.date >= start).map((item) => item.contribution);
 }
 
+const CONTRIBUTION_DATE_FORMATTER = new Intl.DateTimeFormat('en', {
+  month: 'short',
+  day: 'numeric',
+});
+
 function formatContributionLabel(contribution: GithubContributionCell): string {
-  const date = new Intl.DateTimeFormat('en', {
-    month: 'short',
-    day: 'numeric',
-  }).format(dateFromISO(contribution.date) ?? new Date());
+  const date = CONTRIBUTION_DATE_FORMATTER.format(dateFromISO(contribution.date) ?? new Date());
   const label = contribution.count === 1 ? 'contribution' : 'contributions';
   return `${contribution.count} ${label} · ${date}`;
 }
@@ -239,6 +241,192 @@ function LoadingGraph({
     </div>
   );
 }
+
+/** True while `ref`'s element is near or inside the viewport. */
+function useOnScreen(ref: React.RefObject<HTMLElement | null>): boolean {
+  const [onScreen, setOnScreen] = React.useState(false);
+
+  React.useEffect(() => {
+    const node = ref.current;
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      setOnScreen(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => setOnScreen(entry?.isIntersecting ?? false),
+      { rootMargin: '200px' },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return onScreen;
+}
+
+/** Roving tabindex over the week/day grid: one tab stop, arrow keys move within it. */
+function useRovingGridFocus(weeks: GithubContributionWeek[]) {
+  const [focusedCell, setFocusedCell] = React.useState({ weekIndex: 0, dayIndex: 0 });
+  const gridRef = React.useRef<HTMLDivElement>(null);
+
+  const handleFocusCell = React.useCallback((weekIndex: number, dayIndex: number) => {
+    setFocusedCell({ weekIndex, dayIndex });
+  }, []);
+
+  const onGridKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      const { weekIndex, dayIndex } = focusedCell;
+      const lastWeek = weeks.length - 1;
+      if (lastWeek < 0) return;
+
+      let nextWeek = weekIndex;
+      let nextDay = dayIndex;
+
+      switch (event.key) {
+        case 'ArrowRight':
+          nextWeek = Math.min(lastWeek, weekIndex + 1);
+          break;
+        case 'ArrowLeft':
+          nextWeek = Math.max(0, weekIndex - 1);
+          break;
+        case 'ArrowDown':
+          nextDay = Math.min(6, dayIndex + 1);
+          break;
+        case 'ArrowUp':
+          nextDay = Math.max(0, dayIndex - 1);
+          break;
+        case 'Home':
+          nextWeek = 0;
+          break;
+        case 'End':
+          nextWeek = lastWeek;
+          break;
+        default:
+          return;
+      }
+
+      // Clamp to a week that actually has this day (the last week can be short).
+      while (nextWeek >= 0 && !weeks[nextWeek]?.[nextDay]) nextWeek -= 1;
+      if (nextWeek < 0) return;
+
+      event.preventDefault();
+      setFocusedCell({ weekIndex: nextWeek, dayIndex: nextDay });
+      gridRef.current
+        ?.querySelector<HTMLButtonElement>(`[data-cell="${nextWeek}-${nextDay}"]`)
+        ?.focus();
+    },
+    [focusedCell, weeks],
+  );
+
+  return { focusedCell, gridRef, handleFocusCell, onGridKeyDown };
+}
+
+interface ContributionCellProps {
+  contribution: GithubContributionCell;
+  weekIndex: number;
+  dayIndex: number;
+  color: string;
+  cellSize: number;
+  cellRadius: number;
+  /** 0 when this cell is outside the hover wave; drives the brightness filter. */
+  waveStrength: number;
+  /** Roving tabindex: exactly one cell in the grid is tabbable at a time. */
+  isTabbable: boolean;
+  ambientEffect: GithubGraphAmbientEffect;
+  ambientIntensity: number;
+  entranceDelay: number;
+  reducedMotion: boolean | null;
+  onFocusCell: (weekIndex: number, dayIndex: number) => void;
+  onShowTooltip: (
+    element: HTMLButtonElement,
+    contribution: GithubContributionCell,
+    weekIndex: number,
+    dayIndex: number,
+    pointer?: { clientX: number; clientY: number },
+  ) => void;
+  onHideTooltip: () => void;
+}
+
+/** Memoized so a hover only re-renders the cells whose waveStrength actually changed. */
+const ContributionCell = React.memo(function ContributionCell({
+  contribution,
+  weekIndex,
+  dayIndex,
+  color,
+  cellSize,
+  cellRadius,
+  waveStrength,
+  isTabbable,
+  ambientEffect,
+  ambientIntensity,
+  entranceDelay,
+  reducedMotion,
+  onFocusCell,
+  onShowTooltip,
+  onHideTooltip,
+}: ContributionCellProps) {
+  const label = formatContributionLabel(contribution);
+  const ambientMotion = React.useMemo(
+    () =>
+      getAmbientCellMotion(
+        ambientEffect,
+        ambientIntensity,
+        weekIndex,
+        dayIndex,
+        entranceDelay,
+        reducedMotion,
+      ),
+    [ambientEffect, ambientIntensity, weekIndex, dayIndex, entranceDelay, reducedMotion],
+  );
+  const filter = `brightness(${1 + waveStrength * 0.45}) saturate(${1 + waveStrength * 0.2})`;
+
+  return (
+    <m.button
+      type="button"
+      role="gridcell"
+      aria-label={label}
+      data-cell={`${weekIndex}-${dayIndex}`}
+      tabIndex={isTabbable ? 0 : -1}
+      className="relative outline-none ring-offset-2 ring-offset-card transition-shadow focus-visible:ring-2 focus-visible:ring-foreground/60"
+      style={{
+        width: cellSize,
+        height: cellSize,
+        borderRadius: cellRadius,
+      }}
+      initial={reducedMotion ? false : { opacity: 0, scale: 0.35, y: 4 }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter }}
+      transition={{
+        opacity: { duration: 0.14, delay: entranceDelay },
+        y: {
+          type: 'spring',
+          stiffness: 520,
+          damping: 28,
+          delay: entranceDelay,
+        },
+        scale: { type: 'spring', stiffness: 900, damping: 32 },
+        filter: { duration: 0.08, ease: 'easeOut' },
+      }}
+      onMouseEnter={(event) =>
+        onShowTooltip(event.currentTarget, contribution, weekIndex, dayIndex, event)
+      }
+      onFocus={(event) => {
+        onFocusCell(weekIndex, dayIndex);
+        onShowTooltip(event.currentTarget, contribution, weekIndex, dayIndex);
+      }}
+      onBlur={onHideTooltip}
+    >
+      <m.span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundColor: color,
+          borderRadius: cellRadius,
+        }}
+        animate={ambientMotion.animate}
+        transition={ambientMotion.transition}
+      />
+    </m.button>
+  );
+});
 
 export function GithubGraph({
   account = 'shadcn',
@@ -352,8 +540,23 @@ export function GithubGraph({
     [],
   );
 
+  const hideTooltip = React.useCallback(() => setHoveredContribution(null), []);
+
+  // The ambient cell effect loops forever, so only run it while the graph is on
+  // screen — otherwise ~365 infinite animations keep the main thread busy for as
+  // long as the page is open.
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const onScreen = useOnScreen(containerRef);
+  const activeAmbientEffect = onScreen ? ambientEffect : 'none';
+
+  const { focusedCell, gridRef, handleFocusCell, onGridKeyDown } = useRovingGridFocus(weeks);
+
   return (
-    <div className={cn('w-fit max-w-full', className)} aria-busy={resource.status === 'loading'}>
+    <div
+      ref={containerRef}
+      className={cn('w-fit max-w-full', className)}
+      aria-busy={resource.status === 'loading'}
+    >
       {showAccount && (
         <p className="mb-5 text-lg font-medium tracking-tight text-foreground">@{normalizedAccount ?? account}</p>
       )}
@@ -367,70 +570,42 @@ export function GithubGraph({
       {resource.status === 'ready' && weeks.length > 0 && (
         <div className="overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div
+            ref={gridRef}
             className="relative flex min-w-max"
             style={{ gap: cellGap }}
             role="grid"
             aria-label={`GitHub contributions for ${normalizedAccount ?? account}`}
-            onMouseLeave={() => setHoveredContribution(null)}
+            onKeyDown={onGridKeyDown}
+            onMouseLeave={hideTooltip}
           >
             {weeks.map((week, weekIndex) => (
               <div key={`${animationKey}-${weekIndex}`} className="grid grid-rows-7" style={{ gap: cellGap }} role="row">
                 {week.map((contribution, dayIndex) => {
-                  const label = formatContributionLabel(contribution);
                   const entranceDelay = reducedMotion ? 0 : getCellDelay(animation, weekIndex, dayIndex, animationSpeed);
-                  const ambientMotion = getAmbientCellMotion(
-                    ambientEffect,
-                    ambientIntensity,
-                    weekIndex,
-                    dayIndex,
-                    entranceDelay,
-                    reducedMotion,
-                  );
                   const distance = hoveredContribution
                     ? Math.hypot(weekIndex - hoveredContribution.weekIndex, dayIndex - hoveredContribution.dayIndex)
                     : Infinity;
-                  const waveStrength = Math.max(0, 1 - distance / 3);
-                  const filter = `brightness(${1 + waveStrength * 0.45}) saturate(${1 + waveStrength * 0.2})`;
                   return (
-                    <m.button
+                    <ContributionCell
                       key={`${animationKey}-${contribution.date}`}
-                      type="button"
-                      role="gridcell"
-                      aria-label={label}
-                      className="relative outline-none ring-offset-2 ring-offset-card transition-shadow focus-visible:ring-2 focus-visible:ring-foreground/60"
-                      style={{
-                        width: cellSize,
-                        height: cellSize,
-                        borderRadius: resolvedCellRadius,
-                      }}
-                      initial={reducedMotion ? false : { opacity: 0, scale: 0.35, y: 4 }}
-                      animate={{ opacity: 1, scale: 1, y: 0, filter }}
-                      transition={{
-                        opacity: { duration: 0.14, delay: entranceDelay },
-                        y: {
-                          type: 'spring',
-                          stiffness: 520,
-                          damping: 28,
-                          delay: entranceDelay,
-                        },
-                        scale: { type: 'spring', stiffness: 900, damping: 32 },
-                        filter: { duration: 0.08, ease: 'easeOut' },
-                      }}
-                      onMouseEnter={(event) => showTooltip(event.currentTarget, contribution, weekIndex, dayIndex, event)}
-                      onFocus={(event) => showTooltip(event.currentTarget, contribution, weekIndex, dayIndex)}
-                      onBlur={() => setHoveredContribution(null)}
-                    >
-                      <m.span
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-0"
-                        style={{
-                          backgroundColor: colors[contribution.level],
-                          borderRadius: resolvedCellRadius,
-                        }}
-                        animate={ambientMotion.animate}
-                        transition={ambientMotion.transition}
-                      />
-                    </m.button>
+                      contribution={contribution}
+                      weekIndex={weekIndex}
+                      dayIndex={dayIndex}
+                      color={colors[contribution.level]}
+                      cellSize={cellSize}
+                      cellRadius={resolvedCellRadius}
+                      waveStrength={Math.max(0, 1 - distance / 3)}
+                      isTabbable={
+                        focusedCell.weekIndex === weekIndex && focusedCell.dayIndex === dayIndex
+                      }
+                      ambientEffect={activeAmbientEffect}
+                      ambientIntensity={ambientIntensity}
+                      entranceDelay={entranceDelay}
+                      reducedMotion={reducedMotion}
+                      onFocusCell={handleFocusCell}
+                      onShowTooltip={showTooltip}
+                      onHideTooltip={hideTooltip}
+                    />
                   );
                 })}
               </div>
@@ -438,34 +613,37 @@ export function GithubGraph({
             <AnimatePresence>
               {hoveredContribution && (
                 <m.span
-                  role="tooltip"
-                  className="pointer-events-none fixed z-50 whitespace-nowrap rounded-full bg-foreground px-3 py-1.5 text-sm font-medium text-card ring-1 ring-foreground/15"
+                  className="pointer-events-none fixed left-0 top-0 z-50"
+                  style={{ transformOrigin: '0% 0%' }}
                   initial={{
                     opacity: 0,
                     scale: 0.92,
-                    left: hoveredContribution.originLeft,
-                    top: hoveredContribution.originTop,
-                    x: '-50%',
-                    y: hoveredContribution.placement === 'above' ? '-100%' : '0%',
+                    x: hoveredContribution.originLeft,
+                    y: hoveredContribution.originTop,
                   }}
                   animate={{
                     opacity: 1,
                     scale: 1,
-                    left: hoveredContribution.left,
-                    top: hoveredContribution.top,
-                    x: '-50%',
-                    y: hoveredContribution.placement === 'above' ? '-100%' : '0%',
+                    x: hoveredContribution.left,
+                    y: hoveredContribution.top,
                   }}
                   exit={{ opacity: 0, scale: 0.92 }}
                   transition={{
                     opacity: { duration: 0.12 },
                     scale: { duration: 0.12 },
-                    left: { type: 'spring', stiffness: 620, damping: 42 },
-                    top: { type: 'spring', stiffness: 620, damping: 42 },
-                    y: { duration: 0.12 },
+                    x: { type: 'spring', stiffness: 620, damping: 42 },
+                    y: { type: 'spring', stiffness: 620, damping: 42 },
                   }}
                 >
-                  {formatContributionLabel(hoveredContribution.contribution)}
+                  <span
+                    role="tooltip"
+                    className={cn(
+                      'block -translate-x-1/2 whitespace-nowrap rounded-full bg-foreground px-3 py-1.5 text-sm font-medium text-card ring-1 ring-foreground/15',
+                      hoveredContribution.placement === 'above' && '-translate-y-full',
+                    )}
+                  >
+                    {formatContributionLabel(hoveredContribution.contribution)}
+                  </span>
                 </m.span>
               )}
             </AnimatePresence>

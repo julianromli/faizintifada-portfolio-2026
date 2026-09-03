@@ -4,6 +4,7 @@ import { Navigation } from './components/Navigation';
 import { Footer } from './components/Footer';
 import { BodyOverlayScrollbars } from './components/BodyOverlayScrollbars';
 import { LazyMotionProvider } from './components/LazyMotionProvider';
+import { RouteErrorBoundary } from './components/RouteErrorBoundary';
 
 const Home = lazy(() => import('./pages/Home').then((mod) => ({ default: mod.Home })));
 const Projects = lazy(() => import('./pages/Projects').then((mod) => ({ default: mod.Projects })));
@@ -42,31 +43,35 @@ export default function App() {
           <Route
             path="/admin/*"
             element={
-              <Suspense
-                fallback={<p className="py-12 text-[15px] text-muted animate-pulse">Loading…</p>}
-              >
-                <AdminApp />
-              </Suspense>
+              <RouteErrorBoundary>
+                <Suspense
+                  fallback={<p className="py-12 text-[15px] text-muted animate-pulse">Loading…</p>}
+                >
+                  <AdminApp />
+                </Suspense>
+              </RouteErrorBoundary>
             }
           />
           <Route
             path="*"
             element={
               <PublicShell>
-                <Suspense
-                  fallback={<p className="py-12 text-[15px] text-muted animate-pulse">Loading…</p>}
-                >
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/projects" element={<Projects />} />
-                    <Route path="/speaking" element={<Speaking />} />
-                    <Route path="/coaching" element={<Coaching />} />
-                    <Route path="/ui" element={<UiKit />} />
-                    <Route path="/ui/thank-you" element={<UiKitThankYou />} />
-                    <Route path="/project/:slug" element={<ProjectDetail />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
+                <RouteErrorBoundary>
+                  <Suspense
+                    fallback={<p className="py-12 text-[15px] text-muted animate-pulse">Loading…</p>}
+                  >
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/projects" element={<Projects />} />
+                      <Route path="/speaking" element={<Speaking />} />
+                      <Route path="/coaching" element={<Coaching />} />
+                      <Route path="/ui" element={<UiKit />} />
+                      <Route path="/ui/thank-you" element={<UiKitThankYou />} />
+                      <Route path="/project/:slug" element={<ProjectDetail />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
+                </RouteErrorBoundary>
               </PublicShell>
             }
           />

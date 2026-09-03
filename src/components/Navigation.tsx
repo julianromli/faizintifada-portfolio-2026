@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, m, useReducedMotion } from 'motion/react';
 import { List, X } from '@phosphor-icons/react';
@@ -31,12 +31,16 @@ export function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const locationKey = `${location.pathname}${location.hash}`;
-  const prevLocationKeyRef = useRef(locationKey);
+  const [prevLocationKey, setPrevLocationKey] = useState(locationKey);
   const reduce = useReducedMotion();
   const menuMotion = reduce ? menuVariantsReduced : menuVariants;
+  const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
-  if (locationKey !== prevLocationKeyRef.current) {
-    prevLocationKeyRef.current = locationKey;
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  if (locationKey !== prevLocationKey) {
+    setPrevLocationKey(locationKey);
     if (menuOpen) {
       setMenuOpen(false);
     }
@@ -46,6 +50,46 @@ export function Navigation() {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => {
       document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
+
+  // Focus the first menu link on open, trap Tab inside the panel, close on
+  // Escape, and return focus to the trigger on close.
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const panel = panelRef.current;
+    // Captured now so the cleanup restores focus to the trigger that was mounted
+    // when the menu opened, not whatever the ref happens to hold later.
+    const trigger = triggerRef.current;
+    panel?.querySelector<HTMLElement>('a[href]')?.focus();
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setMenuOpen(false);
+        return;
+      }
+      if (event.key !== 'Tab' || !panel) return;
+
+      const focusables = panel.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (!first || !last) return;
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      trigger?.focus();
     };
   }, [menuOpen]);
 
@@ -70,6 +114,7 @@ export function Navigation() {
       <div className="md:hidden flex items-center gap-2">
         <ThemeToggle />
         <button
+          ref={triggerRef}
           type="button"
           className="flex items-center justify-center size-11 rounded-full border border-border text-muted hover:bg-surface hover:text-foreground active:scale-95 theme-transition focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
           aria-expanded={menuOpen}
@@ -86,15 +131,17 @@ export function Navigation() {
           <div key="mobile-nav" className="md:hidden">
             <m.button
               type="button"
+              tabIndex={-1}
+              aria-hidden="true"
               className="fixed inset-0 z-40 bg-black/20"
-              aria-label="Close menu"
-              onClick={() => setMenuOpen(false)}
+              onClick={closeMenu}
               variants={backdropVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             />
             <m.div
+              ref={panelRef}
               id="mobile-nav-menu"
               className="fixed top-6 right-4 left-4 z-50 origin-top rounded-2xl border border-border bg-card p-6 shadow-lg theme-transition"
               variants={menuMotion}

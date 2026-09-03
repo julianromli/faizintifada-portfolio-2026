@@ -3,6 +3,7 @@ import { m } from 'motion/react';
 import type { YouTubeVideo } from '../types/youtube';
 import { useYouTubeVideos } from '../hooks/useYouTubeVideos';
 import { EASE_OUT } from '../lib/motion';
+import { Skeleton } from './Skeleton';
 
 const YOUTUBE_CHANNEL_URL = 'https://www.youtube.com/@faizintifada';
 const DEFAULT_VIDEO_LIMIT = 3;
@@ -52,10 +53,47 @@ function VideoCard({ video, index }: VideoCardProps) {
   );
 }
 
+/** Reserves the section's real height while the videos load, so nothing below shifts. */
+function LatestVideosSkeleton() {
+  return (
+    <section>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <div>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground">Latest Videos</h2>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {Array.from({ length: DEFAULT_VIDEO_LIMIT }, (_, k) => (
+          <div key={k}>
+            <Skeleton
+              className="aspect-[4/3] rounded-[1rem] mb-4"
+              style={{ animationDelay: `${k * 80}ms` }}
+            />
+            <div className="flex flex-col gap-y-2 px-1 mt-1">
+              <Skeleton variant="text" className="w-3/4" style={{ animationDelay: `${k * 80}ms` }} />
+              <Skeleton
+                variant="text"
+                muted
+                className="h-3 w-1/3"
+                style={{ animationDelay: `${k * 80}ms` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function LatestVideos() {
   const { videos, loading, error } = useYouTubeVideos({ limit: DEFAULT_VIDEO_LIMIT });
 
-  if (loading || error || videos.length === 0) {
+  if (loading) {
+    return <LatestVideosSkeleton />;
+  }
+
+  if (error || videos.length === 0) {
     return null;
   }
 

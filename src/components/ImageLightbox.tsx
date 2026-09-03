@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { CaretLeft, CaretRight, X } from '@phosphor-icons/react';
 
 export interface ImageLightboxProps {
@@ -12,8 +12,16 @@ export interface ImageLightboxProps {
 export function ImageLightbox({ src, alt, onClose, onPrev, onNext }: ImageLightboxProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const openOnMount = useCallback((el: HTMLDialogElement | null) => {
-    if (el && !el.open) el.showModal();
+  // showModal() on mount; close() + explicit focus restore on unmount so the
+  // gallery tile that opened the lightbox gets focus back.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    if (dialog && !dialog.open) dialog.showModal();
+    return () => {
+      if (dialog?.open) dialog.close();
+      previouslyFocused?.focus?.();
+    };
   }, []);
 
   useEffect(() => {
@@ -32,7 +40,7 @@ export function ImageLightbox({ src, alt, onClose, onPrev, onNext }: ImageLightb
 
   return (
     <dialog
-      ref={openOnMount}
+      ref={dialogRef}
       aria-label={alt}
       className="fixed inset-0 z-50 m-0 flex h-full max-h-none w-full max-w-none items-center justify-center border-0 bg-black/80 p-4 sm:p-8 backdrop:bg-black/80 open:flex"
       onCancel={(event) => {

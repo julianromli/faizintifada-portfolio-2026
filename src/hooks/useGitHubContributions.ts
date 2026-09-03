@@ -18,24 +18,28 @@ export function useGitHubContributions(): UseGitHubContributionsState & {
   });
   const [nonce, setNonce] = useState(0);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (signal: AbortSignal) => {
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
-      const res = await fetch(apiUrl('/api/github/contributions'));
+      const res = await fetch(apiUrl('/api/github/contributions'), { signal });
       if (!res.ok) {
         throw new Error(`GitHub contributions request failed (${res.status})`);
       }
 
       const data = (await res.json()) as GitHubContributions;
+      if (signal.aborted) return;
       setState({ contributions: data, loading: false, error: null });
     } catch (e) {
+      if (signal.aborted) return;
       const error = e instanceof Error ? e : new Error(String(e));
       setState({ contributions: null, loading: false, error });
     }
   }, []);
 
   useEffect(() => {
-    void load();
+    const controller = new AbortController();
+    void load(controller.signal);
+    return () => controller.abort();
   }, [load, nonce]);
 
   const retry = () => setNonce((n) => n + 1);

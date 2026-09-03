@@ -33,27 +33,34 @@ export function useSpeakingEvents(options?: {
   });
   const [nonce, setNonce] = useState(0);
 
-  const load = useCallback(async () => {
-    setState((s) => ({ ...s, loading: true, error: null }));
-    try {
-      const params = new URLSearchParams();
-      if (featuredOnly) params.set('featured', '1');
-      if (limit !== undefined && limit > 0) params.set('limit', String(limit));
-      const qs = params.toString() ? `?${params.toString()}` : '';
-      const res = await fetch(apiUrl(`/api/speaking-events${qs}`));
-      if (!res.ok) {
-        throw new Error(`Speaking events request failed (${res.status})`);
+  const load = useCallback(
+    async (signal: AbortSignal) => {
+      setState((s) => ({ ...s, loading: true, error: null }));
+      try {
+        const params = new URLSearchParams();
+        if (featuredOnly) params.set('featured', '1');
+        if (limit !== undefined && limit > 0) params.set('limit', String(limit));
+        const qs = params.toString() ? `?${params.toString()}` : '';
+        const res = await fetch(apiUrl(`/api/speaking-events${qs}`), { signal });
+        if (!res.ok) {
+          throw new Error(`Speaking events request failed (${res.status})`);
+        }
+        const data = (await res.json()) as { events: SpeakingEvent[]; stats: SpeakingStatsData };
+        if (signal.aborted) return;
+        setState({ events: data.events, stats: data.stats, loading: false, error: null });
+      } catch (e) {
+        if (signal.aborted) return;
+        const error = e instanceof Error ? e : new Error(String(e));
+        setState({ events: [], stats: EMPTY_STATS, loading: false, error });
       }
-      const data = (await res.json()) as { events: SpeakingEvent[]; stats: SpeakingStatsData };
-      setState({ events: data.events, stats: data.stats, loading: false, error: null });
-    } catch (e) {
-      const error = e instanceof Error ? e : new Error(String(e));
-      setState({ events: [], stats: EMPTY_STATS, loading: false, error });
-    }
-  }, [featuredOnly, limit]);
+    },
+    [featuredOnly, limit],
+  );
 
   useEffect(() => {
-    void load();
+    const controller = new AbortController();
+    void load(controller.signal);
+    return () => controller.abort();
   }, [load, nonce]);
 
   const retry = () => setNonce((n) => n + 1);

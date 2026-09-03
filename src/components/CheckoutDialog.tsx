@@ -1,4 +1,4 @@
-import { useCallback, useReducer, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState, type FormEvent } from 'react';
 import { AnimatePresence, m, useReducedMotion } from 'motion/react';
 import { ArrowUpRight, X } from '@phosphor-icons/react';
 import { createCheckout, validateCoupon } from '../lib/checkout-api';
@@ -85,8 +85,8 @@ export interface CheckoutDialogProps {
 
 /**
  * Native modal checkout dialog. Mount it (e.g. `{open && <CheckoutDialog .../>}`) to show it;
- * it calls `showModal()` from a ref callback on mount and closes when unmounted — so there is
- * no prop-synced effect, and the form state is naturally fresh on each open.
+ * it calls `showModal()` on mount and `close()` on unmount, restoring focus to whatever opened
+ * it — so there is no prop-synced effect, and the form state is naturally fresh on each open.
  */
 export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
   const shouldReduceMotion = useReducedMotion();
@@ -94,8 +94,19 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
   const [state, dispatch] = useReducer(reducer, INITIAL);
   const [closing, setClosing] = useState(false);
 
-  const openOnMount = useCallback((el: HTMLDialogElement | null) => {
-    if (el && !el.open) el.showModal();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  // showModal() on mount; close() + explicit focus restore on unmount. The native
+  // restore is unreliable here because the cleanup runs while React tears the
+  // subtree down, so the previously focused element is captured by hand.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    if (dialog && !dialog.open) dialog.showModal();
+    return () => {
+      if (dialog?.open) dialog.close();
+      previouslyFocused?.focus?.();
+    };
   }, []);
 
   // Play the exit animation, then unmount via the parent's onClose once it completes.
@@ -171,11 +182,12 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
 
   return (
     <dialog
-      ref={openOnMount}
+      ref={dialogRef}
       aria-label={`Get ${UI_KIT.name}`}
       className="fixed inset-0 z-50 m-auto w-full max-w-md rounded-3xl border border-border bg-card p-0 shadow-xl backdrop:bg-black/40 backdrop:backdrop-blur-[2px] open:flex open:flex-col theme-transition"
       onCancel={(event) => {
         event.preventDefault();
+        if (busy) return;
         requestClose();
       }}
     >
@@ -276,6 +288,8 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
                   placeholder="Optional"
                   autoComplete="off"
                   disabled={busy}
+                  aria-invalid={state.couponError ? true : undefined}
+                  aria-describedby={state.couponError ? 'checkout-coupon-error' : undefined}
                 />
                 <button
                   type="button"
@@ -292,11 +306,21 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
                 </p>
               ) : null}
               {state.couponError ? (
-                <p className="mt-1.5 text-[12px] text-red-600 dark:text-red-400">{state.couponError}</p>
+                <p
+                  id="checkout-coupon-error"
+                  role="alert"
+                  className="mt-1.5 text-[12px] text-red-600 dark:text-red-400"
+                >
+                  {state.couponError}
+                </p>
               ) : null}
             </div>
 
-            {state.error ? <div className="alert alert-error">{state.error}</div> : null}
+            {state.error ? (
+              <div role="alert" className="alert alert-error">
+                {state.error}
+              </div>
+            ) : null}
 
             <p className="text-[12px] leading-relaxed text-muted">
               {displayAmount === 0

@@ -19,24 +19,31 @@ export function useProjects(options?: { featuredOnly?: boolean }): UseProjectsSt
   });
   const [nonce, setNonce] = useState(0);
 
-  const load = useCallback(async () => {
-    setState((s) => ({ ...s, loading: true, error: null }));
-    try {
-      const qs = featuredOnly ? '?featured=1' : '';
-      const res = await fetch(apiUrl(`/api/projects${qs}`));
-      if (!res.ok) {
-        throw new Error(`Projects request failed (${res.status})`);
+  const load = useCallback(
+    async (signal: AbortSignal) => {
+      setState((s) => ({ ...s, loading: true, error: null }));
+      try {
+        const qs = featuredOnly ? '?featured=1' : '';
+        const res = await fetch(apiUrl(`/api/projects${qs}`), { signal });
+        if (!res.ok) {
+          throw new Error(`Projects request failed (${res.status})`);
+        }
+        const data = (await res.json()) as ProjectSummary[];
+        if (signal.aborted) return;
+        setState({ projects: data, loading: false, error: null });
+      } catch (e) {
+        if (signal.aborted) return;
+        const error = e instanceof Error ? e : new Error(String(e));
+        setState({ projects: [], loading: false, error });
       }
-      const data = (await res.json()) as ProjectSummary[];
-      setState({ projects: data, loading: false, error: null });
-    } catch (e) {
-      const error = e instanceof Error ? e : new Error(String(e));
-      setState({ projects: [], loading: false, error });
-    }
-  }, [featuredOnly]);
+    },
+    [featuredOnly],
+  );
 
   useEffect(() => {
-    void load();
+    const controller = new AbortController();
+    void load(controller.signal);
+    return () => controller.abort();
   }, [load, nonce]);
 
   const retry = () => setNonce((n) => n + 1);

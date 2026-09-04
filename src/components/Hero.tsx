@@ -11,6 +11,9 @@ import { HeroImage } from './HeroImage';
 import { useContactDialog } from './ContactDialogProvider';
 import { SpaceXAIIcon } from './SpaceXAIIcon';
 
+const HERO_FRAME_SHADOW =
+  'shadow-[0_0_0_1px_oklch(0_0_0/0.06),0_1px_2px_-1px_oklch(0_0_0/0.06),0_2px_4px_0_oklch(0_0_0/0.04)] dark:shadow-[0_0_0_1px_oklch(1_0_0/0.08)]';
+
 export function Hero() {
   const { openContactDialog } = useContactDialog();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -87,9 +90,9 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-12 xl:gap-6 items-start">
+    <section className="grid grid-cols-1 items-start gap-8 xl:grid-cols-[1.2fr_1fr] xl:gap-x-6">
       {/* Left Column — intro + skills (mobile: 1st; desktop: col 1 top) */}
-      <div className="order-1 xl:order-none xl:col-start-1 xl:row-start-1 flex flex-col gap-y-10 xl:mb-14">
+      <div className="order-1 xl:order-none xl:col-start-1 xl:row-start-1 flex flex-col gap-y-10">
         {/* Header / Intro */}
         <div className="space-y-6">
           <div className="flex items-center gap-x-4 animate-blur-reveal">
@@ -162,28 +165,30 @@ export function Hero() {
         )}
       </div>
 
-      {/* Hero images (mobile: 2nd; desktop: col 2) — each in its own grid row so image 2 aligns with the testimonial */}
-      <div className="order-2 aspect-[4/3] xl:order-none xl:col-start-2 xl:row-start-1">
-        <HeroImage
-          key={pageSettings.heroImageTop}
-          src={pageSettings.heroImageTop}
-          alt="Faiz Intifada — design engineer portfolio hero"
-          className="h-full rounded-[1rem] animate-blur-reveal delay-300"
-          imgClassName="absolute inset-0 w-full h-full object-cover object-center"
-          loading="eager"
-          fetchPriority="high"
-          fill
-        />
-      </div>
-      <div className="order-2 aspect-[4/3] xl:order-none xl:col-start-2 xl:row-start-2">
-        <HeroImage
-          key={pageSettings.heroImageMiddle}
-          src={pageSettings.heroImageMiddle}
-          alt="Design engineer work — UI and product visuals"
-          className="h-full rounded-[1rem] animate-blur-reveal delay-400"
-          imgClassName="absolute inset-0 w-full h-full object-cover object-center"
-          fill
-        />
+      {/* Hero images (mobile: 2nd; desktop: col 2, stacked as one group) */}
+      <div className="order-2 flex flex-col gap-3 xl:order-none xl:col-start-2 xl:row-span-2 xl:row-start-1">
+        <div className={`aspect-[16/10] rounded-[1rem] ${HERO_FRAME_SHADOW}`}>
+          <HeroImage
+            key={pageSettings.heroImageTop}
+            src={pageSettings.heroImageTop}
+            alt="Faiz Intifada — design engineer portfolio hero"
+            className="h-full overflow-hidden rounded-[1rem] animate-blur-reveal delay-300"
+            imgClassName="absolute inset-0 w-full h-full object-contain object-center"
+            loading="eager"
+            fetchPriority="high"
+            fill
+          />
+        </div>
+        <div className={`aspect-[16/10] rounded-[1rem] ${HERO_FRAME_SHADOW}`}>
+          <HeroImage
+            key={pageSettings.heroImageMiddle}
+            src={pageSettings.heroImageMiddle}
+            alt="Design engineer work — UI and product visuals"
+            className="h-full overflow-hidden rounded-[1rem] animate-blur-reveal delay-400"
+            imgClassName="absolute inset-0 w-full h-full object-contain object-center"
+            fill
+          />
+        </div>
       </div>
 
       {/* Testimonial (mobile: 3rd; desktop: col 1 bottom) — minimal cross-fade */}

@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import { bearerAuth } from 'hono/bearer-auth';
 import { desc, asc, eq } from 'drizzle-orm';
 import { getDb } from '../../src/db/client.js';
 import {
@@ -38,7 +37,10 @@ import { uiKitSettingsPayloadSchema } from '../schemas/uiKitSettingsPayload.js';
 import { projectPayloadSchema, updateProjectPayloadSchema } from '../schemas/projectPayload.js';
 import { testimonialPayloadSchema } from '../schemas/testimonialPayload.js';
 import { speakingEventPayloadSchema } from '../schemas/speakingEventPayload.js';
-import { normalizeCmsAdminSecret } from '../../src/lib/normalize-cms-admin-secret.js';
+import {
+  normalizeCmsAdminSecret,
+  tokenFromAuthorizationHeader,
+} from '../../src/lib/normalize-cms-admin-secret.js';
 import { createAdminCouponsApp } from './admin/coupons.js';
 
 function decodeParamSlug(raw: string): string {
@@ -106,14 +108,20 @@ export function createAdminApp() {
   const admin = new Hono();
 
   admin.use('*', async (c, next) => {
-    const tok = normalizeCmsAdminSecret(process.env.CMS_ADMIN_TOKEN);
-    if (!tok) {
+    const expected = normalizeCmsAdminSecret(process.env.CMS_ADMIN_TOKEN);
+    if (!expected) {
       return c.json(
         { error: 'Admin API is not configured. Set CMS_ADMIN_TOKEN in the server environment.' },
         503,
       );
     }
-    return bearerAuth({ token: tok })(c, next);
+    const provided = normalizeCmsAdminSecret(
+      tokenFromAuthorizationHeader(c.req.header('Authorization')),
+    );
+    if (!provided || provided !== expected) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+    return next();
   });
 
   /** Used by AdminLogin to validate the Bearer token matches CMS_ADMIN_TOKEN. */

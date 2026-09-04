@@ -86,15 +86,16 @@
 }
 
 .dark {
-  --color-canvas: #141414;
-  --color-foreground: #f7f7f4;
+  --color-canvas: #08090a;
+  --color-background: var(--color-canvas);
+  --color-foreground: #e5e5e6;
   --color-foreground-strong: #ffffff;
-  --color-muted: #9a9994;
-  --color-shell: #0a0a0a;
-  --color-card: #1f1f1c;
-  --color-surface: #1f1f1c;
-  --color-surface-nested: #2a2a26;
-  --color-border: #3a3a36;
+  --color-muted: #d0d6e0;
+  --color-shell: #08090a;
+  --color-card: #0f1011;
+  --color-surface: #161718;
+  --color-surface-nested: #23252a;
+  --color-border: #23252a;
   --color-accent: #f54e00;
   --color-accent-green: #34785c;
 
@@ -108,9 +109,9 @@
   --color-alert-warning-bg: rgba(120, 53, 15, 0.35);
   --color-alert-warning-border: rgba(251, 191, 36, 0.35);
 
-  --color-skeleton-base: #2a2a26;
-  --color-skeleton-highlight: #3a3a36;
-  --color-skeleton-muted: #1f1f1c;
+  --color-skeleton-base: #23252a;
+  --color-skeleton-highlight: #383b3f;
+  --color-skeleton-muted: #0f1011;
 
   --shadow-elevated: rgba(0, 0, 0, 0.4) 0px 28px 70px, rgba(0, 0, 0, 0.25) 0px 14px 32px, oklab(0.85 0 0 / 0.06) 0 0 0 1px;
   --shadow-subtle: oklab(0.85 0 0 / 0.08) 0 0 0 1px;
@@ -253,19 +254,23 @@ body {
   }
 
   .dark .btn-embossed {
-    background: linear-gradient(180deg, #3a3a36 0%, #1f1f1c 100%);
-    border-color: #2a2a26;
+    background: linear-gradient(180deg, #23252a 0%, #161718 100%);
+    border-color: rgba(255, 255, 255, 0.08);
     box-shadow:
-      inset 0px 1px 1px rgba(255, 255, 255, 0.08),
-      inset 0px -2px 4px rgba(0, 0, 0, 0.5),
-      0px 6px 12px rgba(0, 0, 0, 0.4),
-      0px 2px 4px rgba(0, 0, 0, 0.25);
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(255, 255, 255, 0.06);
   }
   .dark .btn-embossed:hover {
-    background: linear-gradient(180deg, #4a4a44 0%, #2a2a26 100%);
+    background: linear-gradient(180deg, #2c2e33 0%, #1b1c1e 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.32),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
   }
   .dark .btn-embossed:active {
-    background: linear-gradient(180deg, #1f1f1c 0%, #2a2a26 100%);
+    background: linear-gradient(180deg, #161718 0%, #23252a 100%);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.55);
   }
 
   .skeleton {

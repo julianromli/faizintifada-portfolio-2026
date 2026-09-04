@@ -5,6 +5,7 @@ import { createCheckout, validateCoupon } from '../lib/checkout-api';
 import { UI_KIT } from '../constants';
 import type { AppliedCoupon } from '../types/coupon';
 import { panelVariants, panelVariantsReduced } from '../lib/motion';
+import { useSound } from '../hooks/useSound';
 
 const labelClass = 'block text-[13px] font-medium text-foreground mb-1.5';
 const inputClass =
@@ -91,6 +92,7 @@ export interface CheckoutDialogProps {
 export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
   const shouldReduceMotion = useReducedMotion();
   const panelMotion = shouldReduceMotion ? panelVariantsReduced : panelVariants;
+  const { playSound } = useSound();
   const [state, dispatch] = useReducer(reducer, INITIAL);
   const [closing, setClosing] = useState(false);
 
@@ -119,6 +121,7 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
     const code = state.couponInput.trim();
     if (!code) {
       dispatch({ type: 'applyError', message: 'Enter a coupon code.' });
+      playSound('error');
       return;
     }
 
@@ -126,6 +129,7 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
     const result = await validateCoupon(code);
     if (!result.valid) {
       dispatch({ type: 'applyError', message: result.error });
+      playSound('error');
       return;
     }
 
@@ -143,6 +147,7 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
     const result = await validateCoupon(typed);
     if (!result.valid) {
       dispatch({ type: 'submitError', message: result.error });
+      playSound('error');
       return 'invalid';
     }
 
@@ -154,10 +159,20 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
     event.preventDefault();
     if (state.submitting) return;
 
-    if (!state.name.trim()) return dispatch({ type: 'submitError', message: 'Please enter your name.' });
-    if (!state.email.trim()) return dispatch({ type: 'submitError', message: 'Please enter your email.' });
+    if (!state.name.trim()) {
+      dispatch({ type: 'submitError', message: 'Please enter your name.' });
+      playSound('error');
+      return;
+    }
+    if (!state.email.trim()) {
+      dispatch({ type: 'submitError', message: 'Please enter your email.' });
+      playSound('error');
+      return;
+    }
     if (state.mobile.trim().length < 6) {
-      return dispatch({ type: 'submitError', message: 'Please enter your WhatsApp number.' });
+      dispatch({ type: 'submitError', message: 'Please enter your WhatsApp number.' });
+      playSound('error');
+      return;
     }
 
     dispatch({ type: 'submitStart' });
@@ -173,11 +188,13 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
     });
 
     if (result.ok) {
+      playSound('success');
       window.location.href = result.link;
       return;
     }
 
     dispatch({ type: 'submitError', message: result.message });
+    playSound('error');
   }
 
   return (

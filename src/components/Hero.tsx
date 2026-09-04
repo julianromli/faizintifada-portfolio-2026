@@ -9,7 +9,7 @@ import {
 import type { Testimonial } from '../types/testimonial';
 import { HeroImage } from './HeroImage';
 import { useContactDialog } from './ContactDialogProvider';
-import { CursorIcon } from './CursorIcon';
+import { SpaceXAIIcon } from './SpaceXAIIcon';
 
 export function Hero() {
   const { openContactDialog } = useContactDialog();
@@ -107,8 +107,10 @@ export function Hero() {
           
           <h2 className="text-[1.75rem] sm:text-4xl leading-[1.3] text-foreground tracking-tight font-medium animate-blur-reveal delay-100">
             {`Design Engineer who ships products, not just mockups. Part of `}
-            <span className="text-muted inline-flex items-center">
-              Cursor <CursorIcon className="size-8 mx-2 inline-block shrink-0 text-foreground opacity-80" /> Ambassador
+            <span className="text-muted inline-flex items-center gap-x-2">
+              SpaceXAI
+              <SpaceXAIIcon className="h-[0.7em] w-auto shrink-0 translate-y-px" />
+              Ambassador
             </span>
           </h2>
           

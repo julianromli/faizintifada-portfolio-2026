@@ -4,6 +4,7 @@ import { AnimatePresence, m, useReducedMotion } from 'motion/react';
 import { List, X } from '@phosphor-icons/react';
 import { NAV_LINKS } from '../constants';
 import { ThemeToggle } from './ThemeToggle';
+import { SoundToggle } from './SoundToggle';
 import { EASE_OUT } from '../lib/motion';
 
 const navLinkClassName =
@@ -108,11 +109,15 @@ export function Navigation() {
             {label}
           </Link>
         ))}
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <SoundToggle />
+        </div>
       </div>
 
       <div className="md:hidden flex items-center gap-2">
         <ThemeToggle />
+        <SoundToggle />
         <button
           ref={triggerRef}
           type="button"

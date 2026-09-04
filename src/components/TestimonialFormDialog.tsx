@@ -15,6 +15,7 @@ import {
 import { submitCoachingTestimonial } from '../lib/coaching-testimonial-api';
 import type { CoachingTestimonialInput } from '../types/coaching-testimonial';
 import { panelVariants, panelVariantsReduced } from '../lib/motion';
+import { useSound } from '../hooks/useSound';
 
 export interface TestimonialFormDialogProps {
   open: boolean;
@@ -52,6 +53,7 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
   const firstFieldRef = useRef<HTMLInputElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const panelMotion = shouldReduceMotion ? panelVariantsReduced : panelVariants;
+  const { playSound } = useSound();
 
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [honeypot, setHoneypot] = useState('');
@@ -124,6 +126,7 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
     const localError = validateLocal();
     if (localError) {
       setError(localError);
+      playSound('error');
       return;
     }
 
@@ -144,8 +147,10 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
 
     if (result.ok) {
       setSuccess(true);
+      playSound('success');
     } else {
       setError(result.message);
+      playSound('error');
     }
   }
 

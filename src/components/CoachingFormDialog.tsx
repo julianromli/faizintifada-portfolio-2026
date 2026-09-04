@@ -22,6 +22,7 @@ import type {
   CoachingSubmissionInput,
 } from '../types/coaching';
 import { panelVariants, panelVariantsReduced } from '../lib/motion';
+import { useSound } from '../hooks/useSound';
 
 export interface CoachingFormDialogProps {
   open: boolean;
@@ -69,6 +70,7 @@ export function CoachingFormDialog({ open, onClose }: CoachingFormDialogProps) {
   const firstFieldRef = useRef<HTMLInputElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const panelMotion = shouldReduceMotion ? panelVariantsReduced : panelVariants;
+  const { playSound } = useSound();
 
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [honeypot, setHoneypot] = useState('');
@@ -146,6 +148,7 @@ export function CoachingFormDialog({ open, onClose }: CoachingFormDialogProps) {
     const localError = validateLocal();
     if (localError) {
       setError(localError);
+      playSound('error');
       return;
     }
 
@@ -171,8 +174,10 @@ export function CoachingFormDialog({ open, onClose }: CoachingFormDialogProps) {
 
     if (result.ok) {
       setSuccess(true);
+      playSound('success');
     } else {
       setError(result.message);
+      playSound('error');
     }
   }
 

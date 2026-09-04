@@ -3,6 +3,7 @@ import { AnimatePresence, m, useReducedMotion } from 'motion/react';
 import { Envelope, InstagramLogo, WhatsappLogo } from '@phosphor-icons/react';
 import { CONTACT_CHANNELS } from '../constants';
 import { EASE_OUT, panelVariants, panelVariantsReduced } from '../lib/motion';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 const CHANNEL_ICONS = {
   email: Envelope,
@@ -120,24 +121,35 @@ export function ContactChoiceDialog({ open, onClose }: ContactChoiceDialogProps)
               {CONTACT_CHANNELS.map((channel, index) => {
                 const IconComponent = CHANNEL_ICONS[channel.id];
                 return (
-                  <m.a
+                  <m.span
                     key={channel.id}
-                    ref={index === 0 ? firstLinkRef : undefined}
-                    href={channel.href}
-                    {...(channel.external
-                      ? { target: '_blank', rel: 'noopener noreferrer' }
-                      : {})}
-                    aria-label={channel.label}
                     variants={shouldReduceMotion ? undefined : iconItemVariants}
                     transition={{ duration: 0.2, ease: EASE_OUT }}
-                    className="flex size-12 items-center justify-center rounded-full border border-border text-foreground transition-transform duration-[160ms] ease-out hover:bg-surface active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card theme-transition"
-                    onClick={() => onClose()}
+                    className="inline-flex"
                   >
-                    <IconComponent
-                      size={22}
-                      weight={channel.id === 'email' ? 'regular' : 'fill'}
-                    />
-                  </m.a>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <a
+                          ref={index === 0 ? firstLinkRef : undefined}
+                          href={channel.href}
+                          {...(channel.external
+                            ? { target: '_blank', rel: 'noopener noreferrer' }
+                            : {})}
+                          aria-label={channel.label}
+                          className="flex size-12 items-center justify-center rounded-full border border-border text-foreground transition-transform duration-[160ms] ease-out hover:bg-surface active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card theme-transition"
+                          onClick={() => onClose()}
+                        >
+                          <IconComponent
+                            size={22}
+                            weight={channel.id === 'email' ? 'regular' : 'fill'}
+                          />
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" sideOffset={8} container={dialogRef.current}>
+                        {channel.label}
+                      </TooltipContent>
+                    </Tooltip>
+                  </m.span>
                 );
               })}
             </m.div>

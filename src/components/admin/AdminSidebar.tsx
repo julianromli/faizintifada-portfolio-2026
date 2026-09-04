@@ -5,6 +5,7 @@ import { ADMIN_NAV_GROUPS } from '../../lib/admin-nav';
 import { SEO } from '../../lib/seo';
 import { clearAdminToken } from '../../lib/admin-api';
 import { useTheme } from '../../hooks/useTheme';
+import { SoundSettingsRow } from '../SoundToggle';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -65,6 +66,7 @@ function SidebarFooter() {
         </span>
         {isDark ? 'Light mode' : 'Dark mode'}
       </button>
+      <SoundSettingsRow />
       <a
         href="/"
         target="_blank"

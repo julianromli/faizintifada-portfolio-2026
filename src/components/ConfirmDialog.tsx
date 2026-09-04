@@ -1,6 +1,7 @@
 import { useEffect, useEffectEvent, useId, useRef, type ReactNode } from 'react';
 import { AnimatePresence, m, useReducedMotion } from 'motion/react';
 import { EASE_OUT, panelVariants, panelVariantsReduced } from '../lib/motion';
+import { useSound } from '../hooks/useSound';
 
 export interface ConfirmDialogProps {
   open: boolean;
@@ -31,6 +32,7 @@ export function ConfirmDialog({
   const cancelRef = useRef<HTMLButtonElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const panelMotion = shouldReduceMotion ? panelVariantsReduced : panelVariants;
+  const { playSound } = useSound();
 
   const handleEscape = useEffectEvent(() => {
     if (!busy) {
@@ -129,7 +131,15 @@ export function ConfirmDialog({
                 >
                   {cancelLabel}
                 </button>
-                <button type="button" disabled={busy} onClick={onConfirm} className={confirmClassName}>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => {
+                    playSound('success', { pitch: variant === 'danger' ? 'low' : 'default' });
+                    onConfirm();
+                  }}
+                  className={confirmClassName}
+                >
                   {busy ? 'Working…' : confirmLabel}
                 </button>
               </div>

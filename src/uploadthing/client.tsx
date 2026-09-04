@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react';
 import type { AppFileRouter } from '../../server/uploadthing';
 import { apiUrl } from '../lib/api';
 import { compressImages } from '../lib/compress-images';
+import { useSound } from '../hooks/useSound';
 
 function uploadThingUrl(): string {
   const raw = import.meta.env.VITE_UPLOADTHING_URL as string | undefined;
@@ -22,8 +23,12 @@ type ProjectImageDropzoneProps = ComponentProps<typeof UploadThingDropzone>;
 /** CMS image dropzone — compresses images client-side before UploadThing upload. */
 export function ProjectImageDropzone({
   onBeforeUploadBegin,
+  onClientUploadComplete,
+  onUploadError,
   ...props
 }: ProjectImageDropzoneProps) {
+  const { playSound } = useSound();
+
   return (
     <UploadThingDropzone
       {...props}
@@ -33,6 +38,14 @@ export function ProjectImageDropzone({
           return compressed;
         }
         return onBeforeUploadBegin(compressed);
+      }}
+      onClientUploadComplete={(res) => {
+        playSound('success');
+        onClientUploadComplete?.(res);
+      }}
+      onUploadError={(error) => {
+        playSound('error');
+        onUploadError?.(error);
       }}
     />
   );

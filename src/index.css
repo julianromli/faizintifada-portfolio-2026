@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @font-face {
   font-family: 'Satoshi';
@@ -52,6 +53,7 @@
 
   /* Semantic aliases */
   --color-canvas: #f7f7f4;
+  --color-background: var(--color-canvas);
   --color-foreground: #262510;
   --color-foreground-strong: #141414;
   --color-muted: #7a7974;

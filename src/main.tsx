@@ -3,6 +3,8 @@ import {createRoot} from 'react-dom/client';
 import {HelmetProvider} from 'react-helmet-async';
 import App from './App.tsx';
 import {ThemeProvider} from './components/ThemeProvider';
+import {SoundProvider} from './components/SoundProvider';
+import {TooltipProvider} from './components/ui/tooltip';
 import 'overlayscrollbars/overlayscrollbars.css';
 import './index.css';
 
@@ -14,12 +16,16 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HelmetProvider>
       <ThemeProvider>
-        <App />
-        {Agentation && (
-          <Suspense fallback={null}>
-            <Agentation endpoint="http://localhost:4747" />
-          </Suspense>
-        )}
+        <SoundProvider>
+          <TooltipProvider>
+            <App />
+            {Agentation && (
+              <Suspense fallback={null}>
+                <Agentation endpoint="http://localhost:4747" />
+              </Suspense>
+            )}
+          </TooltipProvider>
+        </SoundProvider>
       </ThemeProvider>
     </HelmetProvider>
   </StrictMode>,

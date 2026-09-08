@@ -241,7 +241,7 @@ export function AdminCoupons() {
                 value={form.code}
                 onChange={(e) => setForm((prev) => ({ ...prev, code: e.target.value.toUpperCase() }))}
                 className={adminInputClass}
-                placeholder="FAIZ50"
+                placeholder="FAIZ100"
               />
             </div>
             <div>

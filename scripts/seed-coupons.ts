@@ -31,7 +31,9 @@ async function main() {
       await db.insert(couponsTable).values(values);
     }
 
-    console.log(`${values.code}: ${values.discountValue}% off (${values.active ? 'active' : 'inactive'})`);
+    console.log(
+      `${values.code}: ${values.discountType === 'percent' ? `${values.discountValue}% off` : `Rp${values.discountValue} off`} (${values.active ? 'active' : 'inactive'}, ${values.expiresAt ? 'expires' : 'no expiry'})`,
+    );
   }
 
   console.log(`Seeded ${seedCoupons.length} coupon(s).`);

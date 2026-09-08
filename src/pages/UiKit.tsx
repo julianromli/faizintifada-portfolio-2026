@@ -497,7 +497,7 @@ function PricingSection({ onCheckout }: CheckoutProps) {
         <p className="mt-4 text-[13px] text-muted">
           Use code{' '}
           <span className="font-mono font-medium text-foreground">{LAUNCH_COUPON.code}</span>
-          {' '}at checkout for {LAUNCH_COUPON.discountValue}% off.
+          {' '}at checkout for {LAUNCH_COUPON.discountValue}% off. No expiry.
         </p>
         <p className="mt-1.5 text-[13px] text-muted">Delivered to your email after checkout.</p>
       </m.div>

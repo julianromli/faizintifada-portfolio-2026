@@ -1,10 +1,48 @@
 import { eq } from 'drizzle-orm';
+import { seedCoupons } from '../../src/data/coupons.js';
 import { coupons as couponsTable, type CouponRow } from '../../src/db/schema.js';
 import { getDb } from '../../src/db/client.js';
+import { couponToInsertValues } from '../../src/lib/coupon-mapper.js';
 import { formatCouponDiscount } from '../../src/lib/format-coupon.js';
 import type { CouponValidation, CouponValidationError } from '../../src/types/coupon.js';
 
 const FAIZ_UI_PRICE = 99000;
+
+function isUniqueConstraintError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /UNIQUE constraint failed|SQLITE_CONSTRAINT_UNIQUE/i.test(msg);
+}
+
+let seedCouponsEnsured = false;
+
+/**
+ * Insert seed Coupons when their codes are missing.
+ * Does not overwrite an existing row, so an admin can deactivate a launch
+ * Coupon without the next Worker cold start turning it back on.
+ */
+export async function ensureSeedCoupons(db: ReturnType<typeof getDb>): Promise<void> {
+  if (seedCouponsEnsured) return;
+
+  await Promise.all(
+    seedCoupons.map(async (coupon) => {
+      const values = couponToInsertValues(coupon);
+      const [existing] = await db
+        .select({ id: couponsTable.id })
+        .from(couponsTable)
+        .where(eq(couponsTable.code, values.code))
+        .limit(1);
+      if (existing) return;
+
+      try {
+        await db.insert(couponsTable).values(values);
+      } catch (err) {
+        if (!isUniqueConstraintError(err)) throw err;
+      }
+    }),
+  );
+
+  seedCouponsEnsured = true;
+}
 
 export function getCheckoutPrice(): number {
   const raw = Number(process.env.FAIZ_UI_PRICE_IDR);
@@ -38,6 +76,8 @@ export async function findCouponByCode(
   normalizedCode: string,
 ): Promise<CouponRow | null> {
   if (!normalizedCode) return null;
+
+  await ensureSeedCoupons(db);
 
   const [row] = await db
     .select()

@@ -21,6 +21,7 @@
     "db:seed": "tsx scripts/seed-projects.ts",
     "db:seed:testimonials": "tsx scripts/seed-testimonials.ts",
     "db:seed:speaking": "tsx scripts/seed-speaking-events.ts",
+    "db:seed:coupons": "tsx scripts/seed-coupons.ts",
     "doctor": "npx react-doctor@latest",
     "email": "email dev --dir emails --port 3001"
   },

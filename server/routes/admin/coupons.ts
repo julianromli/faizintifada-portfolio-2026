@@ -3,6 +3,7 @@ import { desc, eq } from 'drizzle-orm';
 import { getDb } from '../../../src/db/client.js';
 import { coupons as couponsTable } from '../../../src/db/schema.js';
 import { couponToInsertValues, rowToCoupon } from '../../../src/lib/coupon-mapper.js';
+import { ensureSeedCoupons } from '../../lib/coupon.js';
 import { couponPayloadSchema } from '../../schemas/couponPayload.js';
 
 function isUniqueConstraintError(err: unknown): boolean {
@@ -24,6 +25,7 @@ export function createAdminCouponsApp() {
   app.get('/', async (c) => {
     try {
       const db = getDb();
+      await ensureSeedCoupons(db);
       const rows = await db
         .select()
         .from(couponsTable)

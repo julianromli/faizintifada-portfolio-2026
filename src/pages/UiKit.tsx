@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   ArrowUpRight,
   Check,
@@ -19,6 +20,7 @@ import { Seo } from '../components/Seo';
 import { CheckoutDialog } from '../components/CheckoutDialog';
 import { ImageLightbox } from '../components/ImageLightbox';
 import { UI_KIT } from '../constants';
+import { LAUNCH_COUPON } from '../data/coupons';
 import { apiUrl } from '../lib/api';
 import { DEFAULT_UI_KIT_SETTINGS, type UiKitSettings } from '../lib/ui-kit-settings';
 import { EASE_OUT } from '../lib/motion';
@@ -492,7 +494,12 @@ function PricingSection({ onCheckout }: CheckoutProps) {
         >
           Buy {name} now
         </button>
-        <p className="mt-4 text-[13px] text-muted">Delivered to your email after checkout.</p>
+        <p className="mt-4 text-[13px] text-muted">
+          Use code{' '}
+          <span className="font-mono font-medium text-foreground">{LAUNCH_COUPON.code}</span>
+          {' '}at checkout for {LAUNCH_COUPON.discountValue}% off.
+        </p>
+        <p className="mt-1.5 text-[13px] text-muted">Delivered to your email after checkout.</p>
       </m.div>
     </m.section>
   );
@@ -656,9 +663,15 @@ function FinalCtaSection({ onCheckout }: CheckoutProps) {
 
 export function UiKit() {
   const { name, tagline, price } = UI_KIT;
+  const [searchParams] = useSearchParams();
+  const couponFromUrl = searchParams.get('coupon')?.trim() ?? '';
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [settings, setSettings] = useState<UiKitSettings>(DEFAULT_UI_KIT_SETTINGS);
   const openCheckout = () => setCheckoutOpen(true);
+
+  useEffect(() => {
+    if (couponFromUrl) setCheckoutOpen(true);
+  }, [couponFromUrl]);
 
   useEffect(() => {
     let cancelled = false;
@@ -682,7 +695,12 @@ export function UiKit() {
 
   return (
     <>
-      {checkoutOpen ? <CheckoutDialog onClose={() => setCheckoutOpen(false)} /> : null}
+      {checkoutOpen ? (
+        <CheckoutDialog
+          onClose={() => setCheckoutOpen(false)}
+          initialCoupon={couponFromUrl || undefined}
+        />
+      ) : null}
 
       <Seo
         title="Faiz UI — AI-Agent Starter Kit"

@@ -82,18 +82,24 @@ function reducer(state: FormState, action: FormAction): FormState {
 export interface CheckoutDialogProps {
   /** Render only when opening; the dialog opens itself on mount and closes by unmounting. */
   onClose: () => void;
+  /** Pre-fill and apply this Coupon when the dialog mounts (e.g. from `?coupon=`). */
+  initialCoupon?: string;
 }
 
 /**
  * Native modal checkout dialog. Mount it (e.g. `{open && <CheckoutDialog .../>}`) to show it;
  * it calls `showModal()` on mount and `close()` on unmount, restoring focus to whatever opened
- * it — so there is no prop-synced effect, and the form state is naturally fresh on each open.
+ * it. Form state is fresh on each open. `initialCoupon` is applied once on mount from the
+ * Sales Page query string — not synced from props after that.
  */
-export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
+export function CheckoutDialog({ onClose, initialCoupon }: CheckoutDialogProps) {
   const shouldReduceMotion = useReducedMotion();
   const panelMotion = shouldReduceMotion ? panelVariantsReduced : panelVariants;
   const { playSound } = useSound();
-  const [state, dispatch] = useReducer(reducer, INITIAL);
+  const [state, dispatch] = useReducer(reducer, initialCoupon?.trim() ?? '', (code): FormState => ({
+    ...INITIAL,
+    couponInput: code,
+  }));
   const [closing, setClosing] = useState(false);
 
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -110,6 +116,28 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
       previouslyFocused?.focus?.();
     };
   }, []);
+
+  // Apply a Coupon from the Sales Page URL once on mount. Silent: no error sound
+  // on a deep link, because the Buyer did not press Apply.
+  useEffect(() => {
+    const code = initialCoupon?.trim();
+    if (!code) return;
+
+    let cancelled = false;
+    dispatch({ type: 'applyStart' });
+    void validateCoupon(code).then((result) => {
+      if (cancelled) return;
+      if (!result.valid) {
+        dispatch({ type: 'applyError', message: result.error });
+        return;
+      }
+      dispatch({ type: 'applySuccess', applied: result });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialCoupon]);
 
   // Play the exit animation, then unmount via the parent's onClose once it completes.
   const requestClose = useCallback(() => setClosing(true), []);

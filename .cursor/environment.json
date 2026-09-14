@@ -1,0 +1,11 @@
+{
+  "name": "Portfolio 2026 (dev)",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "export PATH=\"$HOME/.bun/bin:$PATH\" && bun run dev"
+    }
+  ],
+  "ports": [3000, 3001]
+}

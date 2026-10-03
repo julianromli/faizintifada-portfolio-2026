@@ -8,14 +8,14 @@ const containerVariants = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.06,
+      staggerChildren: 0.04,
       delayChildren: 0.2,
     }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 15, filter: "blur(4px)" },
+  hidden: { opacity: 0, y: 12, filter: "blur(3px)" },
   show: { 
     opacity: 1, 
     y: 0, 

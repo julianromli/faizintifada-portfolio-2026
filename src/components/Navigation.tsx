@@ -5,6 +5,7 @@ import { List, X } from '@phosphor-icons/react';
 import { NAV_LINKS } from '../constants';
 import { ThemeToggle } from './ThemeToggle';
 import { SoundToggle } from './SoundToggle';
+import { IconSwap } from './IconSwap';
 import { EASE_OUT } from '../lib/motion';
 
 const navLinkClassName =
@@ -12,14 +13,14 @@ const navLinkClassName =
 
 const backdropVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.2, ease: EASE_OUT } },
+  visible: { opacity: 1, transition: { duration: 0.25, ease: EASE_OUT } },
   exit: { opacity: 0, transition: { duration: 0.15, ease: EASE_OUT } },
 };
 
 const menuVariants = {
-  hidden: { opacity: 0, y: -8, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.2, ease: EASE_OUT } },
-  exit: { opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.15, ease: EASE_OUT } },
+  hidden: { opacity: 0, y: -8, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.25, ease: EASE_OUT } },
+  exit: { opacity: 0, y: -8, scale: 0.99, transition: { duration: 0.15, ease: EASE_OUT } },
 };
 
 const menuVariantsReduced = {
@@ -127,7 +128,11 @@ export function Navigation() {
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           onClick={() => setMenuOpen((open) => !open)}
         >
-          {menuOpen ? <X size={22} weight="bold" /> : <List size={22} weight="bold" />}
+          <IconSwap
+            state={menuOpen ? 'b' : 'a'}
+            iconA={<List size={22} weight="bold" />}
+            iconB={<X size={22} weight="bold" />}
+          />
         </button>
       </div>
 

@@ -241,10 +241,10 @@ export function ToolsStack() {
   return (
     <section className="flex w-full min-w-0 flex-col items-center justify-center">
       <m.div 
-        initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+        initial={{ opacity: 0, y: 12, filter: "blur(3px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.6, ease: EASE_OUT }}
+        transition={{ duration: 0.5, ease: EASE_OUT }}
         className="text-center mb-12 sm:mb-16"
       >
         <h2 className="text-3xl font-semibold tracking-tight text-foreground mb-4">Tools I Use</h2>

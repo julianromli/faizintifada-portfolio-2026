@@ -5,6 +5,7 @@ import { createCheckout, validateCoupon } from '../lib/checkout-api';
 import { UI_KIT } from '../constants';
 import type { AppliedCoupon } from '../types/coupon';
 import { panelVariants, panelVariantsReduced } from '../lib/motion';
+import { FormError } from './FormError';
 import { useSound } from '../hooks/useSound';
 
 const labelClass = 'block text-[13px] font-medium text-foreground mb-1.5';
@@ -350,22 +351,14 @@ export function CheckoutDialog({ onClose, initialCoupon }: CheckoutDialogProps) 
                   Coupon applied — you pay {formatIDR(state.applied.finalAmount)}.
                 </p>
               ) : null}
-              {state.couponError ? (
-                <p
-                  id="checkout-coupon-error"
-                  role="alert"
-                  className="mt-1.5 text-[12px] text-red-600 dark:text-red-400"
-                >
-                  {state.couponError}
-                </p>
-              ) : null}
+              <FormError
+                message={state.couponError}
+                id="checkout-coupon-error"
+                className="mt-1.5 text-[12px] text-red-600 dark:text-red-400"
+              />
             </div>
 
-            {state.error ? (
-              <div role="alert" className="alert alert-error">
-                {state.error}
-              </div>
-            ) : null}
+            <FormError message={state.error} />
 
             <p className="text-[12px] leading-relaxed text-muted">
               {displayAmount === 0

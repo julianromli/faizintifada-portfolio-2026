@@ -1,5 +1,5 @@
+import { useLayoutEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle } from '@phosphor-icons/react';
 import { m, useReducedMotion } from 'motion/react';
 import { Seo } from '../components/Seo';
 import { UI_KIT } from '../constants';
@@ -7,18 +7,21 @@ import { EASE_OUT } from '../lib/motion';
 
 export function UiKitThankYou() {
   const reduce = useReducedMotion();
+  const checkRef = useRef<HTMLSpanElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
 
-  const iconAnim = reduce
-    ? {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        transition: { duration: 0.2, ease: EASE_OUT },
-      }
-    : {
-        initial: { opacity: 0, scale: 0.9 },
-        animate: { opacity: 1, scale: 1 },
-        transition: { type: 'spring' as const, duration: 0.5, bounce: 0.2 },
-      };
+  useLayoutEffect(() => {
+    const check = checkRef.current;
+    const path = pathRef.current;
+    if (!check || !path) return;
+
+    const len = Math.ceil(path.getTotalLength());
+    path.style.strokeDasharray = String(len);
+    path.style.strokeDashoffset = String(len);
+    check.setAttribute('data-state', 'out');
+    void check.offsetWidth;
+    check.setAttribute('data-state', 'in');
+  }, []);
 
   const textAnim = (delay: number) =>
     reduce
@@ -37,9 +40,18 @@ export function UiKitThankYou() {
     <>
       <Seo title="Thank you" path="/ui/thank-you" noIndex />
       <main className="flex min-h-[50vh] flex-col items-center justify-center py-20 text-center">
-        <m.div {...iconAnim} className="inline-flex">
-          <CheckCircle size={56} weight="fill" className="text-emerald-500" aria-hidden />
-        </m.div>
+        <span ref={checkRef} className="t-success-check" data-state="out" aria-hidden="true">
+          <svg viewBox="0 0 48 48" width="56" height="56" fill="none">
+            <path
+              ref={pathRef}
+              d="M10 24 L20 34 L38 14"
+              stroke="#10b981"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
         <m.h1 {...textAnim(0.08)} className="mt-6 max-w-xl text-[2rem] sm:text-[2.5rem] leading-tight font-semibold tracking-tight text-foreground">
           Payment received — welcome to {UI_KIT.name}.
         </m.h1>

@@ -15,6 +15,8 @@ import {
 import { submitCoachingTestimonial } from '../lib/coaching-testimonial-api';
 import type { CoachingTestimonialInput } from '../types/coaching-testimonial';
 import { panelVariants, panelVariantsReduced } from '../lib/motion';
+import { CheckBox } from './CheckBox';
+import { FormError } from './FormError';
 import { useSound } from '../hooks/useSound';
 
 export interface TestimonialFormDialogProps {
@@ -322,20 +324,15 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
                   {/* 4. Consent */}
                   <section className={sectionClass}>
                     <h3 className={sectionTitleClass}>Consent</h3>
-                    <label className="flex cursor-pointer items-start gap-3 text-[14px] text-foreground">
-                      <input
-                        type="checkbox"
-                        checked={form.agreedToPublish}
-                        onChange={(e) => update('agreedToPublish', e.target.checked)}
-                        className="mt-0.5 size-4 shrink-0 accent-foreground"
-                      />
-                      <span>
-                        Gue ngizinin nama, role, dan testimoni ini ditampilkan secara publik.
-                      </span>
-                    </label>
+                    <CheckBox
+                      checked={form.agreedToPublish}
+                      onChange={(checked) => update('agreedToPublish', checked)}
+                    >
+                      Gue ngizinin nama, role, dan testimoni ini ditampilkan secara publik.
+                    </CheckBox>
                   </section>
 
-                  {error ? <div className="alert alert-error">{error}</div> : null}
+                  <FormError message={error} />
                 </div>
 
                 <div className="border-t border-border px-6 py-4">

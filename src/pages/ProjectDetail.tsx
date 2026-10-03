@@ -14,14 +14,14 @@ const containerVariants = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.06,
+      staggerChildren: 0.04,
       delayChildren: 0.1,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 15, filter: 'blur(4px)' },
+  hidden: { opacity: 0, y: 12, filter: 'blur(3px)' },
   show: {
     opacity: 1,
     y: 0,
@@ -214,10 +214,10 @@ export function ProjectDetail() {
       </div>
 
       <m.div
-        initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+        initial={{ opacity: 0, y: 12, filter: 'blur(3px)' }}
         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         viewport={{ once: true, margin: '-50px' }}
-        transition={{ duration: 0.6, ease: EASE_OUT }}
+        transition={{ duration: 0.5, ease: EASE_OUT }}
         className="max-w-3xl mx-auto mb-24"
       >
         <h2 className="text-2xl font-semibold text-foreground mb-6">About the Project</h2>
@@ -238,10 +238,10 @@ export function ProjectDetail() {
           {project.images.slice(1).map((img) => (
             <m.div
               key={img}
-              initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+              initial={{ opacity: 0, y: 12, filter: 'blur(3px)' }}
               whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, ease: EASE_OUT }}
+              transition={{ duration: 0.5, ease: EASE_OUT }}
               className="rounded-[2rem] overflow-hidden bg-surface border border-border"
             >
               <img

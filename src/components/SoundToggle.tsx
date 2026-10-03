@@ -3,15 +3,16 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, m, useReducedMotion } from 'motion/react';
 import { SpeakerHigh, SpeakerSlash } from '@phosphor-icons/react';
 import { useSound } from '../hooks/useSound';
+import { IconSwap } from './IconSwap';
 import { EASE_OUT } from '../lib/motion';
 
 const iconButtonClassName =
   'flex items-center justify-center size-11 rounded-full border border-border text-muted hover:bg-surface hover:text-foreground active:scale-[0.97] theme-transition focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card';
 
 const panelVariants = {
-  hidden: { opacity: 0, scale: 0.98, y: -4 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.18, ease: EASE_OUT } },
-  exit: { opacity: 0, scale: 0.98, y: -4, transition: { duration: 0.12, ease: EASE_OUT } },
+  hidden: { opacity: 0, scale: 0.97, y: -4 },
+  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.25, ease: EASE_OUT } },
+  exit: { opacity: 0, scale: 0.99, y: -4, transition: { duration: 0.15, ease: EASE_OUT } },
 };
 
 const panelVariantsReduced = {
@@ -171,7 +172,11 @@ export function SoundToggle() {
           });
         }}
       >
-        {muted ? <SpeakerSlash size={20} weight="bold" /> : <SpeakerHigh size={20} weight="bold" />}
+        <IconSwap
+          state={muted ? 'b' : 'a'}
+          iconA={<SpeakerHigh size={20} weight="bold" />}
+          iconB={<SpeakerSlash size={20} weight="bold" />}
+        />
       </button>
 
       {createPortal(
@@ -182,7 +187,7 @@ export function SoundToggle() {
               id={panelId}
               key="sound-panel"
               aria-label="Sound settings"
-              className="fixed z-[60] w-56 rounded-2xl border border-border bg-card p-4 shadow-lg theme-transition"
+              className="fixed z-[60] w-56 origin-top-right rounded-2xl border border-border bg-card p-4 shadow-lg theme-transition"
               style={{ top: coords.top, right: coords.right }}
               variants={reduceMotion ? panelVariantsReduced : panelVariants}
               initial="hidden"
@@ -218,33 +223,11 @@ export function SoundSettingsRow() {
           if (next) playSound('click');
         }}
       >
-        <span className="relative inline-flex size-[18px] items-center justify-center">
-          <AnimatePresence mode="wait" initial={false}>
-            {enabled ? (
-              <m.span
-                key="on"
-                className="absolute inset-0 flex items-center justify-center"
-                initial={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
-                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
-                transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
-              >
-                <SpeakerHigh size={18} aria-hidden />
-              </m.span>
-            ) : (
-              <m.span
-                key="off"
-                className="absolute inset-0 flex items-center justify-center"
-                initial={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
-                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
-                transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
-              >
-                <SpeakerSlash size={18} aria-hidden />
-              </m.span>
-            )}
-          </AnimatePresence>
-        </span>
+        <IconSwap
+          state={enabled ? 'a' : 'b'}
+          iconA={<SpeakerHigh size={18} />}
+          iconB={<SpeakerSlash size={18} />}
+        />
         UI sounds
       </button>
       <div className="px-3 pb-2">

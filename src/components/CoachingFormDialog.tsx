@@ -22,6 +22,8 @@ import type {
   CoachingSubmissionInput,
 } from '../types/coaching';
 import { panelVariants, panelVariantsReduced } from '../lib/motion';
+import { CheckBox } from './CheckBox';
+import { FormError } from './FormError';
 import { useSound } from '../hooks/useSound';
 
 export interface CoachingFormDialogProps {
@@ -427,21 +429,16 @@ export function CoachingFormDialog({ open, onClose }: CoachingFormDialogProps) {
                   {/* 4. Agreement */}
                   <section className={sectionClass}>
                     <h3 className={sectionTitleClass}>Agreement</h3>
-                    <label className="flex cursor-pointer items-start gap-3 text-[14px] text-foreground">
-                      <input
-                        type="checkbox"
-                        checked={form.agreedToTerms}
-                        onChange={(e) => update('agreedToTerms', e.target.checked)}
-                        className="mt-0.5 size-4 shrink-0 accent-foreground"
-                      />
-                      <span>
-                        Sesi 2 jam, rekaman dikirim via email/WhatsApp group dalam 24 jam,
-                        reschedule H-24, no refund.
-                      </span>
-                    </label>
+                    <CheckBox
+                      checked={form.agreedToTerms}
+                      onChange={(checked) => update('agreedToTerms', checked)}
+                    >
+                      Sesi 2 jam, rekaman dikirim via email/WhatsApp group dalam 24 jam,
+                      reschedule H-24, no refund.
+                    </CheckBox>
                   </section>
 
-                  {error ? <div className="alert alert-error">{error}</div> : null}
+                  <FormError message={error} />
                 </div>
 
                 <div className="border-t border-border px-6 py-4">

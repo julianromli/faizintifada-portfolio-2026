@@ -8,6 +8,7 @@ import {
 } from '../lib/page-settings';
 import type { Testimonial } from '../types/testimonial';
 import { HeroImage } from './HeroImage';
+import { TextSwap } from './TextSwap';
 import { useContactDialog } from './ContactDialogProvider';
 import { SpaceXAIIcon } from './SpaceXAIIcon';
 
@@ -194,26 +195,9 @@ export function Hero() {
       {/* Testimonial (mobile: 3rd; desktop: col 1 bottom) — minimal cross-fade */}
       {!testimonialsLoading && count > 0 && current ? (
         <div className="order-3 xl:order-none xl:col-start-1 xl:row-start-2 pt-0 w-full sm:max-w-xl animate-blur-reveal delay-250">
-          {/* Quote — grid-stacked: row auto-sizes to the tallest quote (consistent height, no overlap) */}
-          <div className="mb-6 grid">
-            {testimonials.map((t, i) => (
-              <p
-                key={t.id}
-                aria-hidden={activeIndex !== i}
-                className={`col-start-1 row-start-1 text-pretty text-xl md:text-2xl font-medium leading-relaxed text-foreground transition-[opacity,transform,filter] duration-500 ease-[cubic-bezier(0.2,0,0,1)] ${
-                  activeIndex === i
-                    ? shouldReduceMotion
-                      ? 'opacity-100'
-                      : 'opacity-100 translate-y-0 blur-0'
-                    : shouldReduceMotion
-                      ? 'opacity-0 pointer-events-none'
-                      : 'opacity-0 translate-y-4 blur-sm pointer-events-none'
-                }`}
-              >
-                {`“${t.quote}”`}
-              </p>
-            ))}
-          </div>
+          <p className="mb-6 text-pretty text-xl md:text-2xl font-medium leading-relaxed text-foreground">
+            <TextSwap text={`“${current.quote}”`} />
+          </p>
 
           {/* Author row — overlapping avatar buttons + active author info */}
           <div className="flex items-center gap-x-5">
@@ -225,7 +209,7 @@ export function Hero() {
                   onClick={() => setActiveTestimonial(i)}
                   aria-label={`Show testimonial from ${t.name}`}
                   aria-pressed={activeIndex === i}
-                  className={`relative size-10 touch-manipulation overflow-hidden rounded-full ring-2 ring-shell transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2 focus-visible:ring-offset-shell ${
+                  className={`relative size-10 touch-manipulation overflow-hidden rounded-full ring-2 ring-shell transition-[opacity,transform,filter] duration-300 ease-[var(--ease-smooth-out)] active:scale-[0.96] focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2 focus-visible:ring-offset-shell ${
                     activeIndex === i ? 'z-10 scale-110' : 'grayscale hover:grayscale-0 hover:scale-105'
                   }`}
                 >
@@ -241,7 +225,7 @@ export function Hero() {
                 <div
                   key={t.id}
                   aria-hidden={activeIndex !== i}
-                  className={`col-start-1 row-start-1 flex flex-col justify-center transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
+                  className={`col-start-1 row-start-1 flex flex-col justify-center transition-[opacity,transform] duration-300 ease-[var(--ease-smooth-out)] ${
                     activeIndex === i
                       ? shouldReduceMotion
                         ? 'opacity-100'

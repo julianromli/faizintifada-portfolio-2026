@@ -61,6 +61,7 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
   const [honeypot, setHoneypot] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorAttempt, setErrorAttempt] = useState(0);
   const [success, setSuccess] = useState(false);
 
   const handleEscape = useEffectEvent(() => {
@@ -128,6 +129,7 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
     const localError = validateLocal();
     if (localError) {
       setError(localError);
+      setErrorAttempt((n) => n + 1);
       playSound('error');
       return;
     }
@@ -152,6 +154,7 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
       playSound('success');
     } else {
       setError(result.message);
+      setErrorAttempt((n) => n + 1);
       playSound('error');
     }
   }
@@ -332,7 +335,7 @@ export function TestimonialFormDialog({ open, onClose }: TestimonialFormDialogPr
                     </CheckBox>
                   </section>
 
-                  <FormError message={error} />
+                  <FormError message={error} attempt={errorAttempt} />
                 </div>
 
                 <div className="border-t border-border px-6 py-4">

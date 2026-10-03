@@ -2,11 +2,13 @@ import { useEffect, useRef } from 'react';
 
 type FormErrorProps = {
   message: string | null;
+  /** Increments on every failed submit, including when the text stays the same. */
+  attempt: number;
   id?: string;
   className?: string;
 };
 
-export function FormError({ message, id, className }: FormErrorProps) {
+export function FormError({ message, attempt, id, className }: FormErrorProps) {
   const inputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export function FormError({ message, id, className }: FormErrorProps) {
     const shakeMs = read('--shake-dur-a', 80) * 2 + read('--shake-dur-b', 60) * 2;
     const timer = window.setTimeout(() => input.classList.remove('is-shaking'), shakeMs + 20);
     return () => window.clearTimeout(timer);
-  }, [message]);
+  }, [message, attempt]);
 
   if (!message) return null;
 

@@ -195,9 +195,20 @@ export function Hero() {
       {/* Testimonial (mobile: 3rd; desktop: col 1 bottom) — minimal cross-fade */}
       {!testimonialsLoading && count > 0 && current ? (
         <div className="order-3 xl:order-none xl:col-start-1 xl:row-start-2 pt-0 w-full sm:max-w-xl animate-blur-reveal delay-250">
-          <p className="mb-6 text-pretty text-xl md:text-2xl font-medium leading-relaxed text-foreground">
-            <TextSwap text={`“${current.quote}”`} />
-          </p>
+          <div className="mb-6 grid">
+            {testimonials.map((t) => (
+              <p
+                key={t.id}
+                aria-hidden="true"
+                className="col-start-1 row-start-1 invisible text-pretty text-xl md:text-2xl font-medium leading-relaxed text-foreground"
+              >
+                <span className="t-text-swap">{`“${t.quote}”`}</span>
+              </p>
+            ))}
+            <p className="col-start-1 row-start-1 text-pretty text-xl md:text-2xl font-medium leading-relaxed text-foreground">
+              <TextSwap text={`“${current.quote}”`} />
+            </p>
+          </div>
 
           {/* Author row — overlapping avatar buttons + active author info */}
           <div className="flex items-center gap-x-5">

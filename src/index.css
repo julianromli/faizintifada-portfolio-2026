@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./styles/transitions-dev.css";
 
 @font-face {
   font-family: 'Satoshi';
@@ -37,7 +38,7 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --animate-fade-in: fade-in 0.4s var(--ease-out) forwards;
   --animate-skeleton-shimmer: skeleton-shimmer 1.5s ease-in-out infinite;
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Cursor design tokens — light defaults */
   --color-canvas-parchment: #f7f7f4;
@@ -134,7 +135,7 @@
 @keyframes blur-reveal {
   from {
     opacity: 0;
-    filter: blur(4px);
+    filter: blur(3px);
     transform: translateY(12px);
   }
   to {
@@ -146,7 +147,7 @@
 
 .animate-blur-reveal {
   opacity: 0;
-  animation: blur-reveal 0.6s var(--ease-out) forwards;
+  animation: blur-reveal var(--duration-very-slow) var(--ease-out) forwards;
 }
 
 @keyframes skeleton-shimmer {

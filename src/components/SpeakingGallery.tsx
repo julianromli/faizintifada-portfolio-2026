@@ -40,11 +40,11 @@ function EventTile({ event, index, onOpen }: EventTileProps) {
     <m.button
       type="button"
       onClick={onOpen}
-      initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+      initial={{ opacity: 0, y: 12, filter: 'blur(3px)' }}
       whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, ease: EASE_OUT, delay: Math.min(index, 6) * 0.08 }}
-      className={`group relative block w-full overflow-hidden rounded-[1.25rem] bg-surface-nested text-left transition-shadow duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:shadow-elevated focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 ${tileSpanClass(index)}`}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay: Math.min(index, 6) * 0.04 }}
+      className={`group relative block w-full overflow-hidden rounded-[1.25rem] bg-surface-nested text-left transition-shadow duration-300 ease-[var(--ease-smooth-out)] hover:shadow-elevated focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 ${tileSpanClass(index)}`}
       aria-label={`View photo: ${event.title}`}
     >
       <img
@@ -52,7 +52,7 @@ function EventTile({ event, index, onOpen }: EventTileProps) {
         alt={event.title}
         loading="lazy"
         decoding="async"
-        className="h-full w-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.04]"
+        className="h-full w-full object-cover transition-transform duration-300 ease-[var(--ease-smooth-out)] group-hover:scale-[1.04]"
       />
 
       {/* Top-left type badge */}

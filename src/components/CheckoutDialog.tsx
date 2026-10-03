@@ -5,6 +5,7 @@ import { createCheckout, validateCoupon } from '../lib/checkout-api';
 import { UI_KIT } from '../constants';
 import type { AppliedCoupon } from '../types/coupon';
 import { panelVariants, panelVariantsReduced } from '../lib/motion';
+import { FormError } from './FormError';
 import { useSound } from '../hooks/useSound';
 
 const labelClass = 'block text-[13px] font-medium text-foreground mb-1.5';
@@ -23,8 +24,10 @@ type FormState = {
   applied: AppliedCoupon | null;
   applyingCoupon: boolean;
   couponError: string | null;
+  couponErrorAttempt: number;
   submitting: boolean;
   error: string | null;
+  errorAttempt: number;
 };
 
 type FormAction =
@@ -44,8 +47,10 @@ const INITIAL: FormState = {
   applied: null,
   applyingCoupon: false,
   couponError: null,
+  couponErrorAttempt: 0,
   submitting: false,
   error: null,
+  errorAttempt: 0,
 };
 
 function reducer(state: FormState, action: FormAction): FormState {
@@ -69,11 +74,22 @@ function reducer(state: FormState, action: FormAction): FormState {
         couponError: null,
       };
     case 'applyError':
-      return { ...state, applyingCoupon: false, applied: null, couponError: action.message };
+      return {
+        ...state,
+        applyingCoupon: false,
+        applied: null,
+        couponError: action.message,
+        couponErrorAttempt: state.couponErrorAttempt + 1,
+      };
     case 'submitStart':
       return { ...state, submitting: true, error: null };
     case 'submitError':
-      return { ...state, submitting: false, error: action.message };
+      return {
+        ...state,
+        submitting: false,
+        error: action.message,
+        errorAttempt: state.errorAttempt + 1,
+      };
     default:
       return state;
   }
@@ -350,22 +366,15 @@ export function CheckoutDialog({ onClose, initialCoupon }: CheckoutDialogProps) 
                   Coupon applied — you pay {formatIDR(state.applied.finalAmount)}.
                 </p>
               ) : null}
-              {state.couponError ? (
-                <p
-                  id="checkout-coupon-error"
-                  role="alert"
-                  className="mt-1.5 text-[12px] text-red-600 dark:text-red-400"
-                >
-                  {state.couponError}
-                </p>
-              ) : null}
+              <FormError
+                message={state.couponError}
+                attempt={state.couponErrorAttempt}
+                id="checkout-coupon-error"
+                className="mt-1.5 text-[12px] text-red-600 dark:text-red-400"
+              />
             </div>
 
-            {state.error ? (
-              <div role="alert" className="alert alert-error">
-                {state.error}
-              </div>
-            ) : null}
+            <FormError message={state.error} attempt={state.errorAttempt} />
 
             <p className="text-[12px] leading-relaxed text-muted">
               {displayAmount === 0

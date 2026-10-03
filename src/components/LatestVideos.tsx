@@ -21,10 +21,10 @@ interface VideoCardProps {
 function VideoCard({ video, index }: VideoCardProps) {
   return (
     <m.div
-      initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+      initial={{ opacity: 0, y: 12, filter: 'blur(3px)' }}
       whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, ease: EASE_OUT, delay: index * 0.1 }}
+      transition={{ duration: 0.5, ease: EASE_OUT, delay: index * 0.04 }}
     >
       <a
         href={video.url}
@@ -32,15 +32,15 @@ function VideoCard({ video, index }: VideoCardProps) {
         rel="noopener noreferrer"
         className="group block cursor-pointer active:scale-[0.98] transition-transform duration-200 ease-out"
       >
-        <div className="overflow-hidden bg-surface-nested aspect-[4/3] rounded-[1rem] relative mb-4 transition-shadow duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:shadow-elevated">
+        <div className="overflow-hidden bg-surface-nested aspect-[4/3] rounded-[1rem] relative mb-4 transition-shadow duration-300 ease-[var(--ease-smooth-out)] group-hover:shadow-elevated">
           <img
             src={video.thumbnailUrl}
             alt={video.title}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.035]"
+            className="w-full h-full object-cover transition-transform duration-300 ease-[var(--ease-smooth-out)] group-hover:scale-[1.035]"
           />
-          <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:bg-black/[0.03]" />
+          <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 ease-[var(--ease-smooth-out)] group-hover:bg-black/[0.03]" />
         </div>
         <div className="flex flex-col gap-y-0.5 px-1 mt-1">
           <h3 className="text-base font-semibold text-foreground transition-colors duration-200 ease-out group-hover:text-muted">

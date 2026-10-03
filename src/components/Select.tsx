@@ -6,6 +6,7 @@ import {
   useState,
 } from 'react';
 import { AnimatePresence, m } from 'motion/react';
+import { EASE_OUT } from '../lib/motion';
 import { Check, CaretDown } from '@phosphor-icons/react';
 
 export interface SelectOption {
@@ -199,11 +200,20 @@ export function Select({
               activeIndex >= 0 ? `${listboxId}-opt-${activeIndex}` : undefined
             }
             tabIndex={-1}
-            className="absolute z-50 mt-1.5 max-h-64 w-full overflow-auto rounded-xl border border-border bg-card p-1.5 shadow-elevated focus:outline-none"
-            initial={{ opacity: 0, scale: 0.96, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: -2 }}
-            transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+            className="absolute z-50 mt-1.5 max-h-64 w-full origin-top overflow-auto rounded-xl border border-border bg-card p-1.5 shadow-elevated focus:outline-none"
+            initial={{ opacity: 0, scale: 0.97, y: -4 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              transition: { duration: 0.25, ease: EASE_OUT },
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.99,
+              y: -2,
+              transition: { duration: 0.15, ease: EASE_OUT },
+            }}
           >
           {options.map((opt, index) => {
             const isSelected = opt.value === value;
